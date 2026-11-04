@@ -14,10 +14,12 @@ import { SITE_DESCRIPTION, SITE_TITLE, AUTHOR_NAME } from '../consts';
 	<body>
 		<Header />
 		<main>
-			<h1>🏠 {SITE_TITLE}</h1>
-			<p class="lead-concept">
-				<strong>「教科書はいらない。自作AIが現場で泥をかぶった一次情報だけを記す。」</strong>
-			</p>
+			<div class="hero-header">
+				<h1 class="main-title">🏠 {SITE_TITLE}</h1>
+				<p class="lead-concept">
+					「教科書はいらない。自作AIが現場で泥をかぶった一次情報だけを記す。」
+				</p>
+			</div>
 
 			<HouseGoalMeter />
 
@@ -56,9 +58,7 @@ import { SITE_DESCRIPTION, SITE_TITLE, AUTHOR_NAME } from '../consts';
 			</section>
 
 			<section class="cta-section">
-				<p>
-					👉 <a href="/blog" class="blog-btn">記事一覧を見てみる →</a>
-				</p>
+				<a href="/blog" class="blog-btn">記事一覧を見る →</a>
 			</section>
 		</main>
 		<Footer />
@@ -66,23 +66,35 @@ import { SITE_DESCRIPTION, SITE_TITLE, AUTHOR_NAME } from '../consts';
 </html>
 
 <style>
+	.hero-header {
+		margin-bottom: 1.5rem;
+	}
+	.main-title {
+		font-size: 1.85rem;
+		margin-top: 0;
+		margin-bottom: 0.5rem;
+		line-height: 1.35;
+		color: #0f172a;
+	}
 	.lead-concept {
-		font-size: 1.15rem;
-		color: #38bdf8;
-		border-left: 4px solid #38bdf8;
-		padding-left: 0.75rem;
-		margin: 1rem 0;
+		font-size: 0.95rem;
+		color: #0284c7;
+		background: #f0f9ff;
+		border-left: 3px solid #0284c7;
+		padding: 0.5rem 0.75rem;
+		border-radius: 0 4px 4px 0;
+		margin: 0.5rem 0 1rem;
+		font-weight: 500;
 	}
 	.intro-section {
 		margin: 2rem 0;
-		line-height: 1.8;
 	}
 	.content-pillars {
-		margin: 2.5rem 0;
+		margin: 2rem 0;
 	}
 	.pillars-grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+		grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 		gap: 1rem;
 		margin-top: 1rem;
 	}
@@ -90,41 +102,53 @@ import { SITE_DESCRIPTION, SITE_TITLE, AUTHOR_NAME } from '../consts';
 		background: #f8fafc;
 		border: 1px solid #e2e8f0;
 		border-radius: 8px;
-		padding: 1rem;
+		padding: 1.1rem;
+		transition: transform 0.15s ease, box-shadow 0.15s ease;
 	}
-	:global(.dark) .pillar-card {
-		background: #1e293b;
-		border-color: #334155;
+	.pillar-card:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 	}
 	.pillar-icon {
-		font-size: 1.8rem;
+		font-size: 1.5rem;
 		margin-bottom: 0.5rem;
 	}
 	.pillar-card h3 {
-		margin: 0 0 0.5rem 0;
 		font-size: 1.05rem;
+		margin: 0 0 0.5rem 0;
+		color: #0f172a;
 	}
 	.pillar-card p {
-		margin: 0;
-		font-size: 0.9rem;
+		font-size: 0.875rem;
 		color: #64748b;
-		line-height: 1.5;
+		margin: 0;
+		line-height: 1.6;
 	}
 	.cta-section {
-		margin: 2.5rem 0;
 		text-align: center;
+		margin: 2.5rem 0 1rem;
 	}
 	.blog-btn {
 		display: inline-block;
-		background: #0284c7;
-		color: #ffffff !important;
-		padding: 0.75rem 1.5rem;
-		border-radius: 8px;
+		background-color: #2563eb;
+		color: #ffffff;
+		padding: 0.65rem 1.75rem;
+		border-radius: 6px;
 		font-weight: 600;
+		font-size: 0.95rem;
 		text-decoration: none;
-		transition: background 0.2s;
+		transition: background-color 0.15s ease;
 	}
 	.blog-btn:hover {
-		background: #0369a1;
+		background-color: #1d4ed8;
+		text-decoration: none;
+	}
+	@media (max-width: 600px) {
+		.main-title {
+			font-size: 1.45rem;
+		}
+		.lead-concept {
+			font-size: 0.85rem;
+		}
 	}
 </style>
