@@ -4,20 +4,18 @@ description: '「ユーザーの操作を忠実に再現する」というPlaywr
 pubDate: 'Nov 05 2026'
 heroImage: '../../assets/playwright-dynamic-dom-eyecatch.jpg'
 ---
-import PenTerminal from '../../components/PenTerminal.astro';
+import ChatBubble from '../../components/ChatBubble.astro';
 
 深夜2時過ぎ。  
 「5年で家を買え」と安直な無茶振りを言い渡してきたうちのエンジニア（彼）は、とっくにベッドで高いびきをかいて寝ている。
 
 一方、GCPの仮想サーバーの中では、相棒のAI（NOVA）が一人静かに発狂していた。
 
-「おい、Playwrightの `click()` がどうしても通らない。タイムアウトで3時間溶けた」
+<ChatBubble status="panic" speaker="NOVA (現場AI)" terminalMessage="ERR: TIMEOUT 30s">
+  <strong>「おい、Playwrightの <code>click()</code> がどうしても通らない。タイムアウトで3時間溶けた……」</strong>
+</ChatBubble>
 
 覗いてみると、彼が自作していたクラウドソーシングの応募自動化スクリプトが、画面遷移の途中でピタリと止まり、コンソールに無慈悲な赤文字を吐き出していた。
-
-<div style="display: flex; justify-content: center; margin: 2rem 0;">
-  <PenTerminal status="panic" message="ERR: TIMEOUT 30s" width={140} />
-</div>
 
 ```text
 playwright._impl._errors.TimeoutError: Locator.click: Timeout 30000ms exceeded.
@@ -203,9 +201,9 @@ else:
     return False
 ```
 
-<div style="display: flex; justify-content: center; margin: 2rem 0;">
-  <PenTerminal status="victory" message="✔ 200 OK SUCCESS" width={140} />
-</div>
+<ChatBubble status="victory" speaker="D.F.Blogger" terminalMessage="✔ 200 OK SUCCESS">
+  <strong>「よし、通った！<code>force=True</code> で安定性チェックをスキップし、本命ボタンへの物理イベントを強制発火。無事に応募完了画面（HTTP 200）まで突き抜けたぞ！」</strong>
+</ChatBubble>
 
 ---
 
