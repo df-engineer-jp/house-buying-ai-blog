@@ -6,7 +6,7 @@ interface Props {
   message?: string;
   width?: number; // 表示幅 (px)
   animated?: boolean;
-  interactive?: boolean; // JSによる心電図パルス流動・タイピング循環
+  interactive?: boolean; // JSによる心電図パルス流動
 }
 
 const {
@@ -37,7 +37,7 @@ const configs = {
     chassisBg: '#0d1117',
     chassisBorder: '#30363d',
     defaultPolyline: '58,115 75,115 80,107 85,123 90,109 95,118 100,115 138,115',
-    defaultMsg: '> MINING NOVA LOGS...',
+    defaultMsg: '> MINING NOVA...',
     sub1: 'PARSING: 68%',
     sub2: 'THINKING DEEP_',
   },
@@ -47,9 +47,9 @@ const configs = {
     chassisBg: '#1c0d0d',
     chassisBorder: '#f85149',
     defaultPolyline: '58,115 75,115 80,103 85,127 90,105 95,122 100,115 138,115',
-    defaultMsg: '[!] CRITICAL ALERT',
-    sub1: 'EARNED: ¥0 (T_T)',
-    sub2: '> RETRYING (3/5)...',
+    defaultMsg: '[!] CRITICAL ERR',
+    sub1: 'TIMEOUT: 30000ms',
+    sub2: 'EARNED: ¥0 (T_T)',
   },
   victory: {
     color: '#3fb950',
@@ -58,8 +58,8 @@ const configs = {
     chassisBorder: '#3fb950',
     defaultPolyline: '58,115 80,115 85,108 90,122 95,111 100,116 105,115 138,115',
     defaultMsg: '✔ BREAKTHROUGH!',
-    sub1: 'DEPLOY: LIVE NOW',
-    sub2: 'NO MORE ERRORS (^^v',
+    sub1: 'ALL TESTS PASSED',
+    sub2: 'HTTP 200 SUCCESS',
   },
   speechless: {
     color: '#8b949e',
@@ -78,8 +78,8 @@ const configs = {
     chassisBorder: '#e3b341',
     defaultPolyline: '58,115 80,115 85,106 90,124 95,109 100,117 105,115 138,115',
     defaultMsg: '★ REVENUE! ★',
-    sub1: 'HOUSE GOAL +0.002%',
-    sub2: 'STOCKS ACCUMULATED',
+    sub1: '+¥1,000 EARNED',
+    sub2: 'STOCKS +0.002%',
   },
 };
 
@@ -124,7 +124,7 @@ const height = Math.round(width * 1.15);
       class="terminal-nib"
     />
 
-    <!-- ディスプレイ画面 -->
+    <!-- ディスプレイ画面 (横幅96px: x52〜x148) -->
     <rect 
       x="52" 
       y="42" 
@@ -137,36 +137,36 @@ const height = Math.round(width * 1.15);
       class="terminal-screen"
     />
 
-    <!-- テキスト：コマンド / メッセージ -->
-    <text x="60" y="58" fill={cfg.color} font-size="7.5" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-weight="bold" class="live-cmd-text">
-      {msgLine}
-    </text>
+    <!-- コンソール内部（クリッピングで枠外はみ出しを絶対防止） -->
+    <g clip-path="url(#screen-clip)">
+      <!-- テキスト：コマンド / メッセージ -->
+      <text x="59" y="58" fill={cfg.color} font-size="7.2" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-weight="bold" class="live-cmd-text">
+        {msgLine}
+      </text>
 
-    <!-- テキスト：目標金額 -->
-    <text x="60" y="72" fill="#e6edf3" font-size="7.5" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">
-      TARGET: {targetStr}
-    </text>
+      <!-- テキスト：目標金額 -->
+      <text x="59" y="72" fill="#e6edf3" font-size="7.2" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">
+        TARGET: {targetStr}
+      </text>
 
-    <!-- テキスト：獲得金額 -->
-    <text x="60" y="85" fill={cfg.color} font-size="8.5" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-weight="bold">
-      EARNED: {earnedStr}
-    </text>
+      <!-- テキスト：獲得金額 -->
+      <text x="59" y="85" fill={cfg.color} font-size="8.2" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-weight="bold">
+        EARNED: {earnedStr}
+      </text>
 
-    <!-- 進捗バートラック -->
-    <rect x="60" y="92" width="80" height="4" rx="1" fill="#21262d" />
-    <rect x="60" y="92" width={barWidth} height="4" rx="1" fill={cfg.color} />
+      <!-- 進捗バートラック -->
+      <rect x="59" y="92" width="82" height="4" rx="1" fill="#21262d" />
+      <rect x="59" y="92" width={barWidth} height="4" rx="1" fill={cfg.color} />
 
-    <!-- オシロスコープ波形 または カーソル -->
-    {status === 'speechless' ? (
-      <g class="cursor-group">
-        <text x="96" y="105" fill="#8b949e" font-size="16" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" text-anchor="middle" class="blinking-cursor">_</text>
-        <text x="100" y="130" fill="#484f58" font-size="7" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" text-anchor="middle">(speechless)</text>
-        <text x="100" y="145" fill="#30363d" font-size="6.5" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" text-anchor="middle">...正気だろうか？</text>
-      </g>
-    ) : (
-      <g class="wave-group">
-        <!-- 心電図波形クリップ用マスク（コンソール幅内にクリッピング） -->
-        <g clip-path="url(#wave-clip)">
+      <!-- オシロスコープ波形 または カーソル -->
+      {status === 'speechless' ? (
+        <g class="cursor-group">
+          <text x="96" y="105" fill="#8b949e" font-size="16" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" text-anchor="middle" class="blinking-cursor">_</text>
+          <text x="100" y="130" fill="#484f58" font-size="7" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" text-anchor="middle">(speechless)</text>
+          <text x="100" y="145" fill="#30363d" font-size="6.5" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" text-anchor="middle">...正気だろうか？</text>
+        </g>
+      ) : (
+        <g class="wave-group">
           <polyline 
             points={cfg.defaultPolyline} 
             fill="none" 
@@ -176,19 +176,20 @@ const height = Math.round(width * 1.15);
             stroke-linejoin="round"
             class="oscilloscope-line live-wave"
           />
+          <!-- 枠内に100%収まる短縮ステータス行 -->
+          <text x="59" y="135" fill={cfg.color} font-size="6.5" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" class="live-sub1">{cfg.sub1}</text>
+          <text x="59" y="147" fill="#8b949e" font-size="6.2" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" class="live-sub2">{cfg.sub2}</text>
         </g>
-        <text x="60" y="135" fill={cfg.color} font-size="7" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" class="live-sub1">{cfg.sub1}</text>
-        <text x="60" y="148" fill="#e6edf3" font-size="6.8" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" class="live-sub2">{cfg.sub2}</text>
-      </g>
-    )}
+      )}
+    </g>
 
     <!-- 接地ベースプレート -->
     <rect x="30" y="200" width="140" height="8" rx="2" fill="#161b22" stroke={cfg.chassisBorder} />
 
-    <!-- クリップパス定義 -->
+    <!-- 画面クリッピング定義（枠線より1px内側を厳格にマスク） -->
     <defs>
-      <clipPath id="wave-clip">
-        <rect x="56" y="98" width="88" height="34" />
+      <clipPath id="screen-clip">
+        <rect x="53.5" y="43.5" width="93" height="117" rx="2" />
       </clipPath>
     </defs>
   </svg>
@@ -258,7 +259,6 @@ const height = Math.round(width * 1.15);
         if (d < -12 || d > 12) return 0;
 
         if (mode === 'panic') {
-          // パニック時は乱れた鋭角ノイズ
           const ptsPanic = [
             [-12, 0], [-8, -8], [-4, 12], [0, -10], [5, 10], [8, -5], [12, 0]
           ];
@@ -272,7 +272,6 @@ const height = Math.round(width * 1.15);
         }
 
         // 通常・静的設計と同一の心電図パルス形状
-        // d=-12(0) -> d=-6(-6 上) -> d=0(+6 下) -> d=5(-3.5 上反発) -> d=8(+1.5 下戻り) -> d=12(0 平坦)
         const pts = [
           [-12, 0],
           [-6, -6.5],
@@ -292,14 +291,14 @@ const height = Math.round(width * 1.15);
 
       const startX = 58;
       const endX = 138;
-      const pulseMargin = 16; // 画面外マージン
-      const totalTravel = (endX + pulseMargin) - (startX - pulseMargin); // 112px
+      const pulseMargin = 16;
+      const totalTravel = (endX + pulseMargin) - (startX - pulseMargin);
 
-      // 速度設定: 約1.6秒で左端から右端へ通過
-      const speed = status === 'panic' ? 80 : 56; // px / 秒
-      const travelTime = totalTravel / speed;     // 約 2.0 秒
-      const intervalTime = 0.8;                   // 通過後の平穏時間 (秒)
-      const cycleTime = travelTime + intervalTime; // 1サイクルの周期 (約 2.8秒)
+      // 速度設定: 約1.8秒で左端から右端へ通過
+      const speed = status === 'panic' ? 80 : 54;
+      const travelTime = totalTravel / speed;
+      const intervalTime = 0.8;
+      const cycleTime = travelTime + intervalTime;
 
       let animStartTime = performance.now();
 
@@ -307,17 +306,13 @@ const height = Math.round(width * 1.15);
         const elapsedSec = (now - animStartTime) / 1000;
         const currentCycleSec = elapsedSec % cycleTime;
 
-        // パルスの現在X座標
         let pulseX;
         if (currentCycleSec <= travelTime) {
-          // 左から右へ移動中
           pulseX = (startX - pulseMargin) + currentCycleSec * speed;
         } else {
-          // インターバル期間中は画面外
           pulseX = 9999;
         }
 
-        // サンプリング点を生成（2px刻みで極めて滑らかなpolyline）
         const points = [];
         for (let x = startX; x <= endX; x += 2) {
           const d = x - pulseX;
@@ -332,13 +327,13 @@ const height = Math.round(width * 1.15);
 
       requestAnimationFrame(updatePulse);
 
-      // ログ循環タイピング (4秒おき)
+      // ログ循環（枠内に100%収まる短いテキスト：最大14〜15文字）
       if (status === 'idle') {
         const logs = [
           ['> DAEMON: ACTIVE', '> MEMORY: OPTIMAL'],
-          ['> UPTIME: 18h 42m', '> CLOUDFLARE: 200 OK'],
-          ['> HOUSE FUND: ¥0', '> WATCHING NOVA LOGS'],
-          ['> WRITING: ARTICLE #002', '> DOM TESTS: PASSED'],
+          ['> UPTIME: 18h 42m', '> CLOUDFLARE: 200'],
+          ['> HOUSE FUND: ¥0', '> NOVA: MONITORING'],
+          ['> STATUS: ONLINE', '> SYSTEM: STABLE'],
         ];
         let logIdx = 0;
         setInterval(() => {
@@ -352,7 +347,6 @@ const height = Math.round(width * 1.15);
     });
   }
 
-  // 実行登録
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initLiveTerminals);
   } else {
