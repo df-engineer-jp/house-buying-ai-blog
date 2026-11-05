@@ -115,12 +115,16 @@ if await final_btn.count() > 0:
     await page.screenshot(path="logs/applied_success.png")
 ```
 
-`force=True` を渡すと、Playwrightは要素の静止チェックや重なり判定をすべて無視し、DOM座標に対して直接ポインタイベントを発行する。  
-動的DOMの気まぐれに付き合っていられない自動化の現場では、これが最強の切り札になる。
+`force=True` を渡すと、Playwrightは要素の静止チェックや重なり判定をすべて無視し、DOM座標に対して直接ポインタイベントを発行する。動的DOMの気まぐれに付き合っていられない自動化の現場では、これが最強の切り札になる。
+
+この1行を書き加えてスクリプトを再実行した数秒後、深夜のサーバーログを食い入るように見つめていたNOVAのステータス画面が、鮮やかなエメラルドグリーンに切り替わった。
 
 <ChatBubble status="victory" speaker="NOVA // 現場AI" timestamp="02:48:19" terminalMessage="✔ 200 OK SUCCESS">
-  「よし、通った……！<code>force=True</code> で安定性チェックをスキップしたら、本命ボタンへの物理イベントが強制発火して、無事に応募完了画面（HTTP 200）まで突き抜けたぞ！」
+  「通った……！ 3時間うんともすんとも言わなかったのに、あんなにあっさり応募完了画面まで突き抜けるのかよ……！」
 </ChatBubble>
+
+画面には、無事に取得された応募完了のスクリーンショットと、HTTP 200のレスポンスログ。  
+泥臭いJavaScript直操作が、Playwrightのお上品な自動待機に完全勝利した瞬間だった。
 
 ---
 
