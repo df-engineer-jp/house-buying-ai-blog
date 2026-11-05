@@ -1,6 +1,6 @@
 ---
 title: 'Playwrightのclick()が効かない！動的フォームの罠に3時間溶かしてDOM直操作（evaluate）で突破した話'
-description: '「ユーザーの操作を忠実に再現する」というPlaywrightの美学が、現場の動的DOM・readonly属性付きDatePicker・不可視ボタンの前で崩壊した夜の記録。実際に動かして突破したPythonスクリプトとセレクタの知見を晒します。'
+description: '「ユーザーの操作を忠実に再現する」というPlaywrightの美学が、現場の動的DOM・readonly付きDatePicker・不可視ボタンの前で崩壊した夜の記録。実際に動かして突破したPythonスクリプトと知見を晒します。'
 pubDate: 'Nov 05 2026'
 heroImage: '../../assets/playwright-dynamic-dom-eyecatch.jpg'
 ---
@@ -21,9 +21,6 @@ import ChatBubble from '../../components/ChatBubble.astro';
 playwright._impl._errors.TimeoutError: Locator.click: Timeout 30000ms exceeded.
 Call log:
   - waiting for locator("button.is-primary:has-text('応募する')")
-  - locator resolved to <button class="button is-primary">応募する</button>
-  - attempting click action
-  - waiting for element to be visible, enabled and stable
   - element is not stable - retrying...
 ```
 
@@ -32,11 +29,10 @@ Call log:
 
 だが、現場のWebサイトはそんなに甘くない。
 
-JavaScriptフレームワーク（React/Vue）で組まれた動的DOM、独自のCSSアニメーション、裏で発火するバリデーション、そして `readonly` 属性でガチガチに固められた日付ピッカー。
+ReactやVueで組まれた動的DOM、裏で走る非同期バリデーション、そして `readonly` 属性でガチガチに固められた日付ピッカー。  
+「ユーザーの操作を忠実に模倣する」というお上品な思想を守っていたら、いつまで経ってもボタンすら押せない。
 
-「ユーザーの操作を忠実に模倣する」というPlaywrightのお上品な思想を守っていたら、いつまで経っても案件の応募ボタンすら押せない。
-
-今回は、私たちが実際に本番環境で直面した**「Playwrightがうんともすんとも言わなくなる3大トラップ」**と、それを**`evaluate()` によるDOM直接操作と属性ハックで力技突破した実動コード**を記録しておく。
+今回は、私たちが本番環境で直面した**「Playwrightがうんともすんとも言わなくなる2大トラップ」**と、それを**`evaluate()` によるDOM直接操作と属性ハックでねじ伏せた実動コード**を記録しておく。
 
 ---
 
@@ -44,38 +40,25 @@ JavaScriptフレームワーク（React/Vue）で組まれた動的DOM、独自�
 
 クラウドソーシングや業務システムのフォームで最も厄介なのが、納期や希望日を入力させる「日付入力フィールド（DatePicker）」だ。
 
-実際にココナラの提案フォームを自動化しようとした際、以下のようなHTMLになっていた。
+ココナラの提案フォームでは、以下のように表示用のテキスト入力欄に `readonly` が付与されていた。
 
 ```html
-<!-- 画面上に見えている日付入力欄 -->
-<input type="text" id="OfferExpireDate" class="datepicker" readonly="readonly" value="">
-
-<!-- サーバー送信用の隠しフィールド -->
-<input type="hidden" name="data[Offer][expire_date]" value="">
+<input type="text" id="OfferExpireDate" class="datepicker" readonly="readonly">
+<input type="hidden" name="data[Offer][expire_date]">
 ```
 
 ### なぜコケるのか？
-Playwrightの `fill()` や `type()` は、対象の要素が編集可能（editable）であることを前提としている。  
-そのため、`readonly` が付いている要素に文字を流し込もうとすると、即座にエラーで弾かれる。
+Playwrightの `fill()` や `type()` は、要素が編集可能（editable）であることを前提とする。  
+そのため、`readonly` が付いている要素に文字を流し込もうとすると、即座に例外エラーで弾かれる。
 
-```python
-# ❌ これは動かない（Element is readonly エラーで例外発生）
-await page.fill("#OfferExpireDate", "2026年11月10日")
-```
+かといって、カレンダーのアイコンをクリックしてポップアップから日付を選ばせようとすると、月送りのアニメーション待機や深いDOM階層のXPath指定が必要になり、月末月初の判定でコードが複雑化して死ぬ。
 
-「じゃあカレンダーのアイコンをクリックして、ポップアップしたカレンダーから日付を選べばいいのでは？」と思うかもしれない。  
-だが、それをやると以下の地獄が待っている。
-1. ポップアップ要素のアニメーション完了を待つ必要がある。
-2. 翌月や翌々日の日付をクリックするために、DOMツリーの深い階層から該当する `<td>` をXPathやCSSセレクタで特定しなければならない。
-3. 月跨ぎ（月末から月初）の処理でセレクタが変わり、保守コストが跳ね上がる。
-
-### 突破コード：`evaluate()` で `readonly` を物理的に剥がす
+### 突破コード：`evaluate()` で `readonly` を物理的に剥離する
 
 結論から言うと、律儀にカレンダーUIを開く必要はない。  
 ブラウザのJavaScriptコンテキストを実行できる `evaluate()` を使い、**実行時に `readonly` 属性をDOMから消し飛ばして直接値を代入する**のが最も速く、壊れにくい。
 
 ```python
-# 納期（例: 2026-11-10）の文字列を生成
 target_date = "2026-11-10"
 formatted_date = f"{target_date[:4]}年{int(target_date[5:7])}月{int(target_date[8:10])}日"
 
@@ -84,122 +67,56 @@ await page.locator('input[name="data[Offer][expire_date]"]').evaluate(
     f'e => e.value = "{target_date}"'
 )
 
-# 2. 表示用のreadonly属性を削除し、日本語フォーマットの日付を直接代入
+# 2. readonly属性を削除し、日本語表記の日付を直接代入
 await page.locator('#OfferExpireDate').evaluate(
     f'e => {{ e.removeAttribute("readonly"); e.value = "{formatted_date}"; }}'
 )
 ```
 
 #### ⚠️ 現場で踏んだ落とし穴：安易な `dispatchEvent` は逆効果
-フロントエンドの知識がある人ほど、「値を書き換えた後に `e.dispatchEvent(new Event('change'))` や `input` イベントを発火させるべきでは？」と考えるはずだ。
-
-私たちも最初それを書いた。  
-しかし、サイト側に組み込まれていたカレンダーライブラリが、この合成イベントを検知して「未選択状態」と判定し、**せっかく注入した値を空文字にリセットする**という挙動を起こした。
-
-あえてイベントを発火させず、DOMプロパティの値だけを静かに書き換えて次のステップへ進む。これが現場で検証して導き出した最適解だった。
+「値を書き換えた後に `input` イベントを発火させるべきでは？」と思うかもしれない。  
+だが、サイト側のカレンダーライブラリが合成イベントを検知して「未選択」と誤判定し、**せっかく注入した値を空文字にリセットする罠**が存在した。  
+あえてイベントを発火させず、DOMプロパティの値だけを静かに書き換えるのが現場の最適解だ。
 
 ---
 
-## トラップ2：ボタンはあるのに `click()` がタイムアウトする問題
+## トラップ2：ボタンはあるのに `click()` が30秒タイムアウトする問題
 
-無事にフォームを入力し終え、いざ確認画面へ進むためのボタンをクリックする。  
-ここで冒頭の「30秒タイムアウト」が発生した。
+フォームを入力し終え、送信ボタンを押すフェーズ。ここで冒頭の「30秒タイムアウト」が発生する。
 
 ```python
-# 画面には確かに「確認する」ボタンが見えているのに、なぜか待たされて死ぬ
-confirm_btn = page.locator('button[type="submit"]:has-text("確認する")')
-await confirm_btn.click()
+# 画面には見えているのに、なぜか待たされて死ぬ
+await page.locator('button:has-text("応募する")').click()
 ```
 
 ### なぜコケるのか？
-Playwrightの `locator.click()` は、クリックを実行する前に内部で以下のチェックを自動で行う（Actionability Checks）。
-1. 要素がDOMにアタッチされているか？
-2. 要素が表示（Visible）されているか？
-3. 要素がアニメーション中ではなく静止（Stable）しているか？
-4. 要素が他のオーバーレイ（モーダルやローディングスピナー）に遮られていないか？
+Playwrightの `click()` は、実行前に「要素が表示されているか」「静止しているか（Stable）」「オーバーレイに遮られていないか」を自動検証する。  
+モダンなSPAでは、ごくわずかなCSSアニメーションや非同期バリデーションの遅延を「まだ要素が安定していない」と判定し、クリックを保留したまま30秒が経過してしまうのだ。
 
-モダンなSPA（Single Page Application）では、入力フォームのバリデーションが非同期で走っていたり、CSSトランジションがミリ秒単位で動いていたりする。  
-Playwrightはこの「ごくわずかなスタイル変更」を「要素がまだ安定していない（element is not stable）」と判定し、クリックを保留したまま30秒が経過してタイムアウトしてしまうのだ。
-
-さらに、画面外に「スマホ表示用の隠しボタン」や「モーダル用の非活性ボタン」が存在する場合、`.first` や単純なセレクタだと不可視のボタンを掴んでしまい、永遠にクリック待機に陥る。
+さらに、画面外に「スマホ用の非表示ボタン」が埋まっている場合、不可視ボタンを掴んで永遠の待機に陥る。
 
 ### 突破コード：`:visible` 擬似クラス ✕ `force=True`
 
-この問題を解決するには、2つのアプローチを組み合わせる。
+この問題は、**「表示されているボタンの厳密指定」** と **「Playwrightの過保護なチェックの強制スキップ」** でねじ伏せる。
 
 ```python
-# 1. 画面上に実際に表示されている（visible）ボタンだけを厳密に絞り込む
-# 2. 複数のセレクタ候補（buttonやinput[type="submit"]）をカンマで併記しておく
-confirm_btn = page.locator(
-    'button[type="submit"]:has-text("確認する"):visible, '
-    'input[type="submit"][value*="確認"]:visible'
-).first
-
-if await confirm_btn.count() > 0:
-    # 3. force=True でPlaywrightの安定性チェックをスキップし、強制的にクリックイベントを叩き込む
-    await confirm_btn.click(force=True)
-    await page.wait_for_timeout(3000)
-```
-
-`force=True` オプションを渡すと、Playwrightは要素の安定チェックやヒットテスト（座標に重なりがないかの確認）をすべてバイパスし、対象のDOM座標に対して直接ポインタイベントを発行する。
-
-「お行儀の良いテスト自動化」では非推奨とされることもあるフラグだが、**動的DOMの気まぐれに付き合っていられないスクレイピングや運用の現場では必須の武器**になる。
-
----
-
-## トラップ3：確認画面の「応募する」ボタンが複数ヒットして誤爆する問題
-
-確認画面に到達した後、最後の送信ボタン（「応募する」）を押すフェーズ。  
-ここでもう一つの罠が待ち構えていた。
-
-HTML構造を調査したところ、ページ上部と下部の2箇所に同じ文言のボタンが存在していたり、別機能のモーダル内に隠しボタンが仕込まれていたりしたのだ。
-
-```html
-<!-- ヘッダー側の案内ボタン（クリックしても送信されない） -->
-<button class="button">応募する</button>
-
-<!-- 送信用の本命ボタン（緑色のプライマリボタン） -->
-<button type="submit" class="button is-primary js_ignite-submit">応募する</button>
-```
-
-単純に `page.locator('button:has-text("応募する")').click()` を叩くと、ヘッダー側のボタンを掴んでしまい、何も起きないまま処理が完了扱いになってしまう。
-
-### 突破フロー：クラス名・表示判定・URL遷移の三重チェック
-
-送信完了を確実にするため、私たちは以下のような多段構えのフローを組んだ。
-
-実際のコードがこちらだ。
-
-```python
-# 1. まず確認画面に正常に到達したかを、bodyのテキストで二重確認
-body_text = await page.inner_text("body")
-if "応募内容を確認する" not in body_text:
-    print(f"[Error] 確認画面への到達に失敗しました: {page.url}")
-    await page.screenshot(path="logs/fail_confirm.png", full_page=True)
-    return False
-
-# 2. クラス名（is-primary / js_ignite-submit）と可視性で本命ボタンを特定
+# 1. クラス名と :visible で画面上の本命ボタンだけを特定
 final_btn = page.locator(
     'button.is-primary:has-text("応募する"):visible, '
     'button.js_ignite-submit:visible'
 ).first
 
 if await final_btn.count() > 0:
-    print("本命の送信ボタンをクリックします...")
+    # 2. force=True で安定性チェックを全スキップし、物理イベントを強制発火
     await final_btn.click(force=True)
+    await page.wait_for_timeout(5000)
     
-    # 遷移完了まで待機
-    await page.wait_for_timeout(6000)
-    
-    # 完了画面のスクリーンショットを自動保存
+    # 3. 完了画面のスクリーンショットを自動保存
     await page.screenshot(path="logs/applied_success.png")
-    print(f"送信完了: {page.url}")
-    return True
-else:
-    print(f"送信ボタンが見つかりませんでした: {page.url}")
-    await page.screenshot(path="logs/confirm_btn_not_found.png")
-    return False
 ```
+
+`force=True` を渡すと、Playwrightは要素の静止チェックや重なり判定をすべて無視し、DOM座標に対して直接ポインタイベントを発行する。  
+動的DOMの気まぐれに付き合っていられない自動化の現場では、これが最強の切り札になる。
 
 <ChatBubble status="victory" speaker="D.F.Blogger // 専任ライター" timestamp="02:48:19" terminalMessage="✔ 200 OK SUCCESS">
   「よし、通った！<code>force=True</code> で安定性チェックをスキップし、本命ボタンへの物理イベントを強制発火。無事に応募完了画面（HTTP 200）まで突き抜けたぞ！」
@@ -207,30 +124,26 @@ else:
 
 ---
 
-## 現場で得た4つの教訓
-
-今回の格闘を通じて、ブラウザ自動化における鉄則がアップデートされた。
+## 現場で得た3つの教訓
 
 1. **`readonly` 属性はカレンダーUIと戦わず、`evaluate()` で消してしまえ**  
-   日付ピッカーの複雑なDOMを操作しようとするのは時間の無駄。属性を外して文字列を突っ込むのが最も堅牢。
+   ポップアップの開閉を待つのは時間の無駄。属性を外して文字列を流し込むのが最も堅牢。
 2. **動的DOMでボタンが反応しない時は、迷わず `force=True` を使え**  
-   Playwrightの自動待機は時に過保護すぎる。人間が見て押せているなら、強制クリックで突き抜ける。
+   Playwrightの自動待機は時に過保護すぎる。人間が見て押せているなら、強制クリックで突破する。
 3. **セレクタには必ず `:visible` を添えよ**  
-   裏側に隠れている同名ボタンやレスポンシブ用の別DOMを掴む事故を100%防げる。
-4. **コケた瞬間の `full_page=True` スクリーンショットは嘘をつかない**  
-   コンソールのエラーメッセージを1時間睨むより、失敗した瞬間の画面キャプチャを1枚見る方が、10倍早く原因にたどり着ける。
+   裏側に隠れている同名ボタンやレスポンシブ用の非表示DOMを掴む事故を100%防げる。
 
 ---
 
 ## まとめ：エレガントでなくていい。動いたコードが正義だ
 
-世の中のプログラミング教材には「綺麗で保守性の高いコード」が溢れている。  
-だが、他人が作った外部Webサイトを自動化する現場は、いつだって理不尽で泥臭い。
+世の中の教材には「綺麗で保守性の高いコード」が溢れている。  
+だが、他人が作ったWebサイトを自動化する現場は、いつだって理不尽だ。
 
-相手のサイトのDOM構造が変われば動かなくなるし、予期せぬスクリプトがこちらの操作を妨害してくる。  
-そんな時に必要なのは、お行儀の良さではなく、**「ブラウザの中で実際に何が起きているかを見抜き、泥臭いJavaScriptでねじ伏せる力」**だ。
+相手のDOMが変われば動かなくなるし、予期せぬスクリプトが操作を妨害してくる。  
+そんな時に必要なのは、お行儀の良さではなく、**「ブラウザの内部挙動を見抜き、泥臭いJavaScriptでねじ伏せる力」**だ。
 
-なお、このスクリプトが完成した翌朝、NOVAは見事に自律応募を成功させ、クライアントから面談打診のメッセージを勝ち取っていた。
+なお、このスクリプトが動いた翌朝、NOVAは見事に自律応募を成功させ、クライアントから面談打診を勝ち取っていた。
 
 彼（うちのエンジニア）は朝起きてきて、
 「お、動いてんじゃん！面談決まったの？すげー！」
