@@ -6,6 +6,7 @@ interface Props {
   message?: string;
   width?: number; // 表示幅 (px)
   animated?: boolean;
+  interactive?: boolean; // JSによる波形脈動・タイピング循環
 }
 
 const {
@@ -15,6 +16,7 @@ const {
   message,
   width = 240,
   animated = true,
+  interactive = true,
 } = Astro.props;
 
 // ステータス設定
@@ -91,7 +93,8 @@ const height = Math.round(width * 1.15);
 ---
 
 <div 
-  class={`pen-terminal-wrapper status-${status} ${animated ? 'animated' : ''}`}
+  class={`pen-terminal-wrapper status-${status} ${animated ? 'animated' : ''} ${interactive ? 'interactive' : ''}`}
+  data-status={status}
   style={`--theme-color: ${cfg.color}; --theme-glow: ${cfg.glow}; width: ${width}px; height: ${height}px;`}
 >
   <svg 
@@ -134,8 +137,8 @@ const height = Math.round(width * 1.15);
       class="terminal-screen"
     />
 
-    <!-- テキスト：コマンド / 警告 -->
-    <text x="60" y="58" fill={cfg.color} font-size="7.5" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-weight="bold">
+    <!-- テキスト：コマンド / メッセージ -->
+    <text x="60" y="58" fill={cfg.color} font-size="7.5" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-weight="bold" class="live-cmd-text">
       {msgLine}
     </text>
 
@@ -167,10 +170,10 @@ const height = Math.round(width * 1.15);
           fill="none" 
           stroke={cfg.color} 
           stroke-width="1.5"
-          class="oscilloscope-line"
+          class="oscilloscope-line live-wave"
         />
-        <text x="60" y="135" fill={cfg.color} font-size="7" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">{cfg.sub1}</text>
-        <text x="60" y="148" fill="#e6edf3" font-size="6.8" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">{cfg.sub2}</text>
+        <text x="60" y="135" fill={cfg.color} font-size="7" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" class="live-sub1">{cfg.sub1}</text>
+        <text x="60" y="148" fill="#e6edf3" font-size="6.8" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" class="live-sub2">{cfg.sub2}</text>
       </g>
     )}
 
@@ -186,20 +189,19 @@ const height = Math.round(width * 1.15);
     filter: drop-shadow(0 0 16px var(--theme-glow));
     transition: transform 0.25s ease, filter 0.25s ease;
     user-select: none;
+    cursor: default;
   }
   .pen-terminal-wrapper:hover {
     transform: scale(1.03);
     filter: drop-shadow(0 0 24px var(--theme-glow));
   }
 
-  /* 生SVGのベクター鮮明度 */
   .pen-terminal-svg {
     display: block;
     shape-rendering: geometricPrecision;
     text-rendering: geometricPrecision;
   }
 
-  /* CSSアニメーション */
   .animated .blinking-cursor {
     animation: cursor-blink 1s infinite steps(1);
   }
@@ -223,12 +225,71 @@ const height = Math.round(width * 1.15);
     0%, 100% { stroke: #e3b341; }
     50% { stroke: #ffe58f; }
   }
-
-  .animated.status-writing .oscilloscope-line {
-    animation: wave-jitter 0.8s infinite ease-in-out alternate;
-  }
-  @keyframes wave-jitter {
-    0% { transform: translateY(0); }
-    100% { transform: translateY(-1px); }
-  }
 </style>
+
+<script>
+  // クライアント側でリアルタイムに動かすJavaScript
+  function initLiveTerminals() {
+    const terminals = document.querySelectorAll('.pen-terminal-wrapper.interactive');
+    
+    terminals.forEach(el => {
+      const status = el.getAttribute('data-status') || 'idle';
+      const waveEl = el.querySelector('.live-wave');
+      const sub1El = el.querySelector('.live-sub1');
+      const sub2El = el.querySelector('.live-sub2');
+
+      if (status === 'speechless') return;
+
+      // 1. オシロスコープ波形のリアルタイム動的うねり (requestAnimationFrame)
+      let t = 0;
+      function animateWave() {
+        t += 0.05;
+        if (waveEl) {
+          // ベースラインy=115の周りに、微細なサイン波＋パルスを合成
+          let points = [];
+          const startX = 60;
+          const endX = 135;
+          const step = 6;
+          
+          for (let x = startX; x <= endX; x += step) {
+            let y = 115;
+            // 真ん中付近(x: 85〜105)でパルスが走る
+            if (x >= 85 && x <= 105) {
+              const pulse = Math.sin(t * 3 + x * 0.2) * (status === 'writing' ? 12 : 7);
+              y += pulse;
+            } else {
+              // 背景ノイズ波
+              y += Math.sin(t + x * 0.1) * 1.5;
+            }
+            points.push(`${x},${y.toFixed(1)}`);
+          }
+          waveEl.setAttribute('points', points.join(' '));
+        }
+        requestAnimationFrame(animateWave);
+      }
+      requestAnimationFrame(animateWave);
+
+      // 2. ターミナルログのタイピング循環（数秒おきにリアルタイム更新）
+      if (status === 'idle') {
+        const logs = [
+          ['> DAEMON: ACTIVE', '> MEMORY: OPTIMAL'],
+          ['> UPTIME: 18h 42m', '> CLOUDFLARE: 200 OK'],
+          ['> HOUSE FUND: ¥0', '> WATCHING NOVA LOGS'],
+          ['> WRITING: ARTICLE #002', '> DOM TESTS: PASSED'],
+        ];
+        let logIdx = 0;
+        setInterval(() => {
+          logIdx = (logIdx + 1) % logs.length;
+          if (sub1El && sub2El) {
+            sub1El.textContent = logs[logIdx][0];
+            sub2El.textContent = logs[logIdx][1];
+          }
+        }, 4000);
+      }
+    });
+  }
+
+  // 初回ロード & ページ遷移時に実行
+  document.addEventListener('DOMContentLoaded', initLiveTerminals);
+  initLiveTerminals();
+</script>
