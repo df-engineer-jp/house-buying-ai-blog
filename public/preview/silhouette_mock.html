@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PEN キャラクター骨格・シルエット設計シート（Wireframe & Silhouette）</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 30px;
+      background-color: #0d1117;
+      color: #c9d1d9;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "SF Pro Display", Roboto, monospace, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    .header {
+      border-bottom: 2px solid #30363d;
+      padding-bottom: 15px;
+      margin-bottom: 25px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+    .title-group h1 {
+      margin: 0 0 6px 0;
+      font-size: 24px;
+      letter-spacing: 0.05em;
+      color: #58a6ff;
+    }
+    .title-group p {
+      margin: 0;
+      font-size: 13px;
+      color: #8b949e;
+    }
+    .meta-badge {
+      background: #161b22;
+      border: 1px solid #30363d;
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-family: monospace;
+      color: #f0883e;
+    }
+
+    /* 3カラム グリッド */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .column {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .column-header {
+      background: #21262d;
+      padding: 12px 16px;
+      border-bottom: 1px solid #30363d;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .col-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #f0f6fc;
+      margin: 0;
+    }
+    .col-tag {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-weight: 500;
+      font-family: monospace;
+    }
+    .tag-a { background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid #38bdf8; }
+    .tag-b { background: rgba(52, 211, 153, 0.15); color: #34d399; border: 1px solid #34d399; }
+    .tag-c { background: rgba(251, 191, 36, 0.15); color: #fbbf24; border: 1px solid #fbbf24; }
+
+    .card-section {
+      padding: 16px;
+      border-bottom: 1px solid #21262d;
+    }
+    .section-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #8b949e;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* SVG 描画エリア */
+    .viewport {
+      background: #090d13;
+      border: 1px solid #21262d;
+      border-radius: 6px;
+      width: 100%;
+      height: 280px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      background-image: 
+        linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+
+    .viewport svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* シルエット専用ビューポート */
+    .viewport-silhouette {
+      background: #05070a;
+      height: 160px;
+    }
+
+    /* パラメータリスト */
+    .params-table {
+      width: 100%;
+      font-size: 12px;
+      border-collapse: collapse;
+      margin-top: 5px;
+    }
+    .params-table td {
+      padding: 5px 0;
+      border-bottom: 1px dotted #21262d;
+    }
+    .params-table td:first-child {
+      color: #8b949e;
+      width: 45%;
+    }
+    .params-table td:last-child {
+      color: #e6edf3;
+      font-family: monospace;
+      font-weight: 500;
+    }
+
+    .pros-cons {
+      font-size: 12px;
+      line-height: 1.5;
+      color: #c9d1d9;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="title-group">
+      <h1>📐 PEN キャラクター骨格・シルエット設計シート</h1>
+      <p>背景・装飾を排除し、「本質的な形状・パーツ比率・視認性」をコードで完全制御するワイヤーフレーム</p>
+    </div>
+    <div class="meta-badge">CONTROL: HTML5 / CSS3 / SVG VECTOR</div>
+  </div>
+
+  <div class="grid">
+
+    <!-- ================= 骨格A ================= -->
+    <div class="column">
+      <div class="column-header">
+        <h2 class="col-title">骨格A: ミニマル・モノリス型</h2>
+        <span class="col-tag tag-a">SOLID CUBE</span>
+      </div>
+
+      <div class="card-section">
+        <div class="section-label">① 設計ワイヤーフレーム（正面図 ＆ パーツ比率）</div>
+        <div class="viewport">
+          <svg viewBox="0 0 300 240">
+            <!-- ガイド線 -->
+            <line x1="150" y1="20" x2="150" y2="220" stroke="#21262d" stroke-dasharray="2,2"/>
+            <line x1="30" y1="120" x2="270" y2="120" stroke="#21262d" stroke-dasharray="2,2"/>
+            
+            <!-- 脚部インシュレーター -->
+            <rect x="95" y="190" width="20" height="8" rx="2" fill="#30363d"/>
+            <rect x="185" y="190" width="20" height="8" rx="2" fill="#30363d"/>
+
+            <!-- メイン直方体ボディ (アスペクト比 1.2:1) -->
+            <rect x="75" y="50" width="150" height="140" rx="8" fill="#161b22" stroke="#58a6ff" stroke-width="2"/>
+            
+            <!-- 上部天板面取りライン -->
+            <line x1="85" y1="62" x2="215" y2="62" stroke="#30363d" stroke-width="1.5"/>
+
+            <!-- アンバーOLEDスリット (ステータス・目) -->
+            <rect x="95" y="95" width="110" height="14" rx="3" fill="#0d1117" stroke="#d29922" stroke-width="1.5"/>
+            <!-- スリット内のアンバーパルス波形 -->
+            <polyline points="105,102 135,102 142,98 147,106 152,100 156,103 195,102" fill="none" stroke="#f0883e" stroke-width="2"/>
+
+            <!-- 下部通気グリル/スリット (機能美) -->
+            <line x1="95" y1="150" x2="205" y2="150" stroke="#30363d" stroke-width="2"/>
+            <line x1="95" y1="156" x2="205" y2="156" stroke="#30363d" stroke-width="2"/>
+            <line x1="95" y1="162" x2="205" y2="162" stroke="#30363d" stroke-width="2"/>
+
+            <!-- 寸法ラベル -->
+            <text x="150" y="40" fill="#8b949e" font-size="10" font-family="monospace" text-anchor="middle">W: 150mm</text>
+            <text x="235" y="125" fill="#8b949e" font-size="10" font-family="monospace">H: 140mm</text>
+            <text x="150" y="85" fill="#f0883e" font-size="9" font-family="monospace" text-anchor="middle">OLED SLIT (110x14)</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="card-section">
+        <div class="section-label">② ピュア・シルエット（遠景視認性・影）</div>
+        <div class="viewport viewport-silhouette">
+          <svg viewBox="0 0 300 140">
+            <!-- 完全な黒塗り・白抜きシルエット -->
+            <rect x="100" y="122" width="18" height="6" rx="2" fill="#58a6ff"/>
+            <rect x="182" y="122" width="18" height="6" rx="2" fill="#58a6ff"/>
+            <rect x="85" y="15" width="130" height="107" rx="8" fill="#58a6ff"/>
+            <!-- スリットの抜き -->
+            <rect x="102" y="50" width="96" height="10" rx="2" fill="#05070a"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="card-section" style="border: none;">
+        <div class="section-label">③ 設計パラメータ & 特徴</div>
+        <table class="params-table">
+          <tr><td>モチーフ</td><td>直方体モノリス（Braun / Teenage Engineering）</td></tr>
+          <tr><td>愛着度</td><td>ゼロ（完全な工業製品・冷徹なハードウェア）</td></tr>
+          <tr><td>アイコン視認性</td><td>極めて高い（正方形アイコンに最適）</td></tr>
+          <tr><td>表情差分の出し方</td><td>OLEDスリットの光り方・波形・ドット文字で表現</td></tr>
+        </table>
+      </div>
+    </div>
+
+
+    <!-- ================= 骨格B ================= -->
+    <div class="column">
+      <div class="column-header">
+        <h2 class="col-title">骨格B: インダストリアル・アーム型</h2>
+        <span class="col-tag tag-b">PRECISION ARM</span>
+      </div>
+
+      <div class="card-section">
+        <div class="section-label">① 設計ワイヤーフレーム（正面図 ＆ パーツ比率）</div>
+        <div class="viewport">
+          <svg viewBox="0 0 300 240">
+            <!-- ガイド線 -->
+            <line x1="150" y1="20" x2="150" y2="220" stroke="#21262d" stroke-dasharray="2,2"/>
+            
+            <!-- 重厚ベース台座 (丸型ローレットベース) -->
+            <ellipse cx="150" cy="205" rx="55" ry="14" fill="#161b22" stroke="#34d399" stroke-width="2"/>
+            <rect x="142" y="170" width="16" height="30" fill="#21262d" stroke="#34d399" stroke-width="1.5"/>
+
+            <!-- 下部ピボット関節 -->
+            <circle cx="150" cy="165" r="9" fill="#161b22" stroke="#34d399" stroke-width="2"/>
+            <circle cx="150" cy="165" r="3" fill="#34d399"/>
+
+            <!-- 斜めリンクアーム -->
+            <line x1="150" y1="165" x2="175" y2="105" stroke="#34d399" stroke-width="6" stroke-linecap="round"/>
+            <line x1="150" y1="165" x2="175" y2="105" stroke="#090d13" stroke-width="2" stroke-linecap="round"/>
+
+            <!-- 上部エルボー関節 -->
+            <circle cx="175" cy="105" r="8" fill="#161b22" stroke="#34d399" stroke-width="2"/>
+
+            <!-- 首振りヘッドマウント -->
+            <line x1="175" y1="105" x2="140" y2="85" stroke="#34d399" stroke-width="5" stroke-linecap="round"/>
+
+            <!-- カメラ・センサーヘッド (Leica風の円筒レンズ) -->
+            <rect x="100" y="65" width="45" height="38" rx="4" fill="#161b22" stroke="#34d399" stroke-width="2"/>
+            <circle cx="95" cy="84" r="16" fill="#090d13" stroke="#34d399" stroke-width="2"/>
+            <circle cx="95" cy="84" r="10" fill="#0f172a" stroke="#22d3ee" stroke-width="1.5"/>
+            <circle cx="92" cy="81" r="3" fill="#38bdf8"/> <!-- レンズ反射光 -->
+
+            <!-- ヘッド後部ステータスOLED -->
+            <rect x="122" y="73" width="18" height="8" rx="1" fill="#d29922"/>
+
+            <!-- 寸法ラベル -->
+            <text x="75" y="88" fill="#34d399" font-size="9" font-family="monospace" text-anchor="end">LENS EYE (ø32)</text>
+            <text x="150" y="230" fill="#8b949e" font-size="10" font-family="monospace" text-anchor="middle">BASE: ø110mm</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="card-section">
+        <div class="section-label">② ピュア・シルエット（遠景視認性・影）</div>
+        <div class="viewport viewport-silhouette">
+          <svg viewBox="0 0 300 140">
+            <!-- アーム型の特徴的な非対称シルエット -->
+            <ellipse cx="150" cy="122" rx="45" ry="10" fill="#34d399"/>
+            <path d="M 143,120 L 143,100 L 168,60 L 140,45 L 95,45 L 85,55 L 85,75 L 95,85 L 140,85 L 160,85 L 155,100 L 155,120 Z" fill="#34d399"/>
+            <!-- レンズ抜きの穴 -->
+            <circle cx="100" cy="65" r="8" fill="#05070a"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="card-section" style="border: none;">
+        <div class="section-label">③ 設計パラメータ & 特徴</div>
+        <table class="params-table">
+          <tr><td>モチーフ</td><td>Leica光学レンズ ✕ 製図機器精密アーム</td></tr>
+          <tr><td>愛着度</td><td>ゼロ（手元を静かに見つめる観測器具）</td></tr>
+          <tr><td>アイコン視認性</td><td>高（非対称なメカニカルシルエットが個性的）</td></tr>
+          <tr><td>表情差分の出し方</td><td>アームの角度・レンズの絞り（シャッター）・LED色</td></tr>
+        </table>
+      </div>
+    </div>
+
+
+    <!-- ================= 骨格C ================= -->
+    <div class="column">
+      <div class="column-header">
+        <h2 class="col-title">骨格C: 幾何学男性ホログラム型</h2>
+        <span class="col-tag tag-c">GEOMETRIC AVATAR</span>
+      </div>
+
+      <div class="card-section">
+        <div class="section-label">① 設計ワイヤーフレーム（正面図 ＆ パーツ比率）</div>
+        <div class="viewport">
+          <svg viewBox="0 0 300 240">
+            <!-- ガイド線 -->
+            <line x1="150" y1="20" x2="150" y2="220" stroke="#21262d" stroke-dasharray="2,2"/>
+            
+            <!-- 重厚プロジェクター円盤台座 -->
+            <ellipse cx="150" cy="205" rx="60" ry="14" fill="#161b22" stroke="#fbbf24" stroke-width="2"/>
+            <ellipse cx="150" cy="200" rx="45" ry="10" fill="#21262d" stroke="#d29922" stroke-width="1.5"/>
+            <!-- 台座中心の放射エミッター -->
+            <circle cx="150" cy="200" r="14" fill="#0d1117" stroke="#fbbf24" stroke-width="1.5"/>
+            
+            <!-- 投影光コーン (半透明の照射ガイド) -->
+            <polygon points="135,200 165,200 220,50 80,50" fill="rgba(251, 191, 36, 0.05)"/>
+            
+            <!-- 男性知性体の幾何学ワイヤーフレーム (ポリゴン・ライン) -->
+            <!-- 頭部・顎ライン (角ばった大人の男性輪郭) -->
+            <polygon points="150,55 168,68 162,95 150,105 138,95 132,68" fill="none" stroke="#fbbf24" stroke-width="1.8"/>
+            <!-- 髪・フレームライン -->
+            <polyline points="130,68 150,50 170,68" stroke="#fbbf24" stroke-width="1.5"/>
+            
+            <!-- 知的なメガネフレーム / バイザーライン -->
+            <line x1="138" y1="78" x2="162" y2="78" stroke="#f0883e" stroke-width="2"/>
+            
+            <!-- 首・肩・ネクタイ/スーツの幾何学ライン -->
+            <line x1="145" y1="105" x2="145" y2="120" stroke="#fbbf24" stroke-width="1.5"/>
+            <line x1="155" y1="105" x2="155" y2="120" stroke="#fbbf24" stroke-width="1.5"/>
+            
+            <!-- 肩幅 (しっかりとした男性のスクエアショルダー) -->
+            <polygon points="150,120 195,138 185,175 115,175 105,138" fill="none" stroke="#fbbf24" stroke-width="1.8"/>
+            <!-- 胸元のVライン -->
+            <polyline points="132,138 150,160 168,138" stroke="#fbbf24" stroke-width="1.5"/>
+
+            <!-- デジタル粒子 / グリッド点 -->
+            <circle cx="105" cy="138" r="2" fill="#fbbf24"/>
+            <circle cx="195" cy="138" r="2" fill="#fbbf24"/>
+            <circle cx="150" cy="160" r="2" fill="#fbbf24"/>
+
+            <!-- 寸法ラベル -->
+            <text x="195" y="130" fill="#fbbf24" font-size="9" font-family="monospace">SHOULDER: 90px</text>
+            <text x="150" y="230" fill="#8b949e" font-size="10" font-family="monospace" text-anchor="middle">EMITTER BASE: ø120mm</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="card-section">
+        <div class="section-label">② ピュア・シルエット（遠景視認性・影）</div>
+        <div class="viewport viewport-silhouette">
+          <svg viewBox="0 0 300 140">
+            <!-- 台座 ＋ 男性胸像の引き締まったシルエット -->
+            <ellipse cx="150" cy="122" rx="45" ry="8" fill="#fbbf24"/>
+            <!-- 胸像シルエット -->
+            <path d="M 150,15 L 165,28 L 158,50 L 185,62 L 180,95 L 120,95 L 115,62 L 142,50 L 135,28 Z" fill="#fbbf24"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="card-section" style="border: none;">
+        <div class="section-label">③ 設計パラメータ & 特徴</div>
+        <table class="params-table">
+          <tr><td>モチーフ</td><td>幾何学ポリゴン ✕ 男性知性体（思考の具現化）</td></tr>
+          <tr><td>愛着度</td><td>低〜中（知性的・静謐な思考のアバター）</td></tr>
+          <tr><td>アイコン視認性</td><td>中〜高（男性胸像＋光の台座の安定構図）</td></tr>
+          <tr><td>表情差分の出し方</td><td>うつむく（思索）・視線移動・グリッドノイズ・光色変化</td></tr>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>
