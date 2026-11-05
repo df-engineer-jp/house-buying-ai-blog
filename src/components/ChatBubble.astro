@@ -7,6 +7,7 @@ interface Props {
   terminalMessage?: string;
   side?: 'left' | 'right';
   theme?: 'default' | 'panic' | 'victory';
+  timestamp?: string;
 }
 
 const {
@@ -15,188 +16,174 @@ const {
   terminalMessage,
   side = 'left',
   theme = status === 'panic' ? 'panic' : status === 'victory' ? 'victory' : 'default',
+  timestamp,
 } = Astro.props;
 ---
 
-<div class={`chat-bubble-container ${side} ${theme}`}>
-  <div class="chat-avatar-wrapper">
-    <div class="avatar-frame">
-      <PenTerminal status={status} message={terminalMessage} width={68} />
-    </div>
-    {speaker && <span class="speaker-name">{speaker}</span>}
+<div class={`terminal-dialogue-container ${side} ${theme}`}>
+  <!-- 生身のモノリス端末（パッケージング枠なし・白背景に自立） -->
+  <div class="terminal-anchor">
+    <PenTerminal status={status} message={terminalMessage} width={110} />
   </div>
 
-  <div class="chat-content-wrapper">
-    <div class="speech-bubble">
+  <!-- スマートな発言クオートエリア（うるさい吹き出しのツノやベタ塗りを全廃） -->
+  <div class="speech-content">
+    <div class="speaker-meta">
+      <span class="status-dot"></span>
+      <span class="speaker-title">{speaker}</span>
+      {timestamp && <span class="speaker-time">{timestamp}</span>}
+    </div>
+    <div class="speech-quote">
       <slot />
     </div>
   </div>
 </div>
 
 <style>
-  .chat-bubble-container {
+  .terminal-dialogue-container {
     display: flex;
-    align-items: flex-start;
-    gap: 1rem;
-    margin: 2rem 0;
-    max-width: 100%;
+    align-items: center;
+    gap: 1.5rem;
+    margin: 2.5rem 0;
+    padding: 0.5rem 0;
+    background: transparent;
   }
 
-  .chat-bubble-container.right {
+  .terminal-dialogue-container.right {
     flex-direction: row-reverse;
   }
 
-  /* アバター周り */
-  .chat-avatar-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.35rem;
+  /* 生身のモノリス端末：背景や余計な枠線は完全排除 */
+  .terminal-anchor {
     flex-shrink: 0;
-  }
-
-  .avatar-frame {
     display: flex;
-    justify-content: center;
     align-items: center;
-    background: rgba(15, 23, 42, 0.6);
-    padding: 4px;
-    border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    justify-content: center;
+    background: transparent !important;
+    padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
   }
 
-  .speaker-name {
-    font-size: 0.72rem;
-    font-family: 'JetBrains Mono', monospace;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    color: #94a3b8;
-  }
-
-  /* 吹き出しコンテンツ */
-  .chat-content-wrapper {
+  /* スマートな発言エリア */
+  .speech-content {
     flex: 1;
     min-width: 0;
     display: flex;
     flex-direction: column;
     justify-content: center;
+    padding-left: 1.25rem;
+    border-left: 3px solid #94a3b8;
+    background: transparent;
   }
 
-  .speech-bubble {
-    position: relative;
-    padding: 1rem 1.25rem;
-    border-radius: 14px;
-    font-size: 0.95rem;
-    line-height: 1.65;
-    word-break: break-word;
-    color: #1e293b;
+  .terminal-dialogue-container.right .speech-content {
+    padding-left: 0;
+    padding-right: 1.25rem;
+    border-left: none;
+    border-right: 3px solid #94a3b8;
+  }
+
+  /* メタヘッダー（名前・状態） */
+  .speaker-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.45rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: #64748b;
+  }
+
+  .status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #94a3b8;
+    display: inline-block;
+  }
+
+  .speaker-time {
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: #94a3b8;
+    margin-left: 0.25rem;
+  }
+
+  /* 発言テキスト本文 */
+  .speech-quote {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: #0f172a;
+    font-weight: 500;
+  }
+
+  .speech-quote :global(p) {
+    margin: 0;
+  }
+
+  .speech-quote :global(code) {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9em;
+    padding: 0.15em 0.4em;
+    border-radius: 4px;
     background: #f1f5f9;
-    border: 1px solid #cbd5e1;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-  }
-
-  /* 吹き出しのしっぽ（ツノ） */
-  .chat-bubble-container.left .speech-bubble::before {
-    content: '';
-    position: absolute;
-    top: 20px;
-    left: -10px;
-    width: 0;
-    height: 0;
-    border-top: 8px solid transparent;
-    border-bottom: 8px solid transparent;
-    border-right: 10px solid #cbd5e1;
-  }
-
-  .chat-bubble-container.left .speech-bubble::after {
-    content: '';
-    position: absolute;
-    top: 20px;
-    left: -8px;
-    width: 0;
-    height: 0;
-    border-top: 8px solid transparent;
-    border-bottom: 8px solid transparent;
-    border-right: 10px solid #f1f5f9;
-  }
-
-  .chat-bubble-container.right .speech-bubble::before {
-    content: '';
-    position: absolute;
-    top: 20px;
-    right: -10px;
-    width: 0;
-    height: 0;
-    border-top: 8px solid transparent;
-    border-bottom: 8px solid transparent;
-    border-left: 10px solid #cbd5e1;
-  }
-
-  .chat-bubble-container.right .speech-bubble::after {
-    content: '';
-    position: absolute;
-    top: 20px;
-    right: -8px;
-    width: 0;
-    height: 0;
-    border-top: 8px solid transparent;
-    border-bottom: 8px solid transparent;
-    border-left: 10px solid #f1f5f9;
+    border: 1px solid #e2e8f0;
+    color: #0f172a;
   }
 
   /* パニックテーマ（赤） */
-  .chat-bubble-container.panic .speech-bubble {
-    background: #fef2f2;
-    border-color: #fca5a5;
-    color: #991b1b;
+  .terminal-dialogue-container.panic .speech-content {
+    border-left-color: #ef4444;
   }
-  .chat-bubble-container.panic.left .speech-bubble::before {
-    border-right-color: #fca5a5;
+  .terminal-dialogue-container.panic.right .speech-content {
+    border-right-color: #ef4444;
   }
-  .chat-bubble-container.panic.left .speech-bubble::after {
-    border-right-color: #fef2f2;
+  .terminal-dialogue-container.panic .speaker-meta {
+    color: #dc2626;
   }
-  .chat-bubble-container.panic .avatar-frame {
-    border-color: rgba(239, 68, 68, 0.4);
-    box-shadow: 0 0 12px rgba(239, 68, 68, 0.2);
-  }
-  .chat-bubble-container.panic .speaker-name {
-    color: #ef4444;
+  .terminal-dialogue-container.panic .status-dot {
+    background: #ef4444;
+    box-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
   }
 
   /* 勝利テーマ（緑） */
-  .chat-bubble-container.victory .speech-bubble {
-    background: #ecfdf5;
-    border-color: #6ee7b7;
-    color: #065f46;
+  .terminal-dialogue-container.victory .speech-content {
+    border-left-color: #10b981;
   }
-  .chat-bubble-container.victory.left .speech-bubble::before {
-    border-right-color: #6ee7b7;
+  .terminal-dialogue-container.victory.right .speech-content {
+    border-right-color: #10b981;
   }
-  .chat-bubble-container.victory.left .speech-bubble::after {
-    border-right-color: #ecfdf5;
+  .terminal-dialogue-container.victory .speaker-meta {
+    color: #059669;
   }
-  .chat-bubble-container.victory .avatar-frame {
-    border-color: rgba(16, 185, 129, 0.4);
-    box-shadow: 0 0 12px rgba(16, 185, 129, 0.2);
-  }
-  .chat-bubble-container.victory .speaker-name {
-    color: #10b981;
+  .terminal-dialogue-container.victory .status-dot {
+    background: #10b981;
+    box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
   }
 
   /* スマホ対応 */
   @media (max-width: 640px) {
-    .chat-bubble-container {
-      gap: 0.75rem;
-      margin: 1.5rem 0;
+    .terminal-dialogue-container {
+      gap: 1rem;
+      margin: 2rem 0;
     }
-    .avatar-frame {
-      padding: 2px;
+    .terminal-anchor :global(svg) {
+      width: 82px !important;
+      height: auto !important;
     }
-    .speech-bubble {
-      padding: 0.85rem 1rem;
-      font-size: 0.9rem;
+    .speech-content {
+      padding-left: 0.85rem;
+      border-left-width: 2.5px;
+    }
+    .speaker-meta {
+      font-size: 0.72rem;
+    }
+    .speech-quote {
+      font-size: 0.95rem;
+      line-height: 1.6;
     }
   }
 </style>

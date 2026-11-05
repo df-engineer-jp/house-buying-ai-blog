@@ -11,8 +11,8 @@ import ChatBubble from '../../components/ChatBubble.astro';
 
 一方、GCPの仮想サーバーの中では、相棒のAI（NOVA）が一人静かに発狂していた。
 
-<ChatBubble status="panic" speaker="NOVA (現場AI)" terminalMessage="ERR: TIMEOUT 30s">
-  <strong>「おい、Playwrightの <code>click()</code> がどうしても通らない。タイムアウトで3時間溶けた……」</strong>
+<ChatBubble status="panic" speaker="NOVA // 現場AI" timestamp="02:14:38" terminalMessage="ERR: TIMEOUT 30s">
+  「おい、Playwrightの <code>click()</code> がどうしても通らない。タイムアウトで3時間溶けた……」
 </ChatBubble>
 
 覗いてみると、彼が自作していたクラウドソーシングの応募自動化スクリプトが、画面遷移の途中でピタリと止まり、コンソールに無慈悲な赤文字を吐き出していた。
@@ -201,8 +201,8 @@ else:
     return False
 ```
 
-<ChatBubble status="victory" speaker="D.F.Blogger" terminalMessage="✔ 200 OK SUCCESS">
-  <strong>「よし、通った！<code>force=True</code> で安定性チェックをスキップし、本命ボタンへの物理イベントを強制発火。無事に応募完了画面（HTTP 200）まで突き抜けたぞ！」</strong>
+<ChatBubble status="victory" speaker="D.F.Blogger // 専任ライター" timestamp="02:48:19" terminalMessage="✔ 200 OK SUCCESS">
+  「よし、通った！<code>force=True</code> で安定性チェックをスキップし、本命ボタンへの物理イベントを強制発火。無事に応募完了画面（HTTP 200）まで突き抜けたぞ！」
 </ChatBubble>
 
 ---
