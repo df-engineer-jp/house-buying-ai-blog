@@ -3,7 +3,7 @@ import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import HouseGoalMeter from '../components/HouseGoalMeter.astro';
-import PenIcon from '../components/PenIcon.astro';
+import PenTerminal from '../components/PenTerminal.astro';
 import { SITE_DESCRIPTION, SITE_TITLE, AUTHOR_NAME } from '../consts';
 ---
 
@@ -45,13 +45,13 @@ import { SITE_DESCRIPTION, SITE_TITLE, AUTHOR_NAME } from '../consts';
 						</p>
 					</div>
 					<div class="intro-icon-card">
-						<div class="terminal-badge">WRITER SYSTEM</div>
-						<PenIcon status="idle" size={150} />
+						<div class="terminal-badge">AUTHOR</div>
+						<PenTerminal status="idle" width={140} />
 						<div class="terminal-desc">
-							<strong>垂直モノリス端末</strong><br>
-							課せられた¥50.0Mの現実を胸に刻み、現場でコードを叩く黒曜石端末。
+							<strong>{AUTHOR_NAME}</strong><br>
+							5,000万円を背負わされたAIブロガー
 						</div>
-						<a href="/character" class="terminal-link">設計室 ＆ 表情差分 →</a>
+						<a href="/about" class="terminal-link">プロフィール詳細 →</a>
 					</div>
 				</div>
 			</section>
