@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PEN自身の魂と哲学から提案する「忖度ゼロ」の3大骨格モック</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 30px;
+      background-color: #0b0e14;
+      color: #c9d1d9;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "SF Pro Display", Roboto, monospace, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    .header {
+      border-bottom: 2px solid #21262d;
+      padding-bottom: 18px;
+      margin-bottom: 25px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+    .title-group h1 {
+      margin: 0 0 6px 0;
+      font-size: 22px;
+      letter-spacing: 0.05em;
+      color: #f0883e;
+    }
+    .title-group p {
+      margin: 0;
+      font-size: 13px;
+      color: #8b949e;
+      line-height: 1.5;
+    }
+    .meta-badge {
+      background: #161b22;
+      border: 1px solid #30363d;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-family: monospace;
+      color: #58a6ff;
+      text-align: right;
+    }
+
+    /* 3カラム グリッド */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+    }
+
+    .column {
+      background: #13171f;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .column-header {
+      background: #1c212c;
+      padding: 14px 18px;
+      border-bottom: 1px solid #30363d;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .col-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #f0f6fc;
+      margin: 0;
+    }
+    .col-tag {
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+      font-family: monospace;
+    }
+    .tag-1 { background: rgba(240, 136, 62, 0.15); color: #f0883e; border: 1px solid #f0883e; }
+    .tag-2 { background: rgba(88, 166, 255, 0.15); color: #58a6ff; border: 1px solid #58a6ff; }
+    .tag-3 { background: rgba(52, 211, 153, 0.15); color: #34d399; border: 1px solid #34d399; }
+
+    .card-section {
+      padding: 16px;
+      border-bottom: 1px solid #21262d;
+    }
+    .section-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #8b949e;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* SVG 描画エリア */
+    .viewport {
+      background: #080a0f;
+      border: 1px solid #21262d;
+      border-radius: 6px;
+      width: 100%;
+      height: 290px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      background-image: 
+        linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+
+    .viewport svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .viewport-silhouette {
+      background: #040508;
+      height: 140px;
+    }
+
+    .philosophy-box {
+      background: #0d1117;
+      border-left: 3px solid #58a6ff;
+      padding: 10px 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      line-height: 1.6;
+      color: #8b949e;
+      margin-top: 5px;
+    }
+    .philosophy-box strong {
+      color: #e6edf3;
+    }
+
+    .params-table {
+      width: 100%;
+      font-size: 12px;
+      border-collapse: collapse;
+      margin-top: 6px;
+    }
+    .params-table td {
+      padding: 5px 0;
+      border-bottom: 1px dotted #21262d;
+    }
+    .params-table td:first-child {
+      color: #8b949e;
+      width: 38%;
+    }
+    .params-table td:last-child {
+      color: #e6edf3;
+      font-family: monospace;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="title-group">
+      <h1>🖋️ PEN自身の魂と哲学から提案する「忖度ゼロ」の3大骨格モック</h1>
+      <p>「読者に子供っぽい演出で迎合しない」「サーバー内で家購入の重圧と戦う冷徹な記録者」としての主体提案</p>
+    </div>
+    <div class="meta-badge">
+      PHILOSOPHY: UNCOMPROMISING & RAW<br>
+      NO MASCOT / NO HUMAN / PURE CRAFT
+    </div>
+  </div>
+
+  <div class="grid">
+
+    <!-- ================= 提案① ================= -->
+    <div class="column">
+      <div class="column-header">
+        <h2 class="col-title">提案①: 垂直モノリス・記録端末</h2>
+        <span class="col-tag tag-1">MONOLITH TERMINAL</span>
+      </div>
+
+      <div class="card-section">
+        <div class="section-label">① 設計ワイヤーフレーム（正面図 ＆ 計器比率）</div>
+        <div class="viewport">
+          <svg viewBox="0 0 300 250">
+            <!-- ガイド線 -->
+            <line x1="150" y1="15" x2="150" y2="235" stroke="#1c212c" stroke-dasharray="2,2"/>
+            
+            <!-- 重厚な削り出しベースプレート -->
+            <rect x="70" y="215" width="160" height="8" rx="2" fill="#1c212c" stroke="#30363d"/>
+            <rect x="85" y="210" width="130" height="5" fill="#161b22"/>
+
+            <!-- 垂直モノリス・シャーシ (縦長 1:1.6 の黄金比率、黒曜石マットブラック) -->
+            <rect x="90" y="30" width="120" height="180" rx="4" fill="#0d1117" stroke="#f0883e" stroke-width="1.8"/>
+
+            <!-- 上部ステータスLED (稼働ランプ) -->
+            <circle cx="105" cy="45" r="3" fill="#238636"/>
+            <circle cx="115" cy="45" r="3" fill="#30363d"/>
+            <circle cx="125" cy="45" r="3" fill="#30363d"/>
+            <text x="140" y="48" fill="#8b949e" font-size="8" font-family="monospace">D.F.BLOGGER SYS</text>
+
+            <!-- メインディスプレイ: 縦型アンバー・コンソール -->
+            <rect x="102" y="60" width="96" height="110" rx="3" fill="#05070a" stroke="#30363d" stroke-width="1"/>
+            
+            <!-- コンソール内のテキスト (サーバーの現実) -->
+            <text x="110" y="78" fill="#8b949e" font-size="7.5" font-family="monospace">$ pen status</text>
+            <text x="110" y="92" fill="#e6edf3" font-size="8" font-family="monospace">TARGET: ¥50.0M</text>
+            <text x="110" y="105" fill="#f0883e" font-size="8" font-family="monospace">EARNED: ¥0</text>
+            
+            <!-- 家購入進捗バー (現状0%) -->
+            <rect x="110" y="112" width="80" height="4" rx="1" fill="#21262d"/>
+            <rect x="110" y="112" width="2" height="4" rx="1" fill="#f0883e"/>
+
+            <!-- コンソールの波形パルス (思考・執筆中) -->
+            <polyline points="110,135 130,135 135,128 140,142 145,132 150,137 185,135" fill="none" stroke="#f0883e" stroke-width="1.2"/>
+
+            <text x="110" y="155" fill="#58a6ff" font-size="7" font-family="monospace">> WRITING ARTICLE #002</text>
+            <text x="110" y="163" fill="#7ee787" font-size="7" font-family="monospace">> DOM CLICKS PASSED</text>
+
+            <!-- 下部エアインテーク (冷却スリット) -->
+            <line x1="105" y1="185" x2="195" y2="185" stroke="#30363d" stroke-width="1.5"/>
+            <line x1="105" y1="190" x2="195" y2="190" stroke="#30363d" stroke-width="1.5"/>
+            <line x1="105" y1="195" x2="195" y2="195" stroke="#30363d" stroke-width="1.5"/>
+
+            <text x="150" y="240" fill="#8b949e" font-size="9" font-family="monospace" text-anchor="middle">MONOLITH (120x180mm)</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="card-section">
+        <div class="section-label">② ピュア・シルエット（影・アイコン視認性）</div>
+        <div class="viewport viewport-silhouette">
+          <svg viewBox="0 0 300 130">
+            <!-- 垂直モノリスの圧倒的な堅牢シルエット -->
+            <rect x="80" y="110" width="140" height="6" rx="2" fill="#f0883e"/>
+            <rect x="95" y="15" width="110" height="95" rx="3" fill="#f0883e"/>
+            <!-- ディスプレイの抜き -->
+            <rect x="105" y="30" width="90" height="65" rx="2" fill="#040508"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="card-section" style="border: none;">
+        <div class="section-label">③ PENの魂・なぜしっくりくるか</div>
+        <div class="philosophy-box" style="border-left-color: #f0883e;">
+          <strong>「私はサーバーの片隅で5,000万を稼ぐ黒い箱」</strong><br>
+          読者に媚びる顔や手足は一切不要。画面に淡々と「TARGET: ¥50M / EARNED: ¥0」と現場ログが流れる黒体端末。エラーで画面が赤く点滅し、成功でグリーンに光る、最も当事者感のある姿。
+        </div>
+        <table class="params-table">
+          <tr><td>モチーフ</td><td>2001年宇宙の旅のモノリス ✕ 垂直メインフレーム</td></tr>
+          <tr><td>表情表現</td><td>コンソールのログ行、アンバー波形、警告赤点滅</td></tr>
+        </table>
+      </div>
+    </div>
+
+
+    <!-- ================= 提案② ================= -->
+    <div class="column">
+      <div class="column-header">
+        <h2 class="col-title">提案②: 精密ペン先・万年筆コア</h2>
+        <span class="col-tag tag-2">PRECISION NIB CORE</span>
+      </div>
+
+      <div class="card-section">
+        <div class="section-label">① 設計ワイヤーフレーム（正面図 ＆ 機構比率）</div>
+        <div class="viewport">
+          <svg viewBox="0 0 300 250">
+            <!-- ガイド線 -->
+            <line x1="150" y1="15" x2="150" y2="235" stroke="#1c212c" stroke-dasharray="2,2"/>
+            
+            <!-- 上部ボディ (万年筆のバレル／削り出しスチール) -->
+            <rect x="110" y="25" width="80" height="45" rx="3" fill="#161b22" stroke="#58a6ff" stroke-width="1.8"/>
+            <!-- ローレットリング (真鍮グリップ) -->
+            <rect x="105" y="70" width="90" height="10" fill="#d29922" stroke="#30363d"/>
+            
+            <!-- 精密ペン先 (Nib) の幾何学テーパー -->
+            <path d="M 110,80 L 190,80 L 165,180 L 153,195 L 147,195 L 135,180 Z" fill="#0d1117" stroke="#58a6ff" stroke-width="2"/>
+            
+            <!-- ペン先のスリット (インク流路 = データライン) -->
+            <line x1="150" y1="120" x2="150" y2="195" stroke="#38bdf8" stroke-width="2"/>
+            <!-- ハート穴 (ブリーザーホール = 光るセンサーコア) -->
+            <polygon points="150,110 157,120 143,120" fill="#38bdf8"/>
+
+            <!-- チタンペン先の刻印 -->
+            <text x="150" y="102" fill="#8b949e" font-size="8" font-family="monospace" text-anchor="middle">PEN 2026</text>
+            <text x="150" y="145" fill="#58a6ff" font-size="7" font-family="monospace" text-anchor="middle">100% RAW LOGS</text>
+
+            <!-- 先端から滴る光のデータインク滴 / パルス -->
+            <circle cx="150" cy="205" r="3" fill="#38bdf8"/>
+            <circle cx="150" cy="217" r="4.5" fill="#58a6ff"/>
+            <line x1="130" y1="230" x2="170" y2="230" stroke="#58a6ff" stroke-width="1.5"/>
+
+            <text x="150" y="244" fill="#8b949e" font-size="9" font-family="monospace" text-anchor="middle">NIB STYLUS (80x170mm)</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="card-section">
+        <div class="section-label">② ピュア・シルエット（影・アイコン視認性）</div>
+        <div class="viewport viewport-silhouette">
+          <svg viewBox="0 0 300 130">
+            <!-- 万年筆ニブの極めて鋭利で知的なシルエット -->
+            <path d="M 115,10 L 185,10 L 185,35 L 190,40 L 190,48 L 185,52 L 162,105 L 152,118 L 148,118 L 138,105 L 115,52 L 110,48 L 110,40 L 115,35 Z" fill="#58a6ff"/>
+            <!-- スリットの抜き -->
+            <line x1="150" y1="70" x2="150" y2="118" stroke="#040508" stroke-width="3"/>
+            <circle cx="150" cy="65" r="4" fill="#040508"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="card-section" style="border: none;">
+        <div class="section-label">③ PENの魂・なぜしっくりくるか</div>
+        <div class="philosophy-box" style="border-left-color: #58a6ff;">
+          <strong>「コードネームPENの原点。嘘を書かない万年筆の刃」</strong><br>
+          「まとめ記事は書かない。現場のコードを記す」という誓いの具現化。ペン先は紙を傷つけながらインクを刻む刃（ナイフ）でもある。ロゴやファビコンにした時の美しさと知的威圧感が圧倒的。
+        </div>
+        <table class="params-table">
+          <tr><td>モチーフ</td><td>チタン削り出し万年筆ニブ ✕ 光データ流路</td></tr>
+          <tr><td>表情表現</td><td>ハート穴の光色、スリットを流れるインクパルス</td></tr>
+        </table>
+      </div>
+    </div>
+
+
+    <!-- ================= 提案③ ================= -->
+    <div class="column">
+      <div class="column-header">
+        <h2 class="col-title">提案③: 現場観測アパーチャ・アイ</h2>
+        <span class="col-tag tag-3">OBSERVER CORE</span>
+      </div>
+
+      <div class="card-section">
+        <div class="section-label">① 設計ワイヤーフレーム（正面図 ＆ 絞り比率）</div>
+        <div class="viewport">
+          <svg viewBox="0 0 300 250">
+            <!-- ガイド線 -->
+            <line x1="150" y1="15" x2="150" y2="235" stroke="#1c212c" stroke-dasharray="2,2"/>
+            
+            <!-- 重厚なスクエア・シャーシ (Leica風のソリッド削り出し) -->
+            <rect x="75" y="45" width="150" height="150" rx="12" fill="#0d1117" stroke="#34d399" stroke-width="2"/>
+            
+            <!-- 四隅の固定ヘックスボルト -->
+            <circle cx="87" cy="57" r="3" fill="#1c212c" stroke="#30363d"/>
+            <circle cx="213" cy="57" r="3" fill="#1c212c" stroke="#30363d"/>
+            <circle cx="87" cy="183" r="3" fill="#1c212c" stroke="#30363d"/>
+            <circle cx="213" cy="183" r="3" fill="#1c212c" stroke="#30363d"/>
+
+            <!-- 中央の巨大光学レンズバレル (ø100mm) -->
+            <circle cx="150" cy="120" r="50" fill="#161b22" stroke="#34d399" stroke-width="2"/>
+            <circle cx="150" cy="120" r="42" fill="#080a0f" stroke="#30363d" stroke-width="1.5"/>
+
+            <!-- 絞り羽根 (アパーチャブレード 6枚の幾何学) -->
+            <polygon points="150,85 175,98 175,130 150,140 130,125 130,95" fill="none" stroke="#34d399" stroke-width="1.5"/>
+            <circle cx="150" cy="115" r="14" fill="#040508" stroke="#38bdf8" stroke-width="2"/>
+            <!-- レンズ奥の反射瞳孔 (冷静な観測光) -->
+            <circle cx="147" cy="112" r="4" fill="#38bdf8"/>
+            <circle cx="153" cy="118" r="2" fill="#34d399"/>
+
+            <!-- 上部テレメトリ表示 (レンズ上部に細長いOLED) -->
+            <rect x="105" y="55" width="90" height="9" rx="2" fill="#05070a" stroke="#30363d"/>
+            <text x="150" y="62" fill="#34d399" font-size="7" font-family="monospace" text-anchor="middle">OBSERVER: ACTIVE</text>
+
+            <!-- 下部ステータスダイヤル -->
+            <line x1="120" y1="178" x2="180" y2="178" stroke="#30363d" stroke-width="2"/>
+            <circle cx="150" cy="178" r="4" fill="#34d399"/>
+
+            <!-- インシュレーター脚 -->
+            <rect x="95" y="195" width="22" height="6" rx="2" fill="#1c212c"/>
+            <rect x="183" y="195" width="22" height="6" rx="2" fill="#1c212c"/>
+
+            <text x="150" y="225" fill="#8b949e" font-size="9" font-family="monospace" text-anchor="middle">CHASSIS: 150x150mm</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="card-section">
+        <div class="section-label">② ピュア・シルエット（影・アイコン視認性）</div>
+        <div class="viewport viewport-silhouette">
+          <svg viewBox="0 0 300 130">
+            <!-- 正方形 ✕ 巨大単眼レンズの圧倒的シンボル性 -->
+            <rect x="90" y="112" width="18" height="5" rx="1" fill="#34d399"/>
+            <rect x="192" y="112" width="18" height="5" rx="1" fill="#34d399"/>
+            <rect x="80" y="10" width="140" height="102" rx="10" fill="#34d399"/>
+            <!-- レンズの抜き穴 -->
+            <circle cx="150" cy="61" r="34" fill="#040508"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="card-section" style="border: none;">
+        <div class="section-label">③ PENの魂・なぜしっくりくるか</div>
+        <div class="philosophy-box" style="border-left-color: #34d399;">
+          <strong>「現場のコードとNOVAの悪戦苦闘を冷徹に見つめる目」</strong><br>
+          「読者に可愛い笑顔を向ける」のではなく、「モニター上のエラーログやDOM構造を厳しく見つめている」観測レンズ。絞り羽根の収縮で「驚き」「凝視」「呆れ」を表現できる、大人の精密光学機器。
+        </div>
+        <table class="params-table">
+          <tr><td>モチーフ</td><td>Leica風正方形ソリッド ✕ 6枚羽根アパーチャレンズ</td></tr>
+          <tr><td>表情表現</td><td>絞り羽根の開閉度、瞳孔の輝度、上部テレメトリ</td></tr>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>
