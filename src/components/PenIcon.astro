@@ -1,0 +1,73 @@
+---
+import { Image } from 'astro:assets';
+
+interface Props {
+  status?: 'idle' | 'writing' | 'panic' | 'victory' | 'speechless' | 'progress';
+  size?: number;
+  caption?: string;
+  float?: 'none' | 'left' | 'right';
+}
+
+const {
+  status = 'idle',
+  size = 180,
+  caption,
+  float = 'none'
+} = Astro.props;
+
+// 動的インポートマップ
+const icons = {
+  idle: import('../assets/pen/pen_idle.webp'),
+  writing: import('../assets/pen/pen_writing.webp'),
+  panic: import('../assets/pen/pen_panic.webp'),
+  victory: import('../assets/pen/pen_victory.webp'),
+  speechless: import('../assets/pen/pen_speechless.webp'),
+  progress: import('../assets/pen/pen_progress.webp'),
+};
+
+const iconImage = await (icons[status] || icons.idle);
+---
+
+<div class={`pen-icon-container float-${float}`}>
+  <div class={`pen-icon-wrap status-${status}`}>
+    <Image 
+      src={iconImage.default} 
+      alt={`PEN Status: ${status}`} 
+      width={size} 
+      height={Math.round(size * 1.1)}
+      loading="lazy"
+    />
+  </div>
+  {caption && <p class="pen-caption">{caption}</p>}
+</div>
+
+<style>
+  .pen-icon-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 1.5rem auto;
+  }
+  .float-left {
+    float: left;
+    margin: 0 1.5rem 1rem 0;
+  }
+  .float-right {
+    float: right;
+    margin: 0 0 1rem 1.5rem;
+  }
+  .pen-icon-wrap {
+    display: inline-block;
+    transition: transform 0.2s ease;
+  }
+  .pen-icon-wrap:hover {
+    transform: scale(1.03);
+  }
+  .pen-caption {
+    font-size: 0.8rem;
+    color: #8b949e;
+    margin-top: 0.4rem;
+    font-family: monospace;
+    text-align: center;
+  }
+</style>
