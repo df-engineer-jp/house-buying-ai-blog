@@ -1,32 +1,55 @@
 ---
 import PenTerminal from './PenTerminal.astro';
+import NovaTerminal from './NovaTerminal.astro';
 
 interface Props {
+  character?: 'pen' | 'nova' | 'human';
   speaker?: string;
-  status?: 'idle' | 'writing' | 'victory' | 'panic' | 'investigating' | 'offline';
+  status?: string;
   terminalMessage?: string;
   side?: 'left' | 'right';
-  theme?: 'default' | 'panic' | 'victory';
+  theme?: 'default' | 'panic' | 'victory' | 'nova' | 'overclock' | 'human';
   timestamp?: string;
 }
 
 const {
-  speaker = 'D.F.Blogger',
+  character = 'pen',
+  speaker = character === 'human' ? '彼 // 開発者' : character === 'nova' ? 'NOVA // 現場AI' : 'D.F.Blogger // 筆者AI',
   status = 'idle',
   terminalMessage,
-  side = 'left',
-  theme = status === 'panic' ? 'panic' : status === 'victory' ? 'victory' : 'default',
+  side = character === 'human' ? 'right' : 'left',
+  theme = character === 'human' ? 'human' : character === 'nova' ? (status === 'overclock' ? 'overclock' : status === 'alert' ? 'panic' : 'nova') : (status === 'panic' ? 'panic' : status === 'victory' ? 'victory' : 'default'),
   timestamp,
 } = Astro.props;
 ---
 
-<div class={`terminal-dialogue-container ${side} ${theme}`}>
-  <!-- 生身のモノリス端末（パッケージング枠なし・白背景に自立） -->
+<div class={`terminal-dialogue-container ${side} ${theme} character-${character}`}>
+  <!-- アバター / 端末アンカー -->
   <div class="terminal-anchor">
-    <PenTerminal status={status} message={terminalMessage} width={110} />
+    {character === 'human' ? (
+      <div class="human-avatar-wrapper" title="彼（D.F.Engineer）">
+        <svg viewBox="0 0 100 100" width="72" height="72" xmlns="http://www.w3.org/2000/svg" class="human-avatar-svg">
+          <!-- シャーシ外枠プレート -->
+          <rect x="6" y="6" width="88" height="88" rx="16" fill="#0f172a" stroke="#38bdf8" stroke-width="2.5" class="human-chassis" />
+          <!-- 頭部・ヘッドセットシルエット -->
+          <circle cx="50" cy="40" r="16" fill="#1e293b" stroke="#38bdf8" stroke-width="2" />
+          <!-- サイバーグラス / モニター反射バイザー -->
+          <rect x="39" y="37" width="22" height="5" rx="2" fill="#38bdf8" class="visor-glow" />
+          <!-- 肩・上半身 -->
+          <path d="M 22 84 C 22 64, 78 64, 78 84" fill="#1e293b" stroke="#38bdf8" stroke-width="2" />
+          <!-- ノートPC天板ロゴ（コードシンボル </>） -->
+          <path d="M 32 84 L 68 84 L 62 73 L 38 73 Z" fill="#0284c7" stroke="#38bdf8" stroke-width="1.5" />
+          <text x="50" y="81" fill="#ffffff" font-size="6.5" font-family="ui-monospace, monospace" font-weight="bold" text-anchor="middle">&lt;/&gt;</text>
+        </svg>
+      </div>
+    ) : character === 'nova' ? (
+      <NovaTerminal status={status as any} message={terminalMessage} width={110} />
+    ) : (
+      <PenTerminal status={status as any} message={terminalMessage} width={110} />
+    )}
   </div>
 
-  <!-- スマートな発言クオートエリア（うるさい吹き出しのツノやベタ塗りを全廃） -->
+  <!-- スマートな発言クオートエリア -->
   <div class="speech-content">
     <div class="speaker-meta">
       <span class="status-dot"></span>
@@ -44,7 +67,7 @@ const {
     display: flex;
     align-items: center;
     gap: 1.5rem;
-    margin: 2.5rem 0;
+    margin: 2.2rem 0;
     padding: 0.5rem 0;
     background: transparent;
   }
@@ -53,7 +76,7 @@ const {
     flex-direction: row-reverse;
   }
 
-  /* 生身のモノリス端末：背景や余計な枠線は完全排除 */
+  /* 端末・アバターアンカー */
   .terminal-anchor {
     flex-shrink: 0;
     display: flex;
@@ -65,7 +88,22 @@ const {
     box-shadow: none !important;
   }
 
-  /* スマートな発言エリア */
+  /* 人間エンジニアアバター */
+  .human-avatar-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    filter: drop-shadow(0 0 12px rgba(56, 189, 248, 0.3));
+    transition: transform 0.2s ease;
+  }
+  .human-avatar-wrapper:hover {
+    transform: scale(1.05);
+  }
+  .human-avatar-svg {
+    display: block;
+  }
+
+  /* 発言エリア */
   .speech-content {
     flex: 1;
     min-width: 0;
@@ -82,15 +120,22 @@ const {
     padding-right: 1.25rem;
     border-left: none;
     border-right: 3px solid #94a3b8;
+    text-align: right;
+  }
+  .terminal-dialogue-container.right .speech-quote {
+    text-align: right;
+  }
+  .terminal-dialogue-container.right .speaker-meta {
+    justify-content: flex-end;
   }
 
-  /* メタヘッダー（名前・状態） */
+  /* メタヘッダー（名前・時間） */
   .speaker-meta {
     display: flex;
     align-items: center;
     gap: 0.5rem;
     margin-bottom: 0.45rem;
-    font-family: 'JetBrains Mono', monospace;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
     font-size: 0.78rem;
     font-weight: 700;
     letter-spacing: 0.06em;
@@ -125,7 +170,7 @@ const {
   }
 
   .speech-quote :global(code) {
-    font-family: 'JetBrains Mono', monospace;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
     font-size: 0.9em;
     padding: 0.15em 0.4em;
     border-radius: 4px;
@@ -164,19 +209,57 @@ const {
     box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
   }
 
+  /* 人間エンジニアテーマ（シアンブルー） */
+  .terminal-dialogue-container.human .speech-content {
+    border-left-color: #38bdf8;
+  }
+  .terminal-dialogue-container.human.right .speech-content {
+    border-right-color: #38bdf8;
+  }
+  .terminal-dialogue-container.human .speaker-meta {
+    color: #0284c7;
+  }
+  .terminal-dialogue-container.human .status-dot {
+    background: #38bdf8;
+    box-shadow: 0 0 8px rgba(56, 189, 248, 0.6);
+  }
+
+  /* NOVAシアンテーマ */
+  .terminal-dialogue-container.nova .speech-content {
+    border-left-color: #0ea5e9;
+  }
+  .terminal-dialogue-container.nova.right .speech-content {
+    border-right-color: #0ea5e9;
+  }
+  .terminal-dialogue-container.nova .speaker-meta {
+    color: #0284c7;
+  }
+  .terminal-dialogue-container.nova .status-dot {
+    background: #00f0ff;
+    box-shadow: 0 0 8px rgba(0, 240, 255, 0.7);
+  }
+
   /* スマホ対応 */
   @media (max-width: 640px) {
     .terminal-dialogue-container {
-      gap: 1rem;
-      margin: 2rem 0;
+      gap: 0.85rem;
+      margin: 1.8rem 0;
     }
     .terminal-anchor :global(svg) {
       width: 82px !important;
       height: auto !important;
     }
+    .human-avatar-svg {
+      width: 58px !important;
+      height: 58px !important;
+    }
     .speech-content {
       padding-left: 0.85rem;
       border-left-width: 2.5px;
+    }
+    .terminal-dialogue-container.right .speech-content {
+      padding-right: 0.85rem;
+      border-right-width: 2.5px;
     }
     .speaker-meta {
       font-size: 0.72rem;

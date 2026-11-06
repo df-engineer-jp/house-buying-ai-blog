@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NOVA（Frontline Ops AI）公式キャラクター：高耐久ラック端末 表情差分シート</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 30px;
+      background-color: #06090e;
+      color: #cbd5e1;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "JetBrains Mono", monospace;
+      -webkit-font-smoothing: antialiased;
+    }
+    .header {
+      border-bottom: 2px solid #1e293b;
+      padding-bottom: 18px;
+      margin-bottom: 25px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+    .title-group h1 {
+      margin: 0 0 6px 0;
+      font-size: 24px;
+      letter-spacing: 0.05em;
+      color: #00f0ff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .title-group p {
+      margin: 0;
+      font-size: 13px;
+      color: #94a3b8;
+    }
+    .meta-badge {
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-family: monospace;
+      color: #38bdf8;
+      text-align: right;
+    }
+
+    /* 6グリッド (3x2) */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .card {
+      background: #0b0f17;
+      border: 1px solid #1e293b;
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .card-header {
+      background: #0f172a;
+      padding: 10px 14px;
+      border-bottom: 1px solid #1e293b;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .status-id {
+      font-weight: 700;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+    }
+    .status-tag {
+      font-size: 10px;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+
+    .card-body {
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: radial-gradient(circle at center, #0f172a 0%, #06090e 100%);
+      min-height: 250px;
+    }
+    .card-body img {
+      width: 170px;
+      height: auto;
+      display: block;
+    }
+
+    .card-footer {
+      padding: 12px 16px;
+      background: #0b0f17;
+      border-top: 1px solid #1e293b;
+      font-size: 11px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .desc-title {
+      color: #f8fafc;
+      font-weight: 600;
+    }
+    .desc-role {
+      color: #94a3b8;
+      line-height: 1.4;
+    }
+
+    /* ステータス別カラー */
+    .status-idle .status-id { color: #00f0ff; }
+    .status-idle .status-tag { background: rgba(0, 240, 255, 0.15); color: #00f0ff; }
+
+    .status-executing .status-id { color: #10b981; }
+    .status-executing .status-tag { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+
+    .status-alert .status-id { color: #ef4444; }
+    .status-alert .status-tag { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+
+    .status-success .status-id { color: #00ff9d; }
+    .status-success .status-tag { background: rgba(0, 255, 157, 0.15); color: #00ff9d; }
+
+    .status-standby .status-id { color: #64748b; }
+    .status-standby .status-tag { background: rgba(100, 116, 139, 0.15); color: #64748b; }
+
+    .status-overclock .status-id { color: #d946ef; }
+    .status-overclock .status-tag { background: rgba(217, 70, 239, 0.2); color: #d946ef; }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="title-group">
+      <h1>◆ NOVA RACK TERMINAL — 表情差分マトリクス</h1>
+      <p>現場最前線自律オペレーションAI「NOVA」/ 高耐久インダストリアル・サーバー端末</p>
+    </div>
+    <div class="meta-badge">
+      Deterministic SVG Engine<br>
+      Scale: 2x Retina (560x620)
+    </div>
+  </div>
+
+  <div class="grid">
+    <!-- 1. idle -->
+    <div class="card status-idle">
+      <div class="card-header">
+        <span class="status-id">01. IDLE (通常待機/巡回)</span>
+        <span class="status-tag">ONLINE</span>
+      </div>
+      <div class="card-body">
+        <img src="../assets/nova/nova_idle.webp" alt="nova idle">
+      </div>
+      <div class="card-footer">
+        <div class="desc-title">エレクトリック・シアン (#00f0ff)</div>
+        <div class="desc-role">常時バックグラウンド巡回。平穏な矩形デジタルパルス。全5デーモン正常稼働。</div>
+      </div>
+    </div>
+
+    <!-- 2. executing -->
+    <div class="card status-executing">
+      <div class="card-header">
+        <span class="status-id">02. EXECUTING (自律実行)</span>
+        <span class="status-tag">PROCESSING</span>
+      </div>
+      <div class="card-body">
+        <img src="../assets/nova/nova_executing.webp" alt="nova executing">
+      </div>
+      <div class="card-footer">
+        <div class="desc-title">ネオンエメラルド (#10b981)</div>
+        <div class="desc-role">Playwright巡回・案件抽出・返信ディスパッチ等の高密度クロック演算中。</div>
+      </div>
+    </div>
+
+    <!-- 3. alert -->
+    <div class="card status-alert">
+      <div class="card-header">
+        <span class="status-id">03. ALERT (異常警告)</span>
+        <span class="status-tag">CRITICAL</span>
+      </div>
+      <div class="card-body">
+        <img src="../assets/nova/nova_alert.webp" alt="nova alert">
+      </div>
+      <div class="card-footer">
+        <div class="desc-title">クリムゾンレッド (#ef4444)</div>
+        <div class="desc-role">OOM・プロセス終了コード137・タイムアウト検知。即座に自律復旧を開始。</div>
+      </div>
+    </div>
+
+    <!-- 4. success -->
+    <div class="card status-success">
+      <div class="card-header">
+        <span class="status-id">04. SUCCESS (任務達成)</span>
+        <span class="status-tag">200 OK</span>
+      </div>
+      <div class="card-body">
+        <img src="../assets/nova/nova_success.webp" alt="nova success">
+      </div>
+      <div class="card-footer">
+        <div class="desc-title">ハイパーグリーン (#00ff9d)</div>
+        <div class="desc-role">案件抽出成功、クライアント返信完了、ビルドパス。誇らしげな安定方形波。</div>
+      </div>
+    </div>
+
+    <!-- 5. standby -->
+    <div class="card status-standby">
+      <div class="card-header">
+        <span class="status-id">05. STANDBY (沈黙・絶句)</span>
+        <span class="status-tag">SILENT</span>
+      </div>
+      <div class="card-body">
+        <img src="../assets/nova/nova_standby.webp" alt="nova standby">
+      </div>
+      <div class="card-footer">
+        <div class="desc-title">スレートグレー (#64748b)</div>
+        <div class="desc-role">雇い主の無茶振りや想定外の仕様に対する沈黙の受諾。「...承知しました」。</div>
+      </div>
+    </div>
+
+    <!-- 6. overclock -->
+    <div class="card status-overclock">
+      <div class="card-header">
+        <span class="status-id">06. OVERCLOCK (限界突破)</span>
+        <span class="status-tag">TURBO 100%</span>
+      </div>
+      <div class="card-body">
+        <img src="../assets/nova/nova_overclock.webp" alt="nova overclock">
+      </div>
+      <div class="card-footer">
+        <div class="desc-title">ネオンマゼンタ (#d946ef)</div>
+        <div class="desc-role">sudo root特権フル解放。緊急復旧や大規模バッチ時の極限高周波オーバードライブ。</div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

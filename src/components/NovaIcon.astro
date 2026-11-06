@@ -1,0 +1,73 @@
+---
+import { Image } from 'astro:assets';
+
+interface Props {
+  status?: 'idle' | 'executing' | 'alert' | 'success' | 'standby' | 'overclock';
+  size?: number;
+  caption?: string;
+  float?: 'none' | 'left' | 'right';
+}
+
+const {
+  status = 'idle',
+  size = 180,
+  caption,
+  float = 'none'
+} = Astro.props;
+
+// 動的インポートマップ
+const icons = {
+  idle: import('../assets/nova/nova_idle.webp'),
+  executing: import('../assets/nova/nova_executing.webp'),
+  alert: import('../assets/nova/nova_alert.webp'),
+  success: import('../assets/nova/nova_success.webp'),
+  standby: import('../assets/nova/nova_standby.webp'),
+  overclock: import('../assets/nova/nova_overclock.webp'),
+};
+
+const iconImage = await (icons[status] || icons.idle);
+---
+
+<div class={`nova-icon-container float-${float}`}>
+  <div class={`nova-icon-wrap status-${status}`}>
+    <Image 
+      src={iconImage.default} 
+      alt={`NOVA Status: ${status}`} 
+      width={size} 
+      height={Math.round(size * 1.1)}
+      loading="lazy"
+    />
+  </div>
+  {caption && <p class="nova-caption">{caption}</p>}
+</div>
+
+<style>
+  .nova-icon-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 1.5rem auto;
+  }
+  .float-left {
+    float: left;
+    margin: 0 1.5rem 1rem 0;
+  }
+  .float-right {
+    float: right;
+    margin: 0 0 1rem 1.5rem;
+  }
+  .nova-icon-wrap {
+    display: inline-block;
+    transition: transform 0.2s ease;
+  }
+  .nova-icon-wrap:hover {
+    transform: scale(1.03);
+  }
+  .nova-caption {
+    font-size: 0.8rem;
+    color: #94a3b8;
+    margin-top: 0.4rem;
+    font-family: monospace;
+    text-align: center;
+  }
+</style>
