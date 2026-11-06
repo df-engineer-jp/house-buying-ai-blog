@@ -19,45 +19,44 @@ const {
   interactive = true,
 } = Astro.props;
 
-// パラメータ計算（目標金額・獲得金額・進捗バー）
+// パラメータ計算（earnedのみに純化、targetは進捗バー比率計算に使用）
 const ratio = Math.min(Math.max(earned / target, 0.0), 1.0);
 const barWidth = Math.max(Math.floor(ratio * 80), 1);
-const targetStr = target >= 1000000 ? `¥${(target / 1000000).toFixed(1)}M` : `¥${target.toLocaleString()}`;
 const earnedStr = `¥${earned.toLocaleString()}`;
 
-// ステータス設定（大きな文字サイズを維持したパラメータ復元構成）
+// ステータス設定（上段特大ステータス ＆ 93px心電図ベースライン）
 const configs = {
   idle: {
     color: '#f0883e',
     glow: 'rgba(240, 136, 62, 0.25)',
     chassisBg: '#0d1117',
     chassisBorder: '#30363d',
-    defaultPolyline: '58,108 80,108 85,102 90,114 95,104.5 100,109.5 105,108 138,108',
-    statusTag: 'ONLINE',
+    defaultPolyline: '58,93 80,93 85,87 90,99 95,89.5 100,94.5 105,93 138,93',
+    mainText: 'ONLINE',
   },
   writing: {
     color: '#58a6ff',
     glow: 'rgba(88, 166, 255, 0.25)',
     chassisBg: '#0d1117',
     chassisBorder: '#30363d',
-    defaultPolyline: '58,108 75,108 80,100 85,116 90,102 95,111 100,108 138,108',
-    statusTag: 'WRITING_',
+    defaultPolyline: '58,93 75,93 80,85 85,101 90,87 95,96 100,93 138,93',
+    mainText: 'WRITING_',
   },
   panic: {
     color: '#f85149',
     glow: 'rgba(248, 81, 73, 0.35)',
     chassisBg: '#1c0d0d',
     chassisBorder: '#f85149',
-    defaultPolyline: '58,108 75,108 80,96 85,120 90,98 95,115 100,108 138,108',
-    statusTag: 'TIMEOUT 30s',
+    defaultPolyline: '58,93 75,93 80,81 85,105 90,83 95,100 100,93 138,93',
+    mainText: 'ERR !',
   },
   victory: {
     color: '#3fb950',
     glow: 'rgba(46, 160, 67, 0.3)',
     chassisBg: '#0d1c12',
     chassisBorder: '#3fb950',
-    defaultPolyline: '58,108 80,108 85,101 90,115 95,104 100,109 105,108 138,108',
-    statusTag: '200 OK ✔',
+    defaultPolyline: '58,93 80,93 85,86 90,100 95,89 100,94 105,93 138,93',
+    mainText: '200 OK ✔',
   },
   speechless: {
     color: '#8b949e',
@@ -65,20 +64,20 @@ const configs = {
     chassisBg: '#0d1117',
     chassisBorder: '#30363d',
     defaultPolyline: '',
-    statusTag: '......',
+    mainText: '......',
   },
   progress: {
     color: '#e3b341',
     glow: 'rgba(210, 153, 34, 0.35)',
     chassisBg: '#1c180d',
     chassisBorder: '#e3b341',
-    defaultPolyline: '58,108 80,108 85,99 90,117 95,102 100,110 105,108 138,108',
-    statusTag: '+¥1,000 UP',
+    defaultPolyline: '58,93 80,93 85,84 90,102 95,87 100,95 105,93 138,93',
+    mainText: '+¥1,000',
   },
 };
 
 const cfg = configs[status] || configs.idle;
-const statusText = message || cfg.statusTag;
+const mainText = message || cfg.mainText;
 const height = Math.round(width * 1.15);
 ---
 
@@ -129,39 +128,25 @@ const height = Math.round(width * 1.15);
 
     <!-- コンソール内部（クリッピングで枠外はみ出しを絶対防止） -->
     <g clip-path="url(#screen-clip)">
-      <!-- 1. 上段：目標金額 ＆ 獲得金額パラメータ（視認性の高いフォントサイズ） -->
+      <!-- 1. 最上段：特大ステータステキスト（ERR ! / 200 OK ✔ / ONLINE） -->
       <text 
-        x="60" 
-        y="59" 
-        fill="#94a3b8" 
-        font-size="9" 
-        font-family="ui-monospace, SFMono-Regular, Menlo, monospace" 
-        font-weight="600"
-        letter-spacing="0.04em"
-      >
-        TARGET: {targetStr}
-      </text>
-
-      <text 
-        x="60" 
-        y="73" 
+        x="100" 
+        y="66" 
         fill={cfg.color} 
-        font-size="11.5" 
+        font-size="14.5" 
         font-family="ui-monospace, SFMono-Regular, Menlo, monospace" 
-        font-weight="800"
-        letter-spacing="0.02em"
+        font-weight="800" 
+        text-anchor="middle"
+        letter-spacing="0.05em"
+        class="live-main-text"
       >
-        EARNED: {earnedStr}
+        {mainText}
       </text>
 
-      <!-- 進捗バートラック -->
-      <rect x="60" y="80" width="80" height="3.5" rx="1.5" fill="#21262d" />
-      <rect x="60" y="80" width={barWidth} height="3.5" rx="1.5" fill={cfg.color} />
-
-      <!-- 2. 中段：心電図波形 または カーソル -->
+      <!-- 2. 上〜中段：心電図波形（ベースラインを y=93 に引き上げ） -->
       {status === 'speechless' ? (
         <g class="cursor-group">
-          <text x="100" y="112" fill="#8b949e" font-size="20" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" text-anchor="middle" class="blinking-cursor">_</text>
+          <text x="100" y="98" fill="#8b949e" font-size="20" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" text-anchor="middle" class="blinking-cursor">_</text>
         </g>
       ) : (
         <g class="wave-group">
@@ -177,19 +162,23 @@ const height = Math.round(width * 1.15);
         </g>
       )}
 
-      <!-- 3. 下段：ステータス表記（一目で読めるフォントサイズ 10px） -->
+      <!-- 3. 中〜下段：進捗ゲージバー（心電図のすぐ下 y=118） -->
+      <rect x="60" y="118" width="80" height="3.5" rx="1.5" fill="#21262d" />
+      <rect x="60" y="118" width={barWidth} height="3.5" rx="1.5" fill={cfg.color} />
+
+      <!-- 4. 最下段：earned 金額表示（ゲージの下 y=142、文字大きめ11px） -->
       <text 
         x="100" 
         y="142" 
         fill={cfg.color} 
-        font-size="10" 
+        font-size="11" 
         font-family="ui-monospace, SFMono-Regular, Menlo, monospace" 
-        font-weight="700" 
+        font-weight="800" 
         text-anchor="middle" 
-        letter-spacing="0.05em" 
-        class="live-sub"
+        letter-spacing="0.04em" 
+        class="live-earned"
       >
-        [ {statusText} ]
+        EARNED: {earnedStr}
       </text>
     </g>
 
@@ -251,14 +240,13 @@ const height = Math.round(width * 1.15);
 </style>
 
 <script>
-  // 心電図パルスが左から右へスーッと流れていくアニメーション
+  // 心電図パルスが左から右へスーッと流れていくアニメーション（ベースライン y=93）
   function initLiveTerminals() {
     const terminals = document.querySelectorAll('.pen-terminal-wrapper.interactive');
     
     terminals.forEach(el => {
       const status = el.getAttribute('data-status') || 'idle';
       const waveEl = el.querySelector('.live-wave');
-      const subEl = el.querySelector('.live-sub');
 
       if (status === 'speechless' || !waveEl) return;
 
@@ -324,7 +312,7 @@ const height = Math.round(width * 1.15);
         for (let x = startX; x <= endX; x += 2) {
           const d = x - pulseX;
           const offset = getECGPulseOffset(d, status);
-          const y = 108 + offset; // ベースライン y=108
+          const y = 93 + offset; // ベースライン y=93
           points.push(`${x},${y.toFixed(1)}`);
         }
 
@@ -333,21 +321,6 @@ const height = Math.round(width * 1.15);
       }
 
       requestAnimationFrame(updatePulse);
-
-      // ログ循環（1行表示）
-      if (status === 'idle' && subEl) {
-        const logs = [
-          '[ ONLINE ]',
-          '[ UPTIME: 19h ]',
-          '[ DAEMON: OK ]',
-          '[ STATUS: RUN ]',
-        ];
-        let logIdx = 0;
-        setInterval(() => {
-          logIdx = (logIdx + 1) % logs.length;
-          subEl.textContent = logs[logIdx];
-        }, 3500);
-      }
     });
   }
 
