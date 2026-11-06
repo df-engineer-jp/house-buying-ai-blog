@@ -19,43 +19,45 @@ const {
   interactive = true,
 } = Astro.props;
 
-// ステータス設定（デフォルメ・大文字・親しみやすい3段構成）
+// パラメータ計算（目標金額・獲得金額・進捗バー）
+const ratio = Math.min(Math.max(earned / target, 0.0), 1.0);
+const barWidth = Math.max(Math.floor(ratio * 80), 1);
+const targetStr = target >= 1000000 ? `¥${(target / 1000000).toFixed(1)}M` : `¥${target.toLocaleString()}`;
+const earnedStr = `¥${earned.toLocaleString()}`;
+
+// ステータス設定（大きな文字サイズを維持したパラメータ復元構成）
 const configs = {
   idle: {
     color: '#f0883e',
     glow: 'rgba(240, 136, 62, 0.25)',
     chassisBg: '#0d1117',
     chassisBorder: '#30363d',
-    defaultPolyline: '58,105 80,105 85,99 90,111 95,101.5 100,106.5 105,105 138,105',
-    mainText: 'ONLINE',
-    subText: '¥0 / ¥50.0M',
+    defaultPolyline: '58,108 80,108 85,102 90,114 95,104.5 100,109.5 105,108 138,108',
+    statusTag: 'ONLINE',
   },
   writing: {
     color: '#58a6ff',
     glow: 'rgba(88, 166, 255, 0.25)',
     chassisBg: '#0d1117',
     chassisBorder: '#30363d',
-    defaultPolyline: '58,105 75,105 80,97 85,113 90,99 95,108 100,105 138,105',
-    mainText: 'WRITING_',
-    subText: '[ PARSING 68% ]',
+    defaultPolyline: '58,108 75,108 80,100 85,116 90,102 95,111 100,108 138,108',
+    statusTag: 'WRITING_',
   },
   panic: {
     color: '#f85149',
     glow: 'rgba(248, 81, 73, 0.35)',
     chassisBg: '#1c0d0d',
     chassisBorder: '#f85149',
-    defaultPolyline: '58,105 75,105 80,93 85,117 90,95 95,112 100,105 138,105',
-    mainText: 'ERR !',
-    subText: '[ TIMEOUT 30s ]',
+    defaultPolyline: '58,108 75,108 80,96 85,120 90,98 95,115 100,108 138,108',
+    statusTag: 'TIMEOUT 30s',
   },
   victory: {
     color: '#3fb950',
     glow: 'rgba(46, 160, 67, 0.3)',
     chassisBg: '#0d1c12',
     chassisBorder: '#3fb950',
-    defaultPolyline: '58,105 80,105 85,98 90,112 95,101 100,106 105,105 138,105',
-    mainText: '200 OK ✔',
-    subText: '[ ALL PASSED ]',
+    defaultPolyline: '58,108 80,108 85,101 90,115 95,104 100,109 105,108 138,108',
+    statusTag: '200 OK ✔',
   },
   speechless: {
     color: '#8b949e',
@@ -63,22 +65,20 @@ const configs = {
     chassisBg: '#0d1117',
     chassisBorder: '#30363d',
     defaultPolyline: '',
-    mainText: '......',
-    subText: '[ 正気だろうか？ ]',
+    statusTag: '......',
   },
   progress: {
     color: '#e3b341',
     glow: 'rgba(210, 153, 34, 0.35)',
     chassisBg: '#1c180d',
     chassisBorder: '#e3b341',
-    defaultPolyline: '58,105 80,105 85,96 90,114 95,99 100,107 105,105 138,105',
-    mainText: '+¥1,000',
-    subText: '[ STOCKS UP ]',
+    defaultPolyline: '58,108 80,108 85,99 90,117 95,102 100,110 105,108 138,108',
+    statusTag: '+¥1,000 UP',
   },
 };
 
 const cfg = configs[status] || configs.idle;
-const mainText = message || cfg.mainText;
+const statusText = message || cfg.statusTag;
 const height = Math.round(width * 1.15);
 ---
 
@@ -129,25 +129,39 @@ const height = Math.round(width * 1.15);
 
     <!-- コンソール内部（クリッピングで枠外はみ出しを絶対防止） -->
     <g clip-path="url(#screen-clip)">
-      <!-- 1. 上段：超特大ステータステキスト（一目で読めるフォントサイズ 14px〜15px） -->
+      <!-- 1. 上段：目標金額 ＆ 獲得金額パラメータ（視認性の高いフォントサイズ） -->
       <text 
-        x="100" 
-        y="72" 
-        fill={cfg.color} 
-        font-size="14.5" 
+        x="60" 
+        y="59" 
+        fill="#94a3b8" 
+        font-size="9" 
         font-family="ui-monospace, SFMono-Regular, Menlo, monospace" 
-        font-weight="800" 
-        text-anchor="middle"
-        letter-spacing="0.05em"
-        class="live-main-text"
+        font-weight="600"
+        letter-spacing="0.04em"
       >
-        {mainText}
+        TARGET: {targetStr}
       </text>
+
+      <text 
+        x="60" 
+        y="73" 
+        fill={cfg.color} 
+        font-size="11.5" 
+        font-family="ui-monospace, SFMono-Regular, Menlo, monospace" 
+        font-weight="800"
+        letter-spacing="0.02em"
+      >
+        EARNED: {earnedStr}
+      </text>
+
+      <!-- 進捗バートラック -->
+      <rect x="60" y="80" width="80" height="3.5" rx="1.5" fill="#21262d" />
+      <rect x="60" y="80" width={barWidth} height="3.5" rx="1.5" fill={cfg.color} />
 
       <!-- 2. 中段：心電図波形 または カーソル -->
       {status === 'speechless' ? (
         <g class="cursor-group">
-          <text x="100" y="108" fill="#8b949e" font-size="20" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" text-anchor="middle" class="blinking-cursor">_</text>
+          <text x="100" y="112" fill="#8b949e" font-size="20" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" text-anchor="middle" class="blinking-cursor">_</text>
         </g>
       ) : (
         <g class="wave-group">
@@ -155,27 +169,27 @@ const height = Math.round(width * 1.15);
             points={cfg.defaultPolyline} 
             fill="none" 
             stroke={cfg.color} 
-            stroke-width="2.0"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+            stroke-width="2.0" 
+            stroke-linecap="round" 
+            stroke-linejoin="round" 
             class="oscilloscope-line live-wave"
           />
         </g>
       )}
 
-      <!-- 3. 下段：シンプル化されたデフォルメ1行（読めるフォントサイズ 9.5px） -->
+      <!-- 3. 下段：ステータス表記（一目で読めるフォントサイズ 10px） -->
       <text 
         x="100" 
         y="142" 
-        fill="#94a3b8" 
-        font-size="9.5" 
+        fill={cfg.color} 
+        font-size="10" 
         font-family="ui-monospace, SFMono-Regular, Menlo, monospace" 
-        font-weight="600"
-        text-anchor="middle"
-        letter-spacing="0.03em"
+        font-weight="700" 
+        text-anchor="middle" 
+        letter-spacing="0.05em" 
         class="live-sub"
       >
-        {cfg.subText}
+        [ {statusText} ]
       </text>
     </g>
 
@@ -265,7 +279,6 @@ const height = Math.round(width * 1.15);
           return 0;
         }
 
-        // 通常・静的設計と同一の心電図パルス形状
         const pts = [
           [-12, 0],
           [-6, -6.5],
@@ -311,7 +324,7 @@ const height = Math.round(width * 1.15);
         for (let x = startX; x <= endX; x += 2) {
           const d = x - pulseX;
           const offset = getECGPulseOffset(d, status);
-          const y = 105 + offset; // ベースライン y=105
+          const y = 108 + offset; // ベースライン y=108
           points.push(`${x},${y.toFixed(1)}`);
         }
 
@@ -321,10 +334,10 @@ const height = Math.round(width * 1.15);
 
       requestAnimationFrame(updatePulse);
 
-      // ログ循環（1行デフォルメ表示）
+      // ログ循環（1行表示）
       if (status === 'idle' && subEl) {
         const logs = [
-          '¥0 / ¥50.0M',
+          '[ ONLINE ]',
           '[ UPTIME: 19h ]',
           '[ DAEMON: OK ]',
           '[ STATUS: RUN ]',
