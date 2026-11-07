@@ -135,7 +135,17 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
         <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
       </radialGradient>
 
-      <!-- 2. 上部情報テキスト用パス -->
+      <!-- 2. 中心部オーラグラデーション（公式決定稿完全一致） -->
+      <radialGradient id={`auraGlowRefined-${componentId}`} cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#ffffff" stop-opacity="1"/>
+        <stop offset="18%" stop-color={theme.text} stop-opacity="0.98"/>
+        <stop offset="35%" stop-color={theme.primary} stop-opacity="0.9"/>
+        <stop offset="60%" stop-color={theme.secondary} stop-opacity="0.45"/>
+        <stop offset="85%" stop-color={theme.void_accent} stop-opacity="0.2"/>
+        <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+      </radialGradient>
+
+      <!-- 3. 上部情報テキスト用パス -->
       <path id={`topPath-${componentId}`} d={`M ${pt1_top.x.toFixed(1)},${pt1_top.y.toFixed(1)} A ${r_text},${r_text} 0 1,1 ${pt2_top.x.toFixed(1)},${pt2_top.y.toFixed(1)}`} fill="none"/>
 
       <!-- 3. 下部TARGET専用テキストパス -->
@@ -207,23 +217,21 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
     <text x="140" y="61" fill={theme.text} font-size="12" font-family="monospace" font-weight="bold" 
           text-anchor="middle" letter-spacing="3.2" filter={`url(#holoGlow-${componentId})`}>NOVA</text>
 
-    <!-- 七角形クリスタルフレーム -->
-    <polygon points="140,98 166,114 176,144 156,172 124,176 102,150 108,120" fill="none" stroke="#ffffff" stroke-width="2.0" stroke-opacity="0.95"/>
+    <!-- 中心部：エネルギーコア ＆ 八芒星 -->
+    <circle cx="140" cy="140" r="48" fill={`url(#auraGlowRefined-${componentId})`}/>
 
-    <!-- ★ 決定稿：超新星・八芒星コア（添付画像100%完全再現） -->
+    <!-- アパーチャ光彩羽根（七角形クリスタルフレーム：公式決定稿完全一致） -->
+    <polygon points="140,98 166,114 176,144 156,172 124,176 102,150 108,120" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-opacity="0.95"/>
+
+    <!-- ★ NOVA公式決定稿：超新星・八芒星コア（四芒星を二つ重ねた八芒星） -->
     <g transform="translate(140, 140)">
       <g class="supernova-star">
-        <!-- 1. 背後の十字光芒 (力強く突き抜ける光芒) -->
-        <path d="M 0,-40 L 7.5,-10 L 36,0 L 7.5,10 L 0,40 L -7.5,10 L -36,0 L -7.5,-10 Z" fill={theme.primary} filter={`drop-shadow(0 0 8px ${theme.primary})`}/>
-        
-        <!-- 2. 斜め45度のサブフレア -->
-        <path d="M 0,-20 L 4.5,-6 L 20,0 L 4.5,6 L 0,20 L -4.5,6 L -20,0 L -4.5,-6 Z" fill={theme.secondary} transform="rotate(45)" opacity="0.85"/>
-        
-        <!-- 3. 中央の純白四芒星 (シャープで力強いエッジ) -->
-        <path d="M 0,-21 L 5.5,-5.5 L 21,0 L 5.5,5.5 L 0,21 L -5.5,5.5 L -21,0 L -5.5,-5.5 Z" fill="#ffffff" filter="drop-shadow(0 0 5px #ffffff)"/>
-        
-        <!-- 4. 中心特異点 -->
-        <circle cx="0" cy="0" r="2.8" fill="#ffffff"/>
+        <!-- 1. 外側四芒星（上下左右、theme.primary） -->
+        <path d="M 0,-34 L 5,-10 L 30,0 L 5,10 L 0,34 L -5,10 L -30,0 L -5,-10 Z" fill={theme.primary}/>
+        <!-- 2. 内側四芒星（45度回転、純白 #ffffff） -->
+        <path d="M 0,-20 L 3.5,-6 L 18,0 L 3.5,6 L 0,20 L -3.5,6 L -18,0 L -3.5,-6 Z" fill="#ffffff" transform="rotate(45)"/>
+        <!-- 3. 中心円（純白 #ffffff） -->
+        <circle cx="0" cy="0" r="4.2" fill="#ffffff"/>
       </g>
     </g>
   </svg>
