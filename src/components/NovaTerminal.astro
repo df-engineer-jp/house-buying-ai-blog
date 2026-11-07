@@ -135,9 +135,9 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
         <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
       </radialGradient>
 
-      <!-- 2. 背景光ソフトぼかしフィルター（縁をくっきりさせず滑らかにグラデーション化） -->
+      <!-- 2. 背景光ソフトぼかしフィルター（blur=6px: 縁をくっきりさせず滑らかにグラデーション化） -->
       <filter id={`bgLightBlur-${componentId}`} x="-20%" y="-20%" width="140%" height="140%">
-        <feGaussianBlur stdDeviation="5"/>
+        <feGaussianBlur stdDeviation="6"/>
       </filter>
 
       <!-- 3. 上部情報テキスト用パス -->
@@ -156,8 +156,8 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
       </filter>
     </defs>
 
-    <!-- 中心から均一に広がるソフトグラデーション背景（r=116, ぼかしフィルターで滑らかにフェードアウト） -->
-    <circle cx="140" cy="140" r="116" fill={`url(#orangeHaloLight-${componentId})`} filter={`url(#bgLightBlur-${componentId})`}/>
+    <!-- 中心から均一に広がるソフトグラデーション背景（r=120, blur=6px: 最外枠124ぴったり内側で滑らかにフェードアウト） -->
+    <circle cx="140" cy="140" r="120" fill={`url(#orangeHaloLight-${componentId})`} filter={`url(#bgLightBlur-${componentId})`}/>
 
     <!-- 最外周：測位リング ＆ 4方位マーカー -->
     <circle cx="140" cy="140" r="124" fill="none" stroke={theme.text} stroke-width="1.3" stroke-opacity="0.85" stroke-dasharray="45,15,5,15" class="outer-ring"/>
