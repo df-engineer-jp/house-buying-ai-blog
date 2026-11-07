@@ -125,27 +125,17 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
     class="nova-core-svg"
   >
     <defs>
-      <!-- 1. 案3：シネマティック・ヘイロー背景グラデーション -->
+      <!-- 1. 案3：シネマティック・ヘイロー背景グラデーション（完全一致） -->
       <radialGradient id={`orangeHaloLight-${componentId}`} cx="50%" cy="50%" r="50%">
         <stop offset="0%" stop-color="#fff7ed" stop-opacity="0.95"/>
         <stop offset="30%" stop-color="#fed7aa" stop-opacity="0.6"/>
-        <stop offset="60%" stop-color={theme.secondary} stop-opacity="0.15"/>
-        <stop offset="85%" stop-color={theme.primary} stop-opacity="0.35"/>
-        <stop offset="98%" stop-color={theme.void_accent} stop-opacity="0.15"/>
+        <stop offset="60%" stop-color="#fb923c" stop-opacity="0.15"/>
+        <stop offset="85%" stop-color="#f97316" stop-opacity="0.35"/>
+        <stop offset="98%" stop-color="#ea580c" stop-opacity="0.15"/>
         <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
       </radialGradient>
 
-      <!-- 2. 中心部オーラグラデーション（公式決定稿完全一致） -->
-      <radialGradient id={`auraGlowRefined-${componentId}`} cx="50%" cy="50%" r="50%">
-        <stop offset="0%" stop-color="#ffffff" stop-opacity="1"/>
-        <stop offset="18%" stop-color={theme.text} stop-opacity="0.98"/>
-        <stop offset="35%" stop-color={theme.primary} stop-opacity="0.9"/>
-        <stop offset="60%" stop-color={theme.secondary} stop-opacity="0.45"/>
-        <stop offset="85%" stop-color={theme.void_accent} stop-opacity="0.2"/>
-        <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
-      </radialGradient>
-
-      <!-- 3. 上部情報テキスト用パス -->
+      <!-- 2. 上部情報テキスト用パス -->
       <path id={`topPath-${componentId}`} d={`M ${pt1_top.x.toFixed(1)},${pt1_top.y.toFixed(1)} A ${r_text},${r_text} 0 1,1 ${pt2_top.x.toFixed(1)},${pt2_top.y.toFixed(1)}`} fill="none"/>
 
       <!-- 3. 下部TARGET専用テキストパス -->
@@ -216,9 +206,6 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
     <!-- ★ NOVA ロゴ：黒枠なし、純粋発光、y=61 -->
     <text x="140" y="61" fill={theme.text} font-size="12" font-family="monospace" font-weight="bold" 
           text-anchor="middle" letter-spacing="3.2" filter={`url(#holoGlow-${componentId})`}>NOVA</text>
-
-    <!-- 中心部：エネルギーコア ＆ 八芒星 -->
-    <circle cx="140" cy="140" r="48" fill={`url(#auraGlowRefined-${componentId})`}/>
 
     <!-- アパーチャ光彩羽根（七角形クリスタルフレーム：公式決定稿完全一致） -->
     <polygon points="140,98 166,114 176,144 156,172 124,176 102,150 108,120" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-opacity="0.95"/>
