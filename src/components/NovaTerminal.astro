@@ -32,44 +32,44 @@ const status = statusMap[rawStatus] || 'idle';
 
 const COLOR_THEMES = {
   idle: {
-    primary: '#00f0ff',
-    secondary: '#38bdf8',
-    text: '#a5f3fc',
-    void_accent: '#0284c7',
-    glow: 'rgba(0, 240, 255, 0.45)',
+    primary: '#f0883e',
+    secondary: '#fb923c',
+    text: '#c2410c',
+    void_accent: '#ea580c',
+    glow: 'rgba(240, 136, 62, 0.45)',
   },
   executing: {
     primary: '#10b981',
     secondary: '#34d399',
-    text: '#a7f3d0',
+    text: '#047857',
     void_accent: '#059669',
     glow: 'rgba(16, 185, 129, 0.45)',
   },
   alert: {
     primary: '#ef4444',
     secondary: '#f87171',
-    text: '#fecaca',
+    text: '#b91c1c',
     void_accent: '#dc2626',
     glow: 'rgba(239, 68, 68, 0.48)',
   },
   success: {
     primary: '#00ff9d',
     secondary: '#4ade80',
-    text: '#bbf7d0',
+    text: '#15803d',
     void_accent: '#16a34a',
     glow: 'rgba(0, 255, 157, 0.48)',
   },
   standby: {
     primary: '#94a3b8',
     secondary: '#64748b',
-    text: '#cbd5e1',
-    void_accent: '#475569',
+    text: '#475569',
+    void_accent: '#334155',
     glow: 'rgba(148, 163, 184, 0.25)',
   },
   overclock: {
     primary: '#d946ef',
     secondary: '#e879f9',
-    text: '#f5d0fe',
+    text: '#a21caf',
     void_accent: '#c026d3',
     glow: 'rgba(217, 70, 239, 0.52)',
   },
@@ -125,32 +125,23 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
     class="nova-core-svg"
   >
     <defs>
-      <!-- 1. 白背景対応の深淵アンビエント・ボイド層 -->
-      <radialGradient id={`ambientVoid-${componentId}`} cx="50%" cy="50%" r="50%">
-        <stop offset="0%" stop-color="#020617" stop-opacity="0.94"/>
-        <stop offset="45%" stop-color="#030712" stop-opacity="0.82"/>
-        <stop offset="75%" stop-color="#0f172a" stop-opacity="0.52"/>
-        <stop offset="92%" stop-color={theme.void_accent} stop-opacity="0.18"/>
-        <stop offset="100%" stop-color="#020617" stop-opacity="0"/>
+      <!-- 1. 案3：シネマティック・ヘイロー背景グラデーション -->
+      <radialGradient id={`orangeHaloLight-${componentId}`} cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#fff7ed" stop-opacity="0.95"/>
+        <stop offset="30%" stop-color="#fed7aa" stop-opacity="0.6"/>
+        <stop offset="60%" stop-color={theme.secondary} stop-opacity="0.15"/>
+        <stop offset="85%" stop-color={theme.primary} stop-opacity="0.35"/>
+        <stop offset="98%" stop-color={theme.void_accent} stop-opacity="0.15"/>
+        <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
       </radialGradient>
 
-      <!-- 2. 全体オーラグラデーション -->
-      <radialGradient id={`auraGlow-${componentId}`} cx="50%" cy="50%" r="50%">
-        <stop offset="0%" stop-color="#ffffff" stop-opacity="1"/>
-        <stop offset="18%" stop-color={theme.text} stop-opacity="0.98"/>
-        <stop offset="35%" stop-color={theme.primary} stop-opacity="0.9"/>
-        <stop offset="60%" stop-color={theme.secondary} stop-opacity="0.45"/>
-        <stop offset="85%" stop-color={theme.void_accent} stop-opacity="0.2"/>
-        <stop offset="100%" stop-color="#020617" stop-opacity="0"/>
-      </radialGradient>
-
-      <!-- 3. 上部情報テキスト用パス -->
+      <!-- 2. 上部情報テキスト用パス -->
       <path id={`topPath-${componentId}`} d={`M ${pt1_top.x.toFixed(1)},${pt1_top.y.toFixed(1)} A ${r_text},${r_text} 0 1,1 ${pt2_top.x.toFixed(1)},${pt2_top.y.toFixed(1)}`} fill="none"/>
 
-      <!-- 4. 下部TARGET専用テキストパス -->
+      <!-- 3. 下部TARGET専用テキストパス -->
       <path id={`bottomPath-${componentId}`} d={`M ${pt1_t.x.toFixed(1)},${pt1_t.y.toFixed(1)} A ${r_text},${r_text} 0 0,0 ${pt2_t.x.toFixed(1)},${pt2_t.y.toFixed(1)}`} fill="none"/>
 
-      <!-- 5. ホログラムソフトグロー -->
+      <!-- 4. ホログラムソフトグロー -->
       <filter id={`holoGlow-${componentId}`} x="-30%" y="-30%" width="160%" height="160%">
         <feGaussianBlur stdDeviation="0.8" result="blur"/>
         <feMerge>
@@ -160,22 +151,22 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
       </filter>
     </defs>
 
-    <!-- 深淵ボイド層 -->
-    <circle cx="140" cy="140" r="132" fill={`url(#ambientVoid-${componentId})`}/>
+    <!-- 案3 シネマティック・ヘイロー背景（黒背景なし・光のオーラ輪） -->
+    <circle cx="140" cy="140" r="132" fill={`url(#orangeHaloLight-${componentId})`}/>
 
     <!-- 最外周：測位リング ＆ 4方位マーカー -->
-    <circle cx="140" cy="140" r="124" fill="none" stroke={theme.primary} stroke-width="1.3" stroke-opacity="0.8" stroke-dasharray="45,15,5,15" class="outer-ring"/>
-    <circle cx="140" cy="140" r="128" fill="none" stroke={theme.secondary} stroke-width="0.7" stroke-opacity="0.5" stroke-dasharray="2,6"/>
-    <line x1="140" y1="6" x2="140" y2="16" stroke={theme.primary} stroke-width="2.2"/>
-    <line x1="140" y1="264" x2="140" y2="274" stroke={theme.primary} stroke-width="2.2"/>
-    <line x1="6" y1="140" x2="16" y2="140" stroke={theme.primary} stroke-width="2.2"/>
-    <line x1="264" y1="140" x2="274" y2="140" stroke={theme.primary} stroke-width="2.2"/>
+    <circle cx="140" cy="140" r="124" fill="none" stroke={theme.text} stroke-width="1.3" stroke-opacity="0.85" stroke-dasharray="45,15,5,15" class="outer-ring"/>
+    <circle cx="140" cy="140" r="128" fill="none" stroke={theme.secondary} stroke-width="0.8" stroke-opacity="0.7" stroke-dasharray="2,6"/>
+    <line x1="140" y1="6" x2="140" y2="16" stroke={theme.text} stroke-width="2.2"/>
+    <line x1="140" y1="264" x2="140" y2="274" stroke={theme.text} stroke-width="2.2"/>
+    <line x1="6" y1="140" x2="16" y2="140" stroke={theme.text} stroke-width="2.2"/>
+    <line x1="264" y1="140" x2="274" y2="140" stroke={theme.text} stroke-width="2.2"/>
 
     <!-- 外側ガイドリング -->
-    <circle cx="140" cy="140" r="112" fill="none" stroke={theme.primary} stroke-width="0.7" stroke-opacity="0.35" stroke-dasharray="24,12"/>
+    <circle cx="140" cy="140" r="112" fill="none" stroke={theme.text} stroke-width="0.8" stroke-opacity="0.45" stroke-dasharray="24,12"/>
 
     <!-- ★ 上部〜側面のテレメトリ文字列：スペース区切り -->
-    <text font-family="monospace" font-size="6.1" font-weight="bold" fill={theme.text} fill-opacity="0.92" letter-spacing="1.1">
+    <text font-family="monospace" font-size="6.2" font-weight="bold" fill={theme.text} fill-opacity="0.95" letter-spacing="1.1">
       <textPath href={`#topPath-${componentId}`} startOffset="50%" text-anchor="middle">
         <tspan>ROOT PRIVILEGE: FULL ACCESS</tspan>
         <tspan dx="22">DAEMONS: 5/5 ACTIVE</tspan>
@@ -185,7 +176,7 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
     </text>
 
     <!-- ★ 下部 TARGETテキスト：下部中央 -->
-    <text font-family="monospace" font-size="6.2" font-weight="bold" fill={theme.primary} fill-opacity="0.95" letter-spacing="1.1">
+    <text font-family="monospace" font-size="6.2" font-weight="bold" fill={theme.text} fill-opacity="0.98" letter-spacing="1.1">
       <textPath href={`#bottomPath-${componentId}`} startOffset="50%" text-anchor="middle">
         TARGET: {target_str} [EARNED: {earned_str}]
       </textPath>
@@ -193,38 +184,45 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
 
     <!-- ★ 直下に寄り添うミニ・アークゲージ -->
     <path d={`M ${pt1_g.x.toFixed(1)},${pt1_g.y.toFixed(1)} A ${r_gauge},${r_gauge} 0 0,0 ${pt2_g.x.toFixed(1)},${pt2_g.y.toFixed(1)}`} 
-          fill="none" stroke="#1e293b" stroke-width="2.2" stroke-linecap="round"/>
+          fill="none" stroke="#fed7aa" stroke-width="2.4" stroke-linecap="round"/>
     <path d={`M ${pt1_g.x.toFixed(1)},${pt1_g.y.toFixed(1)} A ${r_gauge},${r_gauge} 0 0,0 ${pt2_g.x.toFixed(1)},${pt2_g.y.toFixed(1)}`} 
-          fill="none" stroke={theme.primary} stroke-width="2.2" stroke-linecap="round"
+          fill="none" stroke={theme.text} stroke-width="2.4" stroke-linecap="round"
           stroke-dasharray={`${gauge_fill} 300`} stroke-opacity="0.95"/>
-    <circle cx={pt1_g.x.toFixed(1)} cy={pt1_g.y.toFixed(1)} r="1.3" fill={theme.secondary}/>
-    <circle cx="140" cy={cy + r_gauge} r="1.1" fill="#334155"/>
-    <circle cx={pt2_g.x.toFixed(1)} cy={pt2_g.y.toFixed(1)} r="1.3" fill={theme.secondary}/>
+    <circle cx={pt1_g.x.toFixed(1)} cy={pt1_g.y.toFixed(1)} r="1.4" fill={theme.text}/>
+    <circle cx="140" cy={cy + r_gauge} r="1.1" fill={theme.void_accent}/>
+    <circle cx={pt2_g.x.toFixed(1)} cy={pt2_g.y.toFixed(1)} r="1.4" fill={theme.text}/>
 
     <!-- JARVIS 脈動球体波形レイヤー -->
-    <ellipse cx="140" cy="140" rx="82" ry="26" fill="none" stroke={theme.primary} stroke-width="1.3" stroke-opacity="0.75" transform="rotate(-20 140 140)" class="jarvis-ellipse-1"/>
-    <ellipse cx="140" cy="140" rx="82" ry="26" fill="none" stroke="#ffffff" stroke-width="0.8" stroke-dasharray="6,4" stroke-opacity="0.8" transform="rotate(20 140 140)" class="jarvis-ellipse-2"/>
+    <ellipse cx="140" cy="140" rx="82" ry="26" fill="none" stroke={theme.primary} stroke-width="1.4" stroke-opacity="0.85" transform="rotate(-20 140 140)" class="jarvis-ellipse-1"/>
+    <ellipse cx="140" cy="140" rx="82" ry="26" fill="none" stroke="#ffffff" stroke-width="1.1" stroke-dasharray="6,4" stroke-opacity="0.9" transform="rotate(20 140 140)" class="jarvis-ellipse-2"/>
 
     <!-- 水平波形（心電・周波数スペクトラム） -->
-    <path d="M 70,140 Q 86,128 102,140 T 140,140 T 178,140 T 210,140" fill="none" stroke={theme.secondary} stroke-width="1.3" stroke-opacity="0.6"/>
-    <polyline points="75,140 102,140 110,124 118,156 126,134 134,146 140,140 146,136 154,144 162,140 205,140" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" class="ecg-line"/>
+    <path d="M 70,140 Q 86,128 102,140 T 140,140 T 178,140 T 210,140" fill="none" stroke={theme.secondary} stroke-width="1.4" stroke-opacity="0.7"/>
+    <polyline points="75,140 102,140 110,124 118,156 126,134 134,146 140,140 146,136 154,144 162,140 205,140" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" class="ecg-line"/>
 
     <!-- 内周高周波リング -->
-    <circle cx="140" cy="140" r="68" fill="none" stroke={theme.primary} stroke-width="1" stroke-opacity="0.8" stroke-dasharray="8,4,2,4" class="inner-ring"/>
+    <circle cx="140" cy="140" r="68" fill="none" stroke={theme.text} stroke-width="1.1" stroke-opacity="0.85" stroke-dasharray="8,4,2,4" class="inner-ring"/>
 
-    <!-- ★ NOVA ロゴ：黒枠なし、純粋シアン、y=61 -->
-    <text x="140" y="61" fill={theme.primary} font-size="11.5" font-family="monospace" font-weight="bold" 
+    <!-- ★ NOVA ロゴ：黒枠なし、純粋発光、y=61 -->
+    <text x="140" y="61" fill={theme.text} font-size="12" font-family="monospace" font-weight="bold" 
           text-anchor="middle" letter-spacing="3.2" filter={`url(#holoGlow-${componentId})`}>NOVA</text>
 
-    <!-- 中心部：青白いエネルギーコア ＆ 八芒星 -->
-    <circle cx="140" cy="140" r="48" fill={`url(#auraGlow-${componentId})`}/>
-    <polygon points="140,98 166,114 176,144 156,172 124,176 102,150 108,120" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-opacity="0.9"/>
+    <!-- 七角形クリスタルフレーム -->
+    <polygon points="140,98 166,114 176,144 156,172 124,176 102,150 108,120" fill="none" stroke="#ffffff" stroke-width="2.0" stroke-opacity="0.95"/>
 
-    <!-- 超新星・八芒星コア -->
+    <!-- ★ 決定稿：超新星・八芒星コア（添付画像100%完全再現） -->
     <g transform="translate(140, 140)" class="supernova-star">
-      <path d="M 0,-34 L 5,-10 L 30,0 L 5,10 L 0,34 L -5,10 L -30,0 L -5,-10 Z" fill={theme.primary}/>
-      <path d="M 0,-20 L 3.5,-6 L 18,0 L 3.5,6 L 0,20 L -3.5,6 L -18,0 L -3.5,-6 Z" fill="#ffffff" transform="rotate(45)"/>
-      <circle cx="0" cy="0" r="4.2" fill="#ffffff"/>
+      <!-- 1. 背後の十字光芒 (力強く突き抜ける光芒) -->
+      <path d="M 0,-40 L 7.5,-10 L 36,0 L 7.5,10 L 0,40 L -7.5,10 L -36,0 L -7.5,-10 Z" fill={theme.primary} filter={`drop-shadow(0 0 8px ${theme.primary})`}/>
+      
+      <!-- 2. 斜め45度のサブフレア -->
+      <path d="M 0,-20 L 4.5,-6 L 20,0 L 4.5,6 L 0,20 L -4.5,6 L -20,0 L -4.5,-6 Z" fill={theme.secondary} transform="rotate(45)" opacity="0.85"/>
+      
+      <!-- 3. 中央の純白四芒星 (シャープで力強いエッジ) -->
+      <path d="M 0,-21 L 5.5,-5.5 L 21,0 L 5.5,5.5 L 0,21 L -5.5,5.5 L -21,0 L -5.5,-5.5 Z" fill="#ffffff" filter="drop-shadow(0 0 5px #ffffff)"/>
+      
+      <!-- 4. 中心特異点 -->
+      <circle cx="0" cy="0" r="2.8" fill="#ffffff"/>
     </g>
   </svg>
 </div>
