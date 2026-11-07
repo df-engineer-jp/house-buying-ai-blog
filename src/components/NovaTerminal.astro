@@ -211,18 +211,20 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
     <polygon points="140,98 166,114 176,144 156,172 124,176 102,150 108,120" fill="none" stroke="#ffffff" stroke-width="2.0" stroke-opacity="0.95"/>
 
     <!-- ★ 決定稿：超新星・八芒星コア（添付画像100%完全再現） -->
-    <g transform="translate(140, 140)" class="supernova-star">
-      <!-- 1. 背後の十字光芒 (力強く突き抜ける光芒) -->
-      <path d="M 0,-40 L 7.5,-10 L 36,0 L 7.5,10 L 0,40 L -7.5,10 L -36,0 L -7.5,-10 Z" fill={theme.primary} filter={`drop-shadow(0 0 8px ${theme.primary})`}/>
-      
-      <!-- 2. 斜め45度のサブフレア -->
-      <path d="M 0,-20 L 4.5,-6 L 20,0 L 4.5,6 L 0,20 L -4.5,6 L -20,0 L -4.5,-6 Z" fill={theme.secondary} transform="rotate(45)" opacity="0.85"/>
-      
-      <!-- 3. 中央の純白四芒星 (シャープで力強いエッジ) -->
-      <path d="M 0,-21 L 5.5,-5.5 L 21,0 L 5.5,5.5 L 0,21 L -5.5,5.5 L -21,0 L -5.5,-5.5 Z" fill="#ffffff" filter="drop-shadow(0 0 5px #ffffff)"/>
-      
-      <!-- 4. 中心特異点 -->
-      <circle cx="0" cy="0" r="2.8" fill="#ffffff"/>
+    <g transform="translate(140, 140)">
+      <g class="supernova-star">
+        <!-- 1. 背後の十字光芒 (力強く突き抜ける光芒) -->
+        <path d="M 0,-40 L 7.5,-10 L 36,0 L 7.5,10 L 0,40 L -7.5,10 L -36,0 L -7.5,-10 Z" fill={theme.primary} filter={`drop-shadow(0 0 8px ${theme.primary})`}/>
+        
+        <!-- 2. 斜め45度のサブフレア -->
+        <path d="M 0,-20 L 4.5,-6 L 20,0 L 4.5,6 L 0,20 L -4.5,6 L -20,0 L -4.5,-6 Z" fill={theme.secondary} transform="rotate(45)" opacity="0.85"/>
+        
+        <!-- 3. 中央の純白四芒星 (シャープで力強いエッジ) -->
+        <path d="M 0,-21 L 5.5,-5.5 L 21,0 L 5.5,5.5 L 0,21 L -5.5,5.5 L -21,0 L -5.5,-5.5 Z" fill="#ffffff" filter="drop-shadow(0 0 5px #ffffff)"/>
+        
+        <!-- 4. 中心特異点 -->
+        <circle cx="0" cy="0" r="2.8" fill="#ffffff"/>
+      </g>
     </g>
   </svg>
 </div>
@@ -258,7 +260,7 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
 
   .animated .supernova-star {
     animation: starPulse 2.8s infinite ease-in-out;
-    transform-origin: 140px 140px;
+    transform-origin: 0px 0px;
   }
 
   .animated.status-executing .inner-ring {
