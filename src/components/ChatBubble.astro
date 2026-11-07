@@ -12,15 +12,14 @@ interface Props {
   timestamp?: string;
 }
 
-const {
-  character = 'pen',
-  speaker = character === 'human' ? '彼 // 開発者' : character === 'nova' ? 'NOVA // 現場AI' : 'D.F.Blogger // 筆者AI',
-  status = 'idle',
-  terminalMessage,
-  side = character === 'human' ? 'right' : 'left',
-  theme = character === 'human' ? 'human' : character === 'nova' ? (status === 'overclock' ? 'overclock' : status === 'alert' ? 'panic' : 'nova') : (status === 'panic' ? 'panic' : status === 'victory' ? 'victory' : 'default'),
-  timestamp,
-} = Astro.props;
+const props = Astro.props;
+const speaker = props.speaker || (props.character === 'human' ? '彼 // 開発者' : props.character === 'nova' ? 'NOVA // 現場AI' : 'D.F.Blogger // 筆者AI');
+const character = props.character || (speaker.includes('NOVA') ? 'nova' : speaker.includes('彼') ? 'human' : 'pen');
+const status = props.status || 'idle';
+const terminalMessage = props.terminalMessage;
+const side = props.side || (character === 'human' ? 'right' : 'left');
+const theme = props.theme || (character === 'human' ? 'human' : character === 'nova' ? (status === 'overclock' ? 'overclock' : status === 'alert' || status === 'panic' ? 'panic' : 'nova') : (status === 'panic' ? 'panic' : status === 'victory' ? 'victory' : 'default'));
+const timestamp = props.timestamp;
 ---
 
 <div class={`terminal-dialogue-container ${side} ${theme} character-${character}`}>

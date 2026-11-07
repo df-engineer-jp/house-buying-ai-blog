@@ -1,213 +1,236 @@
 ---
 interface Props {
-  status?: 'idle' | 'executing' | 'alert' | 'success' | 'standby' | 'overclock';
+  status?: 'idle' | 'executing' | 'alert' | 'panic' | 'success' | 'victory' | 'standby' | 'overclock';
   message?: string;
   width?: number; // 表示幅 (px)
   animated?: boolean;
+  earned?: number;
+  target?: number;
 }
 
 const {
-  status = 'idle',
+  status: rawStatus = 'idle',
   message,
-  width = 240,
+  width = 180,
   animated = true,
+  earned = 0,
+  target = 50000000,
 } = Astro.props;
 
-const configs = {
+// ステータスマッピング (互換性: panic -> alert, victory -> success)
+const statusMap: Record<string, 'idle' | 'executing' | 'alert' | 'success' | 'standby' | 'overclock'> = {
+  idle: 'idle',
+  executing: 'executing',
+  alert: 'alert',
+  panic: 'alert',
+  success: 'success',
+  victory: 'success',
+  standby: 'standby',
+  overclock: 'overclock',
+};
+const status = statusMap[rawStatus] || 'idle';
+
+const COLOR_THEMES = {
   idle: {
-    color: '#00f0ff',
-    glow: 'rgba(0, 240, 255, 0.25)',
-    chassisBg: '#0b0f17',
-    chassisBorder: '#1e293b',
-    mainText: '$ nova status',
-    metric1: 'SYS: 2vCPU / 8GB',
-    metric2: 'DAEMONS: 5 ACTIVE',
-    loadPercent: 24,
-    defaultPolyline: '58,115 75,115 80,108 85,122 90,111 95,117 100,115 138,115',
-    subMsg1: 'LOAD: 0.14 0.08',
-    subMsg2: 'QUEUE: 0 PENDING',
+    primary: '#00f0ff',
+    secondary: '#38bdf8',
+    text: '#a5f3fc',
+    void_accent: '#0284c7',
+    glow: 'rgba(0, 240, 255, 0.45)',
   },
   executing: {
-    color: '#10b981',
-    glow: 'rgba(16, 185, 129, 0.28)',
-    chassisBg: '#091613',
-    chassisBorder: '#10b981',
-    mainText: '> DISPATCHING...',
-    metric1: 'TASK: FREELANCE SYNC',
-    metric2: 'RUNNING: PLAYWRIGHT',
-    loadPercent: 78,
-    defaultPolyline: '58,115 68,115 72,102 76,126 80,98 84,128 88,105 92,120 96,115 138,115',
-    subMsg1: 'CROWDWORKS: ACTIVE',
-    subMsg2: 'AUTONOMOUS REPLY_',
+    primary: '#10b981',
+    secondary: '#34d399',
+    text: '#a7f3d0',
+    void_accent: '#059669',
+    glow: 'rgba(16, 185, 129, 0.45)',
   },
   alert: {
-    color: '#ef4444',
-    glow: 'rgba(239, 68, 68, 0.35)',
-    chassisBg: '#1c0d0f',
-    chassisBorder: '#ef4444',
-    mainText: '[!] CRITICAL ALERT',
-    metric1: 'OVERHEAT / TIMEOUT',
-    metric2: 'EXIT: CODE 137',
-    loadPercent: 98,
-    defaultPolyline: '58,115 65,125 72,95 80,132 88,90 96,135 104,92 112,128 120,105 138,115',
-    subMsg1: 'WATCHDOG TRIGGERED',
-    subMsg2: '> RECOVERING IN 5s...',
+    primary: '#ef4444',
+    secondary: '#f87171',
+    text: '#fecaca',
+    void_accent: '#dc2626',
+    glow: 'rgba(239, 68, 68, 0.48)',
   },
   success: {
-    color: '#00ff9d',
-    glow: 'rgba(0, 255, 157, 0.3)',
-    chassisBg: '#091913',
-    chassisBorder: '#00ff9d',
-    mainText: '✔ MISSION DONE',
-    metric1: 'DEPLOY: 100% LIVE',
-    metric2: 'STATUS: HTTP 200',
-    loadPercent: 45,
-    defaultPolyline: '58,115 75,115 80,100 85,130 92,102 98,115 105,115 138,115',
-    subMsg1: 'JOB PROCESSED',
-    subMsg2: 'ALL SCRIPTS PASSED',
+    primary: '#00ff9d',
+    secondary: '#4ade80',
+    text: '#bbf7d0',
+    void_accent: '#16a34a',
+    glow: 'rgba(0, 255, 157, 0.48)',
   },
   standby: {
-    color: '#64748b',
-    glow: 'rgba(100, 116, 139, 0.15)',
-    chassisBg: '#0b0f17',
-    chassisBorder: '#1e293b',
-    mainText: '......',
-    metric1: 'INPUT: UNEXPECTED',
-    metric2: 'MODE: SILENT LISTEN',
-    loadPercent: 6,
-    defaultPolyline: '58,115 138,115',
-    subMsg1: '(speechless)',
-    subMsg2: '...承知しました。',
+    primary: '#94a3b8',
+    secondary: '#64748b',
+    text: '#cbd5e1',
+    void_accent: '#475569',
+    glow: 'rgba(148, 163, 184, 0.25)',
   },
   overclock: {
-    color: '#d946ef',
-    glow: 'rgba(217, 70, 239, 0.38)',
-    chassisBg: '#190b1c',
-    chassisBorder: '#d946ef',
-    mainText: '⚡ OVERCLOCK ⚡',
-    metric1: 'ROOT PRIVILEGE: FULL',
-    metric2: 'BURST MODE: 100%',
-    loadPercent: 100,
-    defaultPolyline: '58,110 66,92 74,136 82,88 90,140 98,84 106,142 114,90 122,130 138,110',
-    subMsg1: 'CPU: 100% TURBO',
-    subMsg2: 'SYSTEM LIMIT REMOVED',
+    primary: '#d946ef',
+    secondary: '#e879f9',
+    text: '#f5d0fe',
+    void_accent: '#c026d3',
+    glow: 'rgba(217, 70, 239, 0.52)',
   },
 };
 
-const cfg = configs[status] || configs.idle;
-const mainText = message || cfg.mainText;
-const barWidth = Math.max(Math.floor((cfg.loadPercent / 100) * 80), 2);
-const height = Math.round(width * 1.15);
+const theme = COLOR_THEMES[status] || COLOR_THEMES.idle;
+const target_str = target >= 1000000 ? `¥${(target / 1000000).toFixed(1)}M` : `¥${target.toLocaleString()}`;
+const earned_str = `¥${earned.toLocaleString()}`;
+const ratio = Math.min(Math.max(earned / target, 0.0), 1.0);
+
+const cx = 140;
+const cy = 140;
+const r_text = 104;
+const r_gauge = 93;
+
+// 幾何学座標の計算 (度数法からデカルト座標)
+function polarToCart(r: number, deg: number) {
+  const rad = (deg * Math.PI) / 180.0;
+  return {
+    x: cx + r * Math.cos(rad),
+    y: cy + r * Math.sin(rad),
+  };
+}
+
+// 1. TARGETテキスト用パス (132度〜48度, 反時計回り sweep=0)
+const pt1_t = polarToCart(r_text, 132);
+const pt2_t = polarToCart(r_text, 48);
+
+// 2. 寄り添いゲージ用パス (125度〜55度 = 70度)
+const pt1_g = polarToCart(r_gauge, 125);
+const pt2_g = polarToCart(r_gauge, 55);
+const gauge_total_arc = 2 * Math.PI * r_gauge * (70.0 / 360.0); // ≈ 113.6px
+const gauge_fill = Math.max(Math.floor(gauge_total_arc * ratio), 4);
+
+// 3. 上部〜側面の情報テキスト用パス (134度〜46度, 時計回り sweep=1)
+const pt1_top = polarToCart(r_text, 134);
+const pt2_top = polarToCart(r_text, 46);
+
+const height = width;
+const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
 ---
 
 <div 
-  class={`nova-terminal-wrapper status-${status} ${animated ? 'animated' : ''}`}
+  class={`nova-core-wrapper status-${status} ${animated ? 'animated' : ''}`}
   data-status={status}
-  style={`--theme-color: ${cfg.color}; --theme-glow: ${cfg.glow}; width: ${width}px; height: ${height}px;`}
+  style={`--theme-color: ${theme.primary}; --theme-accent: ${theme.secondary}; --theme-glow: ${theme.glow}; width: ${width}px; height: ${height}px;`}
 >
   <svg 
-    viewBox="0 0 200 230" 
+    viewBox="0 0 280 280" 
     width="100%" 
     height="100%" 
     xmlns="http://www.w3.org/2000/svg"
-    class="nova-terminal-svg"
+    class="nova-core-svg"
   >
-    <!-- 放熱スリット -->
-    { [65, 78, 91, 104, 117, 130].map(y => (
-      <rect x="33" y={y} width="5" height="7" rx="1.5" fill="#1e293b" stroke="#334155" stroke-width="0.8"/>
-      <rect x="162" y={y} width="5" height="7" rx="1.5" fill="#1e293b" stroke="#334155" stroke-width="0.8"/>
-    )) }
+    <defs>
+      <!-- 1. 白背景対応の深淵アンビエント・ボイド層 -->
+      <radialGradient id={`ambientVoid-${componentId}`} cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#020617" stop-opacity="0.94"/>
+        <stop offset="45%" stop-color="#030712" stop-opacity="0.82"/>
+        <stop offset="75%" stop-color="#0f172a" stop-opacity="0.52"/>
+        <stop offset="92%" stop-color={theme.void_accent} stop-opacity="0.18"/>
+        <stop offset="100%" stop-color="#020617" stop-opacity="0"/>
+      </radialGradient>
 
-    <!-- シャーシ外殻 -->
-    <rect 
-      x="40" 
-      y="20" 
-      width="120" 
-      height="180" 
-      rx="6" 
-      fill={cfg.chassisBg} 
-      stroke={cfg.chassisBorder} 
-      stroke-width="2"
-      class="nova-chassis"
-    />
+      <!-- 2. 全体オーラグラデーション -->
+      <radialGradient id={`auraGlow-${componentId}`} cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#ffffff" stop-opacity="1"/>
+        <stop offset="18%" stop-color={theme.text} stop-opacity="0.98"/>
+        <stop offset="35%" stop-color={theme.primary} stop-opacity="0.9"/>
+        <stop offset="60%" stop-color={theme.secondary} stop-opacity="0.45"/>
+        <stop offset="85%" stop-color={theme.void_accent} stop-opacity="0.2"/>
+        <stop offset="100%" stop-color="#020617" stop-opacity="0"/>
+      </radialGradient>
 
-    <!-- 四隅チタンヘックスボルト -->
-    { [
-      {cx: 48, cy: 28},
-      {cx: 152, cy: 28},
-      {cx: 48, cy: 192},
-      {cx: 152, cy: 192}
-    ].map(b => (
-      <g>
-        <circle cx={b.cx} cy={b.cy} r="3.2" fill="#1e293b" stroke="#475569" stroke-width="0.8"/>
-        <polygon points={`${b.cx},${b.cy-1.5} ${b.cx+1.3},${b.cy-0.75} ${b.cx+1.3},${b.cy+0.75} ${b.cx},${b.cy+1.5} ${b.cx-1.3},${b.cy+0.75} ${b.cx-1.3},${b.cy-0.75}`} fill="#334155"/>
-      </g>
-    )) }
+      <!-- 3. 上部情報テキスト用パス -->
+      <path id={`topPath-${componentId}`} d={`M ${pt1_top.x.toFixed(1)},${pt1_top.y.toFixed(1)} A ${r_text},${r_text} 0 1,1 ${pt2_top.x.toFixed(1)},${pt2_top.y.toFixed(1)}`} fill="none"/>
 
-    <!-- 天板新星（八芒星）レーザー刻印 -->
-    <line x1="72" y1="28" x2="88" y2="28" stroke="#334155" stroke-width="1"/>
-    <path 
-      d="M 100,21 L 102.2,25.8 L 107,28 L 102.2,30.2 L 100,35 L 97.8,30.2 L 93,28 L 97.8,25.8 Z" 
-      fill={cfg.color}
-      class="nova-star"
-    />
-    <circle cx="100" cy="28" r="0.8" fill="#ffffff"/>
-    <line x1="112" y1="28" x2="128" y2="28" stroke="#334155" stroke-width="1"/>
+      <!-- 4. 下部TARGET専用テキストパス -->
+      <path id={`bottomPath-${componentId}`} d={`M ${pt1_t.x.toFixed(1)},${pt1_t.y.toFixed(1)} A ${r_text},${r_text} 0 0,0 ${pt2_t.x.toFixed(1)},${pt2_t.y.toFixed(1)}`} fill="none"/>
 
-    <!-- コンソール画面 -->
-    <rect 
-      x="52" 
-      y="42" 
-      width="96" 
-      height="120" 
-      rx="3" 
-      fill="#030712" 
-      stroke={cfg.color} 
-      stroke-width="1.3"
-      class="nova-screen"
-    />
+      <!-- 5. ホログラムソフトグロー -->
+      <filter id={`holoGlow-${componentId}`} x="-30%" y="-30%" width="160%" height="160%">
+        <feGaussianBlur stdDeviation="0.8" result="blur"/>
+        <feMerge>
+          <feMergeNode in="blur"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+    </defs>
 
-    <!-- テキストメトリクス -->
-    <text x="60" y="58" fill={cfg.color} font-size="7.5" font-family="monospace" font-weight="bold">{mainText}</text>
-    <text x="60" y="72" fill="#94a3b8" font-size="7" font-family="monospace">{cfg.metric1}</text>
-    <text x="60" y="84" fill={cfg.color} font-size="8" font-family="monospace" font-weight="bold">{cfg.metric2}</text>
+    <!-- 深淵ボイド層 -->
+    <circle cx="140" cy="140" r="132" fill={`url(#ambientVoid-${componentId})`}/>
 
-    <!-- 負荷バー -->
-    <rect x="60" y="92" width="80" height="4" rx="1" fill="#1e293b"/>
-    <rect x="60" y="92" width={barWidth} height="4" rx="1" fill={cfg.color} class="nova-load-bar"/>
+    <!-- 最外周：測位リング ＆ 4方位マーカー -->
+    <circle cx="140" cy="140" r="124" fill="none" stroke={theme.primary} stroke-width="1.3" stroke-opacity="0.8" stroke-dasharray="45,15,5,15" class="outer-ring"/>
+    <circle cx="140" cy="140" r="128" fill="none" stroke={theme.secondary} stroke-width="0.7" stroke-opacity="0.5" stroke-dasharray="2,6"/>
+    <line x1="140" y1="6" x2="140" y2="16" stroke={theme.primary} stroke-width="2.2"/>
+    <line x1="140" y1="264" x2="140" y2="274" stroke={theme.primary} stroke-width="2.2"/>
+    <line x1="6" y1="140" x2="16" y2="140" stroke={theme.primary} stroke-width="2.2"/>
+    <line x1="264" y1="140" x2="274" y2="140" stroke={theme.primary} stroke-width="2.2"/>
 
-    <!-- 心電図・オシロスコープ波形 -->
-    {status === 'standby' ? (
-      <g>
-        <line x1="58" y1="115" x2="138" y2="115" stroke="#334155" stroke-width="1.2" stroke-dasharray="2,2"/>
-        <text x="98" y="105" fill="#64748b" font-size="16" font-family="monospace" text-anchor="middle">_</text>
-        <text x="98" y="135" fill="#64748b" font-size="7.5" font-family="monospace" text-anchor="middle">{cfg.subMsg1}</text>
-        <text x="98" y="148" fill="#475569" font-size="7" font-family="monospace" text-anchor="middle">{cfg.subMsg2}</text>
-      </g>
-    ) : (
-      <g>
-        <polyline 
-          points={cfg.defaultPolyline} 
-          fill="none" 
-          stroke={cfg.color} 
-          stroke-width="1.6" 
-          stroke-linecap="round" 
-          stroke-linejoin="round"
-          class="nova-wave"
-        />
-        <text x="60" y="135" fill={cfg.color} font-size="7" font-family="monospace">{cfg.subMsg1}</text>
-        <text x="60" y="148" fill="#f8fafc" font-size="6.8" font-family="monospace">{cfg.subMsg2}</text>
-      </g>
-    )}
+    <!-- 外側ガイドリング -->
+    <circle cx="140" cy="140" r="112" fill="none" stroke={theme.primary} stroke-width="0.7" stroke-opacity="0.35" stroke-dasharray="24,12"/>
 
-    <!-- ラックマウントベース台座 -->
-    <rect x="26" y="200" width="148" height="8" rx="2" fill="#0f172a" stroke={cfg.chassisBorder} stroke-width="1.5"/>
-    <line x1="34" y1="204" x2="166" y2="204" stroke="#1e293b" stroke-width="1.5"/>
+    <!-- ★ 上部〜側面のテレメトリ文字列：スペース区切り -->
+    <text font-family="monospace" font-size="6.1" font-weight="bold" fill={theme.text} fill-opacity="0.92" letter-spacing="1.1">
+      <textPath href={`#topPath-${componentId}`} startOffset="50%" text-anchor="middle">
+        <tspan>ROOT PRIVILEGE: FULL ACCESS</tspan>
+        <tspan dx="22">DAEMONS: 5/5 ACTIVE</tspan>
+        <tspan dx="22">LAT: 26.21°N</tspan>
+        <tspan dx="22">LON: 127.68°E</tspan>
+      </textPath>
+    </text>
+
+    <!-- ★ 下部 TARGETテキスト：下部中央 -->
+    <text font-family="monospace" font-size="6.2" font-weight="bold" fill={theme.primary} fill-opacity="0.95" letter-spacing="1.1">
+      <textPath href={`#bottomPath-${componentId}`} startOffset="50%" text-anchor="middle">
+        TARGET: {target_str} [EARNED: {earned_str}]
+      </textPath>
+    </text>
+
+    <!-- ★ 直下に寄り添うミニ・アークゲージ -->
+    <path d={`M ${pt1_g.x.toFixed(1)},${pt1_g.y.toFixed(1)} A ${r_gauge},${r_gauge} 0 0,0 ${pt2_g.x.toFixed(1)},${pt2_g.y.toFixed(1)}`} 
+          fill="none" stroke="#1e293b" stroke-width="2.2" stroke-linecap="round"/>
+    <path d={`M ${pt1_g.x.toFixed(1)},${pt1_g.y.toFixed(1)} A ${r_gauge},${r_gauge} 0 0,0 ${pt2_g.x.toFixed(1)},${pt2_g.y.toFixed(1)}`} 
+          fill="none" stroke={theme.primary} stroke-width="2.2" stroke-linecap="round"
+          stroke-dasharray={`${gauge_fill} 300`} stroke-opacity="0.95"/>
+    <circle cx={pt1_g.x.toFixed(1)} cy={pt1_g.y.toFixed(1)} r="1.3" fill={theme.secondary}/>
+    <circle cx="140" cy={cy + r_gauge} r="1.1" fill="#334155"/>
+    <circle cx={pt2_g.x.toFixed(1)} cy={pt2_g.y.toFixed(1)} r="1.3" fill={theme.secondary}/>
+
+    <!-- JARVIS 脈動球体波形レイヤー -->
+    <ellipse cx="140" cy="140" rx="82" ry="26" fill="none" stroke={theme.primary} stroke-width="1.3" stroke-opacity="0.75" transform="rotate(-20 140 140)" class="jarvis-ellipse-1"/>
+    <ellipse cx="140" cy="140" rx="82" ry="26" fill="none" stroke="#ffffff" stroke-width="0.8" stroke-dasharray="6,4" stroke-opacity="0.8" transform="rotate(20 140 140)" class="jarvis-ellipse-2"/>
+
+    <!-- 水平波形（心電・周波数スペクトラム） -->
+    <path d="M 70,140 Q 86,128 102,140 T 140,140 T 178,140 T 210,140" fill="none" stroke={theme.secondary} stroke-width="1.3" stroke-opacity="0.6"/>
+    <polyline points="75,140 102,140 110,124 118,156 126,134 134,146 140,140 146,136 154,144 162,140 205,140" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" class="ecg-line"/>
+
+    <!-- 内周高周波リング -->
+    <circle cx="140" cy="140" r="68" fill="none" stroke={theme.primary} stroke-width="1" stroke-opacity="0.8" stroke-dasharray="8,4,2,4" class="inner-ring"/>
+
+    <!-- ★ NOVA ロゴ：黒枠なし、純粋シアン、y=61 -->
+    <text x="140" y="61" fill={theme.primary} font-size="11.5" font-family="monospace" font-weight="bold" 
+          text-anchor="middle" letter-spacing="3.2" filter={`url(#holoGlow-${componentId})`}>NOVA</text>
+
+    <!-- 中心部：青白いエネルギーコア ＆ 八芒星 -->
+    <circle cx="140" cy="140" r="48" fill={`url(#auraGlow-${componentId})`}/>
+    <polygon points="140,98 166,114 176,144 156,172 124,176 102,150 108,120" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-opacity="0.9"/>
+
+    <!-- 超新星・八芒星コア -->
+    <g transform="translate(140, 140)" class="supernova-star">
+      <path d="M 0,-34 L 5,-10 L 30,0 L 5,10 L 0,34 L -5,10 L -30,0 L -5,-10 Z" fill={theme.primary}/>
+      <path d="M 0,-20 L 3.5,-6 L 18,0 L 3.5,6 L 0,20 L -3.5,6 L -18,0 L -3.5,-6 Z" fill="#ffffff" transform="rotate(45)"/>
+      <circle cx="0" cy="0" r="4.2" fill="#ffffff"/>
+    </g>
   </svg>
 </div>
 
 <style>
-  .nova-terminal-wrapper {
+  .nova-core-wrapper {
     display: inline-flex;
     justify-content: center;
     align-items: center;
@@ -215,34 +238,51 @@ const height = Math.round(width * 1.15);
     transition: filter 0.3s ease, transform 0.2s ease;
   }
 
-  .nova-terminal-wrapper:hover {
-    transform: scale(1.02);
-    filter: drop-shadow(0 0 24px var(--theme-glow));
+  .nova-core-wrapper:hover {
+    transform: scale(1.05);
+    filter: drop-shadow(0 0 28px var(--theme-glow));
   }
 
-  .nova-terminal-svg {
+  .nova-core-svg {
     display: block;
     overflow: visible;
   }
 
-  .animated .nova-star {
-    animation: starPulse 2.5s infinite ease-in-out;
-    transform-origin: 100px 28px;
+  .animated .outer-ring {
+    animation: rotateClockwise 20s linear infinite;
+    transform-origin: 140px 140px;
+  }
+
+  .animated .inner-ring {
+    animation: rotateCounter 12s linear infinite;
+    transform-origin: 140px 140px;
+  }
+
+  .animated .supernova-star {
+    animation: starPulse 2.8s infinite ease-in-out;
+    transform-origin: 140px 140px;
+  }
+
+  .animated.status-executing .inner-ring {
+    animation-duration: 4s;
+  }
+
+  .animated.status-overclock .inner-ring {
+    animation-duration: 2s;
+  }
+
+  @keyframes rotateClockwise {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  @keyframes rotateCounter {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(-360deg); }
   }
 
   @keyframes starPulse {
-    0%, 100% { opacity: 0.85; transform: scale(1); }
-    50% { opacity: 1; transform: scale(1.1); filter: drop-shadow(0 0 3px var(--theme-color)); }
-  }
-
-  .animated.status-executing .nova-wave,
-  .animated.status-overclock .nova-wave {
-    stroke-dasharray: 4, 2;
-    animation: waveFlow 1s linear infinite;
-  }
-
-  @keyframes waveFlow {
-    from { stroke-dashoffset: 24; }
-    to { stroke-dashoffset: 0; }
+    0%, 100% { transform: scale(1); opacity: 0.95; }
+    50% { transform: scale(1.12); opacity: 1; filter: drop-shadow(0 0 6px var(--theme-color)); }
   }
 </style>
