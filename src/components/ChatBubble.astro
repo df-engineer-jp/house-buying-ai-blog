@@ -18,7 +18,23 @@ const character = props.character || (speaker.includes('NOVA') ? 'nova' : speake
 const status = props.status || 'idle';
 const terminalMessage = props.terminalMessage;
 const side = props.side || (character === 'human' ? 'right' : 'left');
-const theme = props.theme || (character === 'human' ? 'human' : character === 'nova' ? (status === 'overclock' ? 'overclock' : status === 'alert' || status === 'panic' ? 'panic' : 'nova') : (status === 'panic' ? 'panic' : status === 'victory' ? 'victory' : 'default'));
+const theme = props.theme || (
+  character === 'human'
+    ? 'human'
+    : character === 'nova'
+    ? (status === 'overclock'
+        ? 'overclock'
+        : status === 'alert' || status === 'panic'
+        ? 'panic'
+        : status === 'success' || status === 'victory'
+        ? 'victory'
+        : 'nova')
+    : (status === 'panic'
+        ? 'panic'
+        : status === 'victory'
+        ? 'victory'
+        : 'default')
+);
 const timestamp = props.timestamp;
 ---
 
