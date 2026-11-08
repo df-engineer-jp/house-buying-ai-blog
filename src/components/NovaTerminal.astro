@@ -228,17 +228,10 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
     </g>
 
     <!-- ★ コアの周りを立体公転する単一の洗練された惑星リング ★ -->
-    <!-- リング1（-60度傾斜）：中核白枠(r≈42)と中間点線円(r=68)の中間(r=55)へ縮小配置＆厚み100%維持立体回転 (stroke-width="1.6") -->
+    <!-- リング1（-60度傾斜）：消去した中間点線円と同じ外周サイズ(r=68)へ拡大＆厚み100%維持立体回転 (stroke-width="1.6") -->
     <g class="jarvis-3d-ring-1">
-      <circle class="ring-core-1" cx="140" cy="140" r="55" fill="none" stroke={theme.primary} stroke-width="1.6" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/>
+      <circle class="ring-core-1" cx="140" cy="140" r="68" fill="none" stroke={theme.primary} stroke-width="1.6" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/>
     </g>
-
-    <!-- 中間の周円：静止（リング1と同一太さ stroke-width="1.6"） -->
-    <circle cx="140" cy="140" r="68" fill="none" stroke={theme.text} stroke-width="1.6" stroke-opacity="0.85" stroke-dasharray="8,4,2,4" class="inner-ring" vector-effect="non-scaling-stroke"/>
-
-    <!-- ★ NOVA ロゴ：黒枠なし、純粋発光、y=61 -->
-    <text x="140" y="61" fill={theme.text} font-size="12" font-family="monospace" font-weight="bold" 
-          text-anchor="middle" letter-spacing="3.2" filter={`url(#holoGlow-${componentId})`}>NOVA</text>
 
     <!-- アパーチャ光彩羽根（七角形クリスタルフレーム：リング1と同一太さ stroke-width="1.6"） -->
     <polygon points="140,98 166,114 176,144 156,172 124,176 102,150 108,120" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-opacity="0.95" vector-effect="non-scaling-stroke"/>
