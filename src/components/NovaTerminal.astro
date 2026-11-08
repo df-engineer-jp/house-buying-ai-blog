@@ -203,8 +203,8 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
     <!-- 中心から均一に広がるソフトグラデーション背景（r=120, blur=6px: 最外枠124ぴったり内側で滑らかにフェードアウト） -->
     <circle cx="140" cy="140" r="120" fill={`url(#haloLight-${componentId})`} filter={`url(#bgLightBlur-${componentId})`}/>
 
-    <!-- 最外周：測位リング（回らない・静止、リング1と同一太さ stroke-width="1.6"） -->
-    <circle cx="140" cy="140" r="124" fill="none" stroke={theme.text} stroke-width="1.6" stroke-opacity="0.85" stroke-dasharray="45,15,5,15" class="outer-ring" vector-effect="non-scaling-stroke"/>
+    <!-- 最外周：測位リング（回らない・静止、リング1と同一太さ stroke-width="1.6"、12等分完全シームレス） -->
+    <circle cx="140" cy="140" r="124" fill="none" stroke={theme.text} stroke-width="1.6" stroke-opacity="0.85" stroke-dasharray="36,11,6,11.93" class="outer-ring" vector-effect="non-scaling-stroke"/>
 
     <!-- ★ 一緒に回転するデータストリーム＋寄り添いゲージ (r=105, r=91) ★ -->
     <g class="rotating-stream">
