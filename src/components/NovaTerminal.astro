@@ -300,12 +300,13 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
     transform-box: view-box;
   }
 
+  /* ★ 惑星リング：パターンA 傾斜固定（±25°）✕ Y軸奥方向へのコイン立体回転 ★ */
   .animated .jarvis-3d-ring-1 {
-    animation: gyroDepthSpin1 12s linear infinite;
+    animation: spinPatternA1 7s linear infinite;
   }
 
   .animated .jarvis-3d-ring-2 {
-    animation: gyroDepthSpin2 16s linear infinite;
+    animation: spinPatternA2 9.5s linear infinite;
   }
 
   /* 中間の周円（内周リング）は静止（回さない） */
@@ -320,11 +321,11 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
   }
 
   .animated.status-executing .jarvis-3d-ring-1 {
-    animation-duration: 6s;
+    animation-duration: 3.5s;
   }
 
   .animated.status-executing .jarvis-3d-ring-2 {
-    animation-duration: 8s;
+    animation-duration: 4.8s;
   }
 
   .animated.status-overclock .rotating-stream {
@@ -332,11 +333,11 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
   }
 
   .animated.status-overclock .jarvis-3d-ring-1 {
-    animation-duration: 3s;
+    animation-duration: 1.8s;
   }
 
   .animated.status-overclock .jarvis-3d-ring-2 {
-    animation-duration: 4s;
+    animation-duration: 2.4s;
   }
 
   @keyframes rotateClockwise {
@@ -354,14 +355,15 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
     50% { transform: scale(1.12); opacity: 1; filter: drop-shadow(0 0 6px var(--theme-color)); }
   }
 
-  /* ★ 初期配置の美しい楕円姿勢（X:68°, Z:±20°）から奥（Z軸深度）へ立体的に回るスムーズ回転 ★ */
-  @keyframes gyroDepthSpin1 {
-    0% { transform: perspective(1000px) rotateY(0deg) rotateX(68deg) rotateZ(-20deg); }
-    100% { transform: perspective(1000px) rotateY(360deg) rotateX(68deg) rotateZ(-20deg); }
+  /* パターンA: 傾斜固定（-25°）✕ Y軸奥方向回転（時計回り） */
+  @keyframes spinPatternA1 {
+    from { transform: perspective(800px) rotateZ(-25deg) rotateY(0deg); }
+    to { transform: perspective(800px) rotateZ(-25deg) rotateY(360deg); }
   }
 
-  @keyframes gyroDepthSpin2 {
-    0% { transform: perspective(1000px) rotateY(0deg) rotateX(68deg) rotateZ(20deg); }
-    100% { transform: perspective(1000px) rotateY(-360deg) rotateX(68deg) rotateZ(20deg); }
+  /* パターンA: 傾斜固定（+25°）✕ Y軸奥方向回転（反時計回り） */
+  @keyframes spinPatternA2 {
+    from { transform: perspective(800px) rotateZ(25deg) rotateY(0deg); }
+    to { transform: perspective(800px) rotateZ(25deg) rotateY(-360deg); }
   }
 </style>
