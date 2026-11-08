@@ -130,8 +130,9 @@ const ratio = Math.min(Math.max(earned / target, 0.0), 1.0);
 
 const cx = 140;
 const cy = 140;
-const r_text = 104; // 修正前の文字配置半径
-const r_gauge = 93; // 修正前のミニゲージ配置半径 (文字直下11pxに密着)
+const r_text = 104; // テキストストリーム配置半径
+// ★ ユーザー指示によりゲージを残金文字列に寄せ、上部「NOVA」ロゴとの干渉を完全解消 (93 -> 98px)
+const r_gauge = 98; // 文字直下6pxに密着、上部NOVA文字とのクリアランス7px確保
 
 // 幾何学座標の計算 (度数法からデカルト座標)
 function polarToCart(r: number, deg: number) {
@@ -142,17 +143,13 @@ function polarToCart(r: number, deg: number) {
   };
 }
 
-// 寄り添いゲージのアーク計算
-// 一連のテキスト (ROOT + DAEMONS + LAT + LON + TARGET) のうち、TARGET の区間に同心円ゲージを配置
-// TARGET開始: 430.8px, TARGET終了: 561.2px (左右6pxマージン)
-const s1_g = 430.8 + 6.0;
-const s2_g = 561.2 - 6.0;
-const deg1_g = -90 + (s1_g / r_text) * (180.0 / Math.PI);
-const deg2_g = -90 + (s2_g / r_text) * (180.0 / Math.PI);
+// ★ 残金文字列「TARGET: ¥50.0M [EARNED: ¥0]」のDOM実測位置に寸分違わずピッタリ整合 (158.2°〜229.8°)
+const deg1_g = 158.2; // 「TARGET」先頭Tの直下
+const deg2_g = 229.8; // 「[EARNED: ...]」末尾ブラケット直下
 
 const pt1_g = polarToCart(r_gauge, deg1_g);
 const pt2_g = polarToCart(r_gauge, deg2_g);
-const gauge_total_arc = (s2_g - s1_g); // ≈ 118.4px
+const gauge_total_arc = r_gauge * (deg2_g - deg1_g) * (Math.PI / 180.0); // ≈ 122.5px
 const gauge_fill = Math.max(Math.floor(gauge_total_arc * ratio), 4);
 
 const height = width;
