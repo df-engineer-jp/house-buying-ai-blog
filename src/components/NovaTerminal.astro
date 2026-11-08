@@ -130,9 +130,10 @@ const ratio = Math.min(Math.max(earned / target, 0.0), 1.0);
 
 const cx = 140;
 const cy = 140;
-const r_text = 104; // テキストストリーム配置半径
-// ★ ユーザー指示によりゲージを残金文字列に寄せ、上部「NOVA」ロゴとの干渉を完全解消 (93 -> 98px)
-const r_gauge = 98; // 文字直下6pxに密着、上部NOVA文字とのクリアランス7px確保
+// ★ 最外周(124)の直下に配置（r_text=110: 文字上端121.4pxで最外周の内側に美しく沿う）
+const r_text = 110; 
+// ★ 文字列ピッタリ外周(r=112)を撤去し、文字直下に寄り添うミニゲージ(r_gauge=100)
+const r_gauge = 100; 
 
 // 幾何学座標の計算 (度数法からデカルト座標)
 function polarToCart(r: number, deg: number) {
@@ -143,10 +144,10 @@ function polarToCart(r: number, deg: number) {
   };
 }
 
-// ★ 残金文字列「TARGET: ¥50M [¥0]」の初期幾何学位置（案Bデフォルメ実測値 27.2°〜90.9°）
+// ★ 残金文字列「TARGET: ¥50M [¥0]」の初期幾何学位置（r_text=110 実測値 28.0°〜88.4°）
 // クライアント側ではさらに <script> により端末実機の getStartPositionOfChar / getEndPositionOfChar でミリ単位自動吸着
-const deg1_g = 27.2; // 「TARGET」先頭Tの直下
-const deg2_g = 90.9; // 「[¥0]」末尾ブラケット直下
+const deg1_g = 28.0; // 「TARGET」先頭Tの直下
+const deg2_g = 88.4; // 「[¥0]」末尾ブラケット直下
 
 const pt1_g = polarToCart(r_gauge, deg1_g);
 const pt2_g = polarToCart(r_gauge, deg2_g);
@@ -186,8 +187,8 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
         <feGaussianBlur stdDeviation="6"/>
       </filter>
 
-      <!-- 3. 一連のデータストリーム用360度パス (r=104, 12時起点・時計回り) -->
-      <path id={`streamPath-${componentId}`} d="M 140,36 A 104,104 0 1,1 139.9,36 Z" fill="none"/>
+      <!-- 3. 一連のデータストリーム用360度パス (r=110: 最外周124直下・時計回り) -->
+      <path id={`streamPath-${componentId}`} d="M 140,30 A 110,110 0 1,1 139.9,30 Z" fill="none"/>
 
       <!-- 4. ホログラムソフトグロー -->
       <filter id={`holoGlow-${componentId}`} x="-30%" y="-30%" width="160%" height="160%">
@@ -202,15 +203,12 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
     <!-- 中心から均一に広がるソフトグラデーション背景（r=120, blur=6px: 最外枠124ぴったり内側で滑らかにフェードアウト） -->
     <circle cx="140" cy="140" r="120" fill={`url(#haloLight-${componentId})`} filter={`url(#bgLightBlur-${componentId})`}/>
 
-    <!-- 最外周：測位リング（回らない・静止） -->
-    <circle cx="140" cy="140" r="124" fill="none" stroke={theme.text} stroke-width="1.3" stroke-opacity="0.85" stroke-dasharray="45,15,5,15" class="outer-ring"/>
+    <!-- 最外周：測位リング（回らない・静止、リング1と同一太さ stroke-width="1.6"） -->
+    <circle cx="140" cy="140" r="124" fill="none" stroke={theme.text} stroke-width="1.6" stroke-opacity="0.85" stroke-dasharray="45,15,5,15" class="outer-ring" vector-effect="non-scaling-stroke"/>
 
-    <!-- 外側ガイドリング (r=112: 静止) -->
-    <circle cx="140" cy="140" r="112" fill="none" stroke={theme.text} stroke-width="0.8" stroke-opacity="0.4" stroke-dasharray="24,12"/>
-
-    <!-- ★ 一緒に回転するデータストリーム＋寄り添いゲージ (r=104, r=98) ★ -->
+    <!-- ★ 一緒に回転するデータストリーム＋寄り添いゲージ (r=110, r=100) ★ -->
     <g class="rotating-stream">
-      <!-- 一連の稼働データストリーム（案B：PENモノリス連動・極限デフォルメ 9.5px） -->
+      <!-- 一連の稼働データストリーム（案B：PENモノリス連動・極限デフォルメ 9.5px、最外周直下） -->
       <text font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace" font-size="9.5" font-weight="bold" fill={theme.text} fill-opacity="0.95" letter-spacing="1.1">
         <textPath href={`#streamPath-${componentId}`} startOffset="0%">
           <tspan>SYS: ONLINE</tspan>
@@ -219,24 +217,24 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
         </textPath>
       </text>
 
-      <!-- TARGET直下の寄り添いミニ・アークゲージ (r=98: TARGETと一緒に回転) -->
+      <!-- TARGET直下の寄り添いミニ・アークゲージ (r=100: リング1と同一太さ stroke-width="1.6") -->
       <path class="gauge-track" d={`M ${pt1_g.x.toFixed(1)},${pt1_g.y.toFixed(1)} A ${r_gauge},${r_gauge} 0 0,1 ${pt2_g.x.toFixed(1)},${pt2_g.y.toFixed(1)}`} 
-            fill="none" stroke={theme.gauge_bg} stroke-width="2.2" stroke-linecap="round"/>
+            fill="none" stroke={theme.gauge_bg} stroke-width="1.6" stroke-linecap="round"/>
       <path class="gauge-bar" d={`M ${pt1_g.x.toFixed(1)},${pt1_g.y.toFixed(1)} A ${r_gauge},${r_gauge} 0 0,1 ${pt2_g.x.toFixed(1)},${pt2_g.y.toFixed(1)}`} 
-            fill="none" stroke={theme.text} stroke-width="2.2" stroke-linecap="round"
+            fill="none" stroke={theme.text} stroke-width="1.6" stroke-linecap="round"
             stroke-dasharray={`${gauge_fill} 300`} stroke-opacity="0.95"/>
       <circle class="gauge-dot-start" cx={pt1_g.x.toFixed(1)} cy={pt1_g.y.toFixed(1)} r="1.3" fill={theme.text}/>
       <circle class="gauge-dot-end" cx={pt2_g.x.toFixed(1)} cy={pt2_g.y.toFixed(1)} r="1.3" fill={theme.text}/>
     </g>
 
     <!-- ★ コアの周りを立体公転する単一の洗練された惑星リング ★ -->
-    <!-- リング1（-60度傾斜）：中核白枠(r≈42)と中間点線円(r=68)の中間(r=55)へ縮小配置＆厚み100%維持立体回転 -->
+    <!-- リング1（-60度傾斜）：中核白枠(r≈42)と中間点線円(r=68)の中間(r=55)へ縮小配置＆厚み100%維持立体回転 (stroke-width="1.6") -->
     <g class="jarvis-3d-ring-1">
       <circle class="ring-core-1" cx="140" cy="140" r="55" fill="none" stroke={theme.primary} stroke-width="1.6" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/>
     </g>
 
-    <!-- 中間の周円：静止（回らない） -->
-    <circle cx="140" cy="140" r="68" fill="none" stroke={theme.text} stroke-width="1.1" stroke-opacity="0.85" stroke-dasharray="8,4,2,4" class="inner-ring"/>
+    <!-- 中間の周円：静止（リング1と同一太さ stroke-width="1.6"） -->
+    <circle cx="140" cy="140" r="68" fill="none" stroke={theme.text} stroke-width="1.6" stroke-opacity="0.85" stroke-dasharray="8,4,2,4" class="inner-ring" vector-effect="non-scaling-stroke"/>
 
     <!-- ★ NOVA ロゴ：黒枠なし、純粋発光、y=61 -->
     <text x="140" y="61" fill={theme.text} font-size="12" font-family="monospace" font-weight="bold" 
@@ -389,7 +387,7 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
         const deg1 = (Math.atan2(pt1.y - cy, pt1.x - cx) * 180 / Math.PI + 360) % 360;
         const deg2 = (Math.atan2(pt2.y - cy, pt2.x - cx) * 180 / Math.PI + 360) % 360;
         
-        const r_gauge = 98;
+        const r_gauge = 100;
         const rad1 = (deg1 * Math.PI) / 180;
         const rad2 = (deg2 * Math.PI) / 180;
         
