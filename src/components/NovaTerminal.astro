@@ -130,9 +130,8 @@ const ratio = Math.min(Math.max(earned / target, 0.0), 1.0);
 
 const cx = 140;
 const cy = 140;
-const r_telemetry = 112; // 最外周(124)の直下を周回するテレメトリリング
-const r_target = 98;      // TARGETテキスト (下部中央固定)
-const r_gauge = 88;       // 寄り添いミニゲージ (下部中央固定)
+const r_text = 104; // 修正前の文字配置半径
+const r_gauge = 93; // 修正前のミニゲージ配置半径 (文字直下11pxに密着)
 
 // 幾何学座標の計算 (度数法からデカルト座標)
 function polarToCart(r: number, deg: number) {
@@ -143,14 +142,17 @@ function polarToCart(r: number, deg: number) {
   };
 }
 
-// 1. 下部固定TARGETテキスト用パス (130度〜50度, 反時計回り sweep=0)
-const pt1_t = polarToCart(r_target, 130);
-const pt2_t = polarToCart(r_target, 50);
+// 寄り添いゲージのアーク計算
+// 一連のテキスト (ROOT + DAEMONS + LAT + LON + TARGET) のうち、TARGET の区間に同心円ゲージを配置
+// TARGET開始: 430.8px, TARGET終了: 561.2px (左右6pxマージン)
+const s1_g = 430.8 + 6.0;
+const s2_g = 561.2 - 6.0;
+const deg1_g = -90 + (s1_g / r_text) * (180.0 / Math.PI);
+const deg2_g = -90 + (s2_g / r_text) * (180.0 / Math.PI);
 
-// 2. 下部固定寄り添いゲージ用パス (124度〜56度 = 68度)
-const pt1_g = polarToCart(r_gauge, 124);
-const pt2_g = polarToCart(r_gauge, 56);
-const gauge_total_arc = 2 * Math.PI * r_gauge * (68.0 / 360.0); // ≈ 104.4px
+const pt1_g = polarToCart(r_gauge, deg1_g);
+const pt2_g = polarToCart(r_gauge, deg2_g);
+const gauge_total_arc = (s2_g - s1_g); // ≈ 118.4px
 const gauge_fill = Math.max(Math.floor(gauge_total_arc * ratio), 4);
 
 const height = width;
@@ -185,13 +187,10 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
         <feGaussianBlur stdDeviation="6"/>
       </filter>
 
-      <!-- 3. 最外周直下を360度周回するテレメトリテキストパス (r=112) -->
-      <path id={`telemetryCircle-${componentId}`} d="M 140,28 A 112,112 0 1,1 139.9,28 Z" fill="none"/>
+      <!-- 3. 一連のデータストリーム用360度パス (r=104, 12時起点・時計回り) -->
+      <path id={`streamPath-${componentId}`} d="M 140,36 A 104,104 0 1,1 139.9,36 Z" fill="none"/>
 
-      <!-- 4. 下部TARGET専用固定テキストパス (r=98) -->
-      <path id={`targetPath-${componentId}`} d={`M ${pt1_t.x.toFixed(1)},${pt1_t.y.toFixed(1)} A ${r_target},${r_target} 0 0,0 ${pt2_t.x.toFixed(1)},${pt2_t.y.toFixed(1)}`} fill="none"/>
-
-      <!-- 5. ホログラムソフトグロー -->
+      <!-- 4. ホログラムソフトグロー -->
       <filter id={`holoGlow-${componentId}`} x="-30%" y="-30%" width="160%" height="160%">
         <feGaussianBlur stdDeviation="0.8" result="blur"/>
         <feMerge>
@@ -208,34 +207,31 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
     <circle cx="140" cy="140" r="124" fill="none" stroke={theme.text} stroke-width="1.3" stroke-opacity="0.85" stroke-dasharray="45,15,5,15" class="outer-ring"/>
     <circle cx="140" cy="140" r="128" fill="none" stroke={theme.secondary} stroke-width="0.8" stroke-opacity="0.7" stroke-dasharray="2,6"/>
 
-    <!-- ★ 最外周の直下を回転するテレメトリ文字列リング (r=112, 時計回りに周回) -->
-    <g class="rotating-telemetry">
-      <text font-family="monospace" font-size="5.8" font-weight="bold" fill={theme.text} fill-opacity="0.95" letter-spacing="1.1">
-        <textPath href={`#telemetryCircle-${componentId}`} startOffset="0%">
-          ROOT PRIVILEGE: FULL ACCESS   DAEMONS: 5/5 ACTIVE   LAT: 26.21°N   LON: 127.68°E
+    <!-- 外側ガイドリング (r=112: 静止) -->
+    <circle cx="140" cy="140" r="112" fill="none" stroke={theme.text} stroke-width="0.8" stroke-opacity="0.4" stroke-dasharray="24,12"/>
+
+    <!-- ★ 一緒に回転するデータストリーム＋寄り添いゲージ (r=104, r=93) ★ -->
+    <g class="rotating-stream">
+      <!-- 一連の稼働データストリーム（TARGETも等間隔dx=22で並び、余白スペースが残るリアルHUD） -->
+      <text font-family="monospace" font-size="6.2" font-weight="bold" fill={theme.text} fill-opacity="0.95" letter-spacing="1.1">
+        <textPath href={`#streamPath-${componentId}`} startOffset="0%">
+          <tspan>ROOT PRIVILEGE: FULL ACCESS</tspan>
+          <tspan dx="22">DAEMONS: 5/5 ACTIVE</tspan>
+          <tspan dx="22">LAT: 26.21°N</tspan>
+          <tspan dx="22">LON: 127.68°E</tspan>
+          <tspan dx="22">TARGET: {target_str} [EARNED: {earned_str}]</tspan>
         </textPath>
       </text>
+
+      <!-- TARGET直下の寄り添いミニ・アークゲージ (r=93: TARGETと一緒に回転) -->
+      <path d={`M ${pt1_g.x.toFixed(1)},${pt1_g.y.toFixed(1)} A ${r_gauge},${r_gauge} 0 0,1 ${pt2_g.x.toFixed(1)},${pt2_g.y.toFixed(1)}`} 
+            fill="none" stroke={theme.gauge_bg} stroke-width="2.2" stroke-linecap="round"/>
+      <path d={`M ${pt1_g.x.toFixed(1)},${pt1_g.y.toFixed(1)} A ${r_gauge},${r_gauge} 0 0,1 ${pt2_g.x.toFixed(1)},${pt2_g.y.toFixed(1)}`} 
+            fill="none" stroke={theme.text} stroke-width="2.2" stroke-linecap="round"
+            stroke-dasharray={`${gauge_fill} 300`} stroke-opacity="0.95"/>
+      <circle cx={pt1_g.x.toFixed(1)} cy={pt1_g.y.toFixed(1)} r="1.3" fill={theme.text}/>
+      <circle cx={pt2_g.x.toFixed(1)} cy={pt2_g.y.toFixed(1)} r="1.3" fill={theme.text}/>
     </g>
-
-    <!-- ガイドライン (r=105) -->
-    <circle cx="140" cy="140" r="105" fill="none" stroke={theme.text} stroke-width="0.7" stroke-opacity="0.35" stroke-dasharray="16,8"/>
-
-    <!-- ★ 下部固定 TARGETテキスト (r=98: 回転するテレメトリと絶対に重ならない) -->
-    <text font-family="monospace" font-size="6.0" font-weight="bold" fill={theme.text} fill-opacity="0.98" letter-spacing="1.1">
-      <textPath href={`#targetPath-${componentId}`} startOffset="50%" text-anchor="middle">
-        TARGET: {target_str} [EARNED: {earned_str}]
-      </textPath>
-    </text>
-
-    <!-- ★ 下部固定 寄り添いミニ・アークゲージ (r=88) -->
-    <path d={`M ${pt1_g.x.toFixed(1)},${pt1_g.y.toFixed(1)} A ${r_gauge},${r_gauge} 0 0,0 ${pt2_g.x.toFixed(1)},${pt2_g.y.toFixed(1)}`} 
-          fill="none" stroke={theme.gauge_bg} stroke-width="2.2" stroke-linecap="round"/>
-    <path d={`M ${pt1_g.x.toFixed(1)},${pt1_g.y.toFixed(1)} A ${r_gauge},${r_gauge} 0 0,0 ${pt2_g.x.toFixed(1)},${pt2_g.y.toFixed(1)}`} 
-          fill="none" stroke={theme.text} stroke-width="2.2" stroke-linecap="round"
-          stroke-dasharray={`${gauge_fill} 300`} stroke-opacity="0.95"/>
-    <circle cx={pt1_g.x.toFixed(1)} cy={pt1_g.y.toFixed(1)} r="1.3" fill={theme.text}/>
-    <circle cx="140" cy={cy + r_gauge} r="1.1" fill={theme.void_accent}/>
-    <circle cx={pt2_g.x.toFixed(1)} cy={pt2_g.y.toFixed(1)} r="1.3" fill={theme.text}/>
 
     <!-- ★ コアの周りを動く2つの惑星リング（JARVIS球体波形レイヤー） ★ -->
     <g class="jarvis-orbit-1">
@@ -245,7 +241,7 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
       <ellipse cx="140" cy="140" rx="82" ry="26" fill="none" stroke="#ffffff" stroke-width="1.1" stroke-dasharray="6,4" stroke-opacity="0.9" transform="rotate(20 140 140)"/>
     </g>
 
-    <!-- 内周高周波リング -->
+    <!-- 中間の周円：静止（回らない） -->
     <circle cx="140" cy="140" r="68" fill="none" stroke={theme.text} stroke-width="1.1" stroke-opacity="0.85" stroke-dasharray="8,4,2,4" class="inner-ring"/>
 
     <!-- ★ NOVA ロゴ：黒枠なし、純粋発光、y=61 -->
@@ -290,8 +286,8 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
 
   /* 最外周円は静止（回らない） */
 
-  /* 最外周の直下にあるテレメトリ文字列が時計回りに回転 */
-  .animated .rotating-telemetry {
+  /* 一緒に回転するデータストリーム＋TARGETメーター（時計回り25秒） */
+  .animated .rotating-stream {
     animation: rotateClockwise 25s linear infinite;
     transform-origin: 140px 140px;
   }
@@ -314,7 +310,7 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
     transform-origin: 0px 0px;
   }
 
-  .animated.status-executing .rotating-telemetry {
+  .animated.status-executing .rotating-stream {
     animation-duration: 8s;
   }
 
@@ -326,7 +322,7 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
     animation-duration: 8s;
   }
 
-  .animated.status-overclock .rotating-telemetry {
+  .animated.status-overclock .rotating-stream {
     animation-duration: 4s;
   }
 
