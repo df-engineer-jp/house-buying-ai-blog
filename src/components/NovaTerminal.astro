@@ -143,9 +143,10 @@ function polarToCart(r: number, deg: number) {
   };
 }
 
-// ★ 残金文字列「TARGET: ¥50.0M [EARNED: ¥0]」のDOM実測位置に寸分違わずピッタリ整合 (158.2°〜229.8°)
-const deg1_g = 158.2; // 「TARGET」先頭Tの直下
-const deg2_g = 229.8; // 「[EARNED: ...]」末尾ブラケット直下
+// ★ 残金文字列「TARGET: ¥50.0M [EARNED: ¥0]」のDOM実測位置に寸分違わずピッタリ整合
+// 実測テキスト範囲: 146.72°〜218.31° (端点ドット半径1.3px/0.76°を考慮して完全一致)
+const deg1_g = 147.5; // 「TARGET」先頭Tの直下
+const deg2_g = 217.5; // 「[EARNED: ...]」末尾ブラケット直下
 
 const pt1_g = polarToCart(r_gauge, deg1_g);
 const pt2_g = polarToCart(r_gauge, deg2_g);
