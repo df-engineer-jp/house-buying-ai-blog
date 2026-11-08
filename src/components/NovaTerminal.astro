@@ -143,14 +143,14 @@ function polarToCart(r: number, deg: number) {
   };
 }
 
-// ★ 残金文字列「TARGET: ¥50.0M [EARNED: ¥0]」のDOM実測位置に寸分違わずピッタリ整合
-// 実測テキスト範囲: 146.72°〜218.31° (端点ドット半径1.3px/0.76°を考慮して完全一致)
+// ★ 残金文字列「TARGET: ¥50.0M [EARNED: ¥0]」の初期幾何学位置（iPhone/Mac標準フォント実測スパン49.0°）
+// クライアント側ではさらに <script> により端末実機の getStartPositionOfChar / getEndPositionOfChar でミリ単位自動吸着
 const deg1_g = 147.5; // 「TARGET」先頭Tの直下
-const deg2_g = 217.5; // 「[EARNED: ...]」末尾ブラケット直下
+const deg2_g = 196.5; // 「[EARNED: ...]」末尾ブラケット直下 (iPhone/Mac実機完全一致: 147.5° + 49.0°)
 
 const pt1_g = polarToCart(r_gauge, deg1_g);
 const pt2_g = polarToCart(r_gauge, deg2_g);
-const gauge_total_arc = r_gauge * (deg2_g - deg1_g) * (Math.PI / 180.0); // ≈ 122.5px
+const gauge_total_arc = r_gauge * (deg2_g - deg1_g) * (Math.PI / 180.0);
 const gauge_fill = Math.max(Math.floor(gauge_total_arc * ratio), 4);
 
 const height = width;
@@ -160,6 +160,7 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
 <div 
   class={`nova-core-wrapper status-${status} ${animated ? 'animated' : ''}`}
   data-status={status}
+  data-ratio={ratio}
   style={`--theme-color: ${theme.primary}; --theme-accent: ${theme.secondary}; --theme-glow: ${theme.glow}; width: ${width}px; height: ${height}px;`}
 >
   <svg 
@@ -208,27 +209,27 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
     <!-- 外側ガイドリング (r=112: 静止) -->
     <circle cx="140" cy="140" r="112" fill="none" stroke={theme.text} stroke-width="0.8" stroke-opacity="0.4" stroke-dasharray="24,12"/>
 
-    <!-- ★ 一緒に回転するデータストリーム＋寄り添いゲージ (r=104, r=93) ★ -->
+    <!-- ★ 一緒に回転するデータストリーム＋寄り添いゲージ (r=104, r=98) ★ -->
     <g class="rotating-stream">
       <!-- 一連の稼働データストリーム（TARGETも等間隔dx=22で並び、余白スペースが残るリアルHUD） -->
-      <text font-family="monospace" font-size="6.2" font-weight="bold" fill={theme.text} fill-opacity="0.95" letter-spacing="1.1">
+      <text font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace" font-size="6.2" font-weight="bold" fill={theme.text} fill-opacity="0.95" letter-spacing="1.1">
         <textPath href={`#streamPath-${componentId}`} startOffset="0%">
           <tspan>ROOT PRIVILEGE: FULL ACCESS</tspan>
           <tspan dx="22">DAEMONS: 5/5 ACTIVE</tspan>
           <tspan dx="22">LAT: 26.21°N</tspan>
           <tspan dx="22">LON: 127.68°E</tspan>
-          <tspan dx="22">TARGET: {target_str} [EARNED: {earned_str}]</tspan>
+          <tspan class="target-tspan" dx="22">TARGET: {target_str} [EARNED: {earned_str}]</tspan>
         </textPath>
       </text>
 
-      <!-- TARGET直下の寄り添いミニ・アークゲージ (r=93: TARGETと一緒に回転) -->
-      <path d={`M ${pt1_g.x.toFixed(1)},${pt1_g.y.toFixed(1)} A ${r_gauge},${r_gauge} 0 0,1 ${pt2_g.x.toFixed(1)},${pt2_g.y.toFixed(1)}`} 
+      <!-- TARGET直下の寄り添いミニ・アークゲージ (r=98: TARGETと一緒に回転) -->
+      <path class="gauge-track" d={`M ${pt1_g.x.toFixed(1)},${pt1_g.y.toFixed(1)} A ${r_gauge},${r_gauge} 0 0,1 ${pt2_g.x.toFixed(1)},${pt2_g.y.toFixed(1)}`} 
             fill="none" stroke={theme.gauge_bg} stroke-width="2.2" stroke-linecap="round"/>
-      <path d={`M ${pt1_g.x.toFixed(1)},${pt1_g.y.toFixed(1)} A ${r_gauge},${r_gauge} 0 0,1 ${pt2_g.x.toFixed(1)},${pt2_g.y.toFixed(1)}`} 
+      <path class="gauge-bar" d={`M ${pt1_g.x.toFixed(1)},${pt1_g.y.toFixed(1)} A ${r_gauge},${r_gauge} 0 0,1 ${pt2_g.x.toFixed(1)},${pt2_g.y.toFixed(1)}`} 
             fill="none" stroke={theme.text} stroke-width="2.2" stroke-linecap="round"
             stroke-dasharray={`${gauge_fill} 300`} stroke-opacity="0.95"/>
-      <circle cx={pt1_g.x.toFixed(1)} cy={pt1_g.y.toFixed(1)} r="1.3" fill={theme.text}/>
-      <circle cx={pt2_g.x.toFixed(1)} cy={pt2_g.y.toFixed(1)} r="1.3" fill={theme.text}/>
+      <circle class="gauge-dot-start" cx={pt1_g.x.toFixed(1)} cy={pt1_g.y.toFixed(1)} r="1.3" fill={theme.text}/>
+      <circle class="gauge-dot-end" cx={pt2_g.x.toFixed(1)} cy={pt2_g.y.toFixed(1)} r="1.3" fill={theme.text}/>
     </g>
 
     <!-- ★ コアの周りをX,Y,Z軸に不規則立体公転する2つの惑星リング（数学的ジャイロ数式・乱数シード） ★ -->
@@ -367,3 +368,80 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
     to { transform: perspective(800px) rotateZ(25deg) rotateY(-360deg); }
   }
 </style>
+
+<script>
+  // ★ 全OS・全ブラウザ（iOS/Mac/Windows/Linux/Android）完全自動同期エンジン ★
+  // フォントの字幅メトリクス差異をリアルタイム吸収し、実際の文字位置にミリ単位でピタッと吸着
+  function autoAlignNovaGauges() {
+    const svgs = document.querySelectorAll('svg.nova-core-svg');
+    svgs.forEach((svg) => {
+      try {
+        const targetTspan = svg.querySelector('.target-tspan') as SVGTSpanElement | null;
+        if (!targetTspan) return;
+        
+        const numChars = targetTspan.getNumberOfChars();
+        if (!numChars || numChars === 0) return;
+        
+        const pt1 = targetTspan.getStartPositionOfChar(0);
+        const pt2 = targetTspan.getEndPositionOfChar(numChars - 1);
+        
+        if (!pt1 || !pt2 || (pt1.x === 0 && pt1.y === 0)) return;
+        
+        const cx = 140;
+        const cy = 140;
+        const deg1 = (Math.atan2(pt1.y - cy, pt1.x - cx) * 180 / Math.PI + 360) % 360;
+        const deg2 = (Math.atan2(pt2.y - cy, pt2.x - cx) * 180 / Math.PI + 360) % 360;
+        
+        const r_gauge = 98;
+        const rad1 = (deg1 * Math.PI) / 180;
+        const rad2 = (deg2 * Math.PI) / 180;
+        
+        const p1x = (cx + r_gauge * Math.cos(rad1)).toFixed(1);
+        const p1y = (cy + r_gauge * Math.sin(rad1)).toFixed(1);
+        const p2x = (cx + r_gauge * Math.cos(rad2)).toFixed(1);
+        const p2y = (cy + r_gauge * Math.sin(rad2)).toFixed(1);
+        
+        const newD = `M ${p1x},${p1y} A ${r_gauge},${r_gauge} 0 0,1 ${p2x},${p2y}`;
+        
+        const track = svg.querySelector('.gauge-track');
+        const bar = svg.querySelector('.gauge-bar');
+        const dotStart = svg.querySelector('.gauge-dot-start');
+        const dotEnd = svg.querySelector('.gauge-dot-end');
+        
+        if (track) track.setAttribute('d', newD);
+        if (bar) {
+          bar.setAttribute('d', newD);
+          let arcDeg = deg2 - deg1;
+          if (arcDeg < 0) arcDeg += 360;
+          const totalArc = r_gauge * arcDeg * (Math.PI / 180);
+          const ratioAttr = svg.closest('.nova-core-wrapper')?.getAttribute('data-ratio');
+          const ratio = ratioAttr ? parseFloat(ratioAttr) : 0;
+          const fill = Math.max(Math.floor(totalArc * ratio), 4);
+          bar.setAttribute('stroke-dasharray', `${fill} 300`);
+        }
+        if (dotStart) {
+          dotStart.setAttribute('cx', p1x);
+          dotStart.setAttribute('cy', p1y);
+        }
+        if (dotEnd) {
+          dotEnd.setAttribute('cx', p2x);
+          dotEnd.setAttribute('cy', p2y);
+        }
+      } catch (err) {
+        // SVG getStartPositionOfChar can throw if not attached or rendered yet
+      }
+    });
+  }
+
+  // ライフサイクル全フェーズで確実に同期
+  if (typeof window !== 'undefined') {
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(autoAlignNovaGauges);
+    }
+    window.addEventListener('load', autoAlignNovaGauges);
+    requestAnimationFrame(autoAlignNovaGauges);
+    setTimeout(autoAlignNovaGauges, 50);
+    setTimeout(autoAlignNovaGauges, 200);
+    setTimeout(autoAlignNovaGauges, 800);
+  }
+</script>
