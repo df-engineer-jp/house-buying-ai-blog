@@ -207,8 +207,8 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
     <!-- 中心から均一に広がるソフトグラデーション背景（r=120, blur=6px: 最外枠124ぴったり内側で滑らかにフェードアウト） -->
     <circle cx="140" cy="140" r="120" fill={`url(#haloLight-${componentId})`} filter={`url(#bgLightBlur-${componentId})`}/>
 
-    <!-- 最外周：測位リング（回らない・静止、1.6px、光が透ける0.38透過、12等分・長線+3連ドット完全シームレス） -->
-    <circle cx="140" cy="140" r="124" fill="none" stroke={theme.text} stroke-width="1.6" stroke-opacity="0.38" stroke-dasharray="27.926, 8, 3, 6, 3, 6, 3, 8" class="outer-ring" vector-effect="non-scaling-stroke"/>
+    <!-- 最外周：測位リング（回らない・静止、1.6px、光が透ける0.38透過、pathLength=360で全12ブロック3連ドット完全保証） -->
+    <circle cx="140" cy="140" r="124" fill="none" stroke={theme.text} stroke-width="1.6" stroke-opacity="0.38" pathLength="360" stroke-dasharray="13 3.5 1.5 2.5 1.5 2.5 1.5 4" class="outer-ring"/>
 
     <!-- ★ 一緒に回転するデータストリーム＋寄り添いゲージ (r=104, r=90) ★ -->
     <g class="rotating-stream">
@@ -237,9 +237,9 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
       <circle class="ring-core-1" cx="140" cy="140" r="80" fill="none" stroke={theme.primary} stroke-width="1.6" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/>
     </g>
 
-    <!-- ★ 中間点線リング（r=58）：白枠と拡大リング1の間のインナーオービット（反時計回り公転、クッキリ離れた独立10個ダッシュ） ★ -->
+    <!-- ★ 中間点線リング（r=58）：白枠と拡大リング1の間のインナーオービット（反時計回り公転、pathLength=360で完全10分割） ★ -->
     <g class="inner-dash-ring">
-      <circle cx="140" cy="140" r="58" fill="none" stroke={theme.primary} stroke-width="1.6" stroke-dasharray="7.5, 28.9425" stroke-opacity="0.8" vector-effect="non-scaling-stroke"/>
+      <circle cx="140" cy="140" r="58" fill="none" stroke={theme.primary} stroke-width="1.6" pathLength="360" stroke-dasharray="9 27" stroke-opacity="0.85"/>
     </g>
 
     <!-- アパーチャ光彩羽根（七角形クリスタルフレーム：リング1と同一太さ stroke-width="1.6"） -->
