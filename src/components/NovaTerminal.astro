@@ -233,8 +233,9 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
     </g>
 
     <!-- ★ コアの周りをX,Y,Z軸に不規則立体公転する2つの惑星リング ★ -->
+    <!-- リング1（-60度傾斜）：中核の角ばった白枠(r≈42)と中間点線円(r=68)の中間(r=55)へサイズ縮小＆立体回転 -->
     <g class="jarvis-3d-ring-1">
-      <circle class="ring-core-1" cx="140" cy="140" r="82" fill="none" stroke={theme.primary} stroke-width="1.6" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/>
+      <circle class="ring-core-1" cx="140" cy="140" r="55" fill="none" stroke={theme.primary} stroke-width="1.6" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/>
     </g>
     <!-- 点線リング（+50度傾斜）：ユーザー指示により回転せず完全静止 -->
     <g class="jarvis-3d-ring-2">
