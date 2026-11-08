@@ -130,10 +130,14 @@ const ratio = Math.min(Math.max(earned / target, 0.0), 1.0);
 
 const cx = 140;
 const cy = 140;
-// ★ 最外周(124)直下に超特大14.5pxフォント配置（r_text=105: 文字上端121.9pxで最外周の内側に美しく沿う）
-const r_text = 105; 
-// ★ 文字直下に寄り添うミニゲージ(r_gauge=91)
-const r_gauge = 91; 
+// ★ 最外周(124)直下にモノリス同等18pxフォント配置（r_text=108: 文字上端123pxで最外周の内側に美しく沿う）
+const r_text = 108; 
+// ★ 文字直下に寄り添うミニゲージ(r_gauge=94)
+const r_gauge = 94; 
+// ★ コア周りの拡大リング1(r=78)
+const r_ring1 = 78;
+// ★ 中間点線リング(r=58, 反時計回り)
+const r_inner_dash = 58;
 
 // 幾何学座標の計算 (度数法からデカルト座標)
 function polarToCart(r: number, deg: number) {
@@ -144,10 +148,10 @@ function polarToCart(r: number, deg: number) {
   };
 }
 
-// ★ 残金文字列「TARGET: ¥50M [¥0]」の初期幾何学位置（14.5px 実測値 70.2°〜161.3°）
+// ★ 残金文字列「TARGET: ¥50M [¥0]」の初期幾何学位置（18px 実測値 79.5°〜177.3°）
 // クライアント側ではさらに <script> により端末実機の getStartPositionOfChar / getEndPositionOfChar でミリ単位自動吸着
-const deg1_g = 70.2; // 「TARGET」先頭Tの直下
-const deg2_g = 161.3; // 「[¥0]」末尾ブラケット直下
+const deg1_g = 79.5; // 「TARGET」先頭Tの直下
+const deg2_g = 177.3; // 「[¥0]」末尾ブラケット直下
 
 const pt1_g = polarToCart(r_gauge, deg1_g);
 const pt2_g = polarToCart(r_gauge, deg2_g);
@@ -187,8 +191,8 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
         <feGaussianBlur stdDeviation="6"/>
       </filter>
 
-      <!-- 3. 一連のデータストリーム用360度パス (r=105: 超特大14.5pxフォント最外周直下・時計回り) -->
-      <path id={`streamPath-${componentId}`} d="M 140,35 A 105,105 0 1,1 139.9,35 Z" fill="none"/>
+      <!-- 3. 一連のデータストリーム用360度パス (r=108: モノリス同等18pxフォント最外周直下・時計回り) -->
+      <path id={`streamPath-${componentId}`} d="M 140,32 A 108,108 0 1,1 139.9,32 Z" fill="none"/>
 
       <!-- 4. ホログラムソフトグロー -->
       <filter id={`holoGlow-${componentId}`} x="-30%" y="-30%" width="160%" height="160%">
@@ -203,13 +207,13 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
     <!-- 中心から均一に広がるソフトグラデーション背景（r=120, blur=6px: 最外枠124ぴったり内側で滑らかにフェードアウト） -->
     <circle cx="140" cy="140" r="120" fill={`url(#haloLight-${componentId})`} filter={`url(#bgLightBlur-${componentId})`}/>
 
-    <!-- 最外周：測位リング（回らない・静止、リング1と同一太さ stroke-width="1.6"、12等分完全シームレス） -->
-    <circle cx="140" cy="140" r="124" fill="none" stroke={theme.text} stroke-width="1.6" stroke-opacity="0.85" stroke-dasharray="36,11,6,11.93" class="outer-ring" vector-effect="non-scaling-stroke"/>
+    <!-- 最外周：測位リング（回らない・静止、1.6px、光が透ける0.38透過、12等分・長線+3連ドット完全シームレス） -->
+    <circle cx="140" cy="140" r="124" fill="none" stroke={theme.text} stroke-width="1.6" stroke-opacity="0.38" stroke-dasharray="27.926, 8, 3, 6, 3, 6, 3, 8" class="outer-ring" vector-effect="non-scaling-stroke"/>
 
-    <!-- ★ 一緒に回転するデータストリーム＋寄り添いゲージ (r=105, r=91) ★ -->
+    <!-- ★ 一緒に回転するデータストリーム＋寄り添いゲージ (r=108, r=94) ★ -->
     <g class="rotating-stream">
-      <!-- 一連の稼働データストリーム（特大 14.5px、最外周直下） -->
-      <text font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace" font-size="14.5" font-weight="bold" fill={theme.text} fill-opacity="0.95" letter-spacing="1.1">
+      <!-- 一連の稼働データストリーム（特大 18px、最外周直下） -->
+      <text font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace" font-size="18" font-weight="bold" fill={theme.text} fill-opacity="0.95" letter-spacing="1.1">
         <textPath href={`#streamPath-${componentId}`} startOffset="0%">
           <tspan>SYS: ONLINE</tspan>
           <tspan dx="24">DAEMONS: 5/5</tspan>
@@ -217,7 +221,7 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
         </textPath>
       </text>
 
-      <!-- TARGET直下の寄り添いミニ・アークゲージ (r=91: リング1と同一太さ stroke-width="1.6") -->
+      <!-- TARGET直下の寄り添いミニ・アークゲージ (r=94: リング1と同一太さ stroke-width="1.6") -->
       <path class="gauge-track" d={`M ${pt1_g.x.toFixed(1)},${pt1_g.y.toFixed(1)} A ${r_gauge},${r_gauge} 0 0,1 ${pt2_g.x.toFixed(1)},${pt2_g.y.toFixed(1)}`} 
             fill="none" stroke={theme.gauge_bg} stroke-width="1.6" stroke-linecap="round"/>
       <path class="gauge-bar" d={`M ${pt1_g.x.toFixed(1)},${pt1_g.y.toFixed(1)} A ${r_gauge},${r_gauge} 0 0,1 ${pt2_g.x.toFixed(1)},${pt2_g.y.toFixed(1)}`} 
@@ -228,9 +232,14 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
     </g>
 
     <!-- ★ コアの周りを立体公転する単一の洗練された惑星リング ★ -->
-    <!-- リング1（-60度傾斜）：消去した中間点線円と同じ外周サイズ(r=68)へ拡大＆厚み100%維持立体回転 (stroke-width="1.6") -->
+    <!-- リング1（-60度傾斜）：r=78へ拡大＆厚み100%維持立体回転 (stroke-width="1.6") -->
     <g class="jarvis-3d-ring-1">
-      <circle class="ring-core-1" cx="140" cy="140" r="68" fill="none" stroke={theme.primary} stroke-width="1.6" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/>
+      <circle class="ring-core-1" cx="140" cy="140" r="78" fill="none" stroke={theme.primary} stroke-width="1.6" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/>
+    </g>
+
+    <!-- ★ 中間点線リング（r=58）：白枠と拡大リング1の間のインナーオービット（反時計回り公転） ★ -->
+    <g class="inner-dash-ring">
+      <circle cx="140" cy="140" r="58" fill="none" stroke={theme.primary} stroke-width="1.6" stroke-dasharray="14,10" stroke-opacity="0.7" vector-effect="non-scaling-stroke"/>
     </g>
 
     <!-- アパーチャ光彩羽根（七角形クリスタルフレーム：リング1と同一太さ stroke-width="1.6"） -->
@@ -289,7 +298,11 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
     animation: coinSpin1 7s linear infinite;
   }
 
-  /* 中間の周円（内周リング）は静止（回さない） */
+  /* ★ 中間点線リング：反時計回り公転（18秒周期） ★ */
+  .animated .inner-dash-ring {
+    animation: rotateCounter 18s linear infinite;
+    transform-origin: 140px 140px;
+  }
 
   .animated .supernova-star {
     animation: starPulse 2.8s infinite ease-in-out;
@@ -304,12 +317,20 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
     animation-duration: 3.5s;
   }
 
+  .animated.status-executing .inner-dash-ring {
+    animation-duration: 6s;
+  }
+
   .animated.status-overclock .rotating-stream {
     animation-duration: 4s;
   }
 
   .animated.status-overclock .ring-core-1 {
     animation-duration: 1.8s;
+  }
+
+  .animated.status-overclock .inner-dash-ring {
+    animation-duration: 3s;
   }
 
   @keyframes rotateClockwise {
@@ -380,7 +401,7 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
         const deg1 = (Math.atan2(pt1.y - cy, pt1.x - cx) * 180 / Math.PI + 360) % 360;
         const deg2 = (Math.atan2(pt2.y - cy, pt2.x - cx) * 180 / Math.PI + 360) % 360;
         
-        const r_gauge = 91;
+        const r_gauge = 94;
         const rad1 = (deg1 * Math.PI) / 180;
         const rad2 = (deg2 * Math.PI) / 180;
         
