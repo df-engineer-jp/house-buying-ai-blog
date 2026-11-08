@@ -237,9 +237,9 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
       <circle class="ring-core-1" cx="140" cy="140" r="80" fill="none" stroke={theme.primary} stroke-width="1.6" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/>
     </g>
 
-    <!-- ★ 中間点線リング（r=58）：白枠と拡大リング1の間のインナーオービット（反時計回り公転、pathLength=360で完全10分割） ★ -->
+    <!-- ★ 中間点線リング（r=58）：リング1同一線幅1.6px ✕ 黄金10分割ダッシュ（14度長・22度隙）反時計回り公転 ★ -->
     <g class="inner-dash-ring">
-      <circle cx="140" cy="140" r="58" fill="none" stroke={theme.primary} stroke-width="1.6" pathLength="360" stroke-dasharray="9 27" stroke-opacity="0.85"/>
+      <circle cx="140" cy="140" r="58" fill="none" stroke={theme.primary} stroke-width="1.6" pathLength="360" stroke-dasharray="14 22" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/>
     </g>
 
     <!-- アパーチャ光彩羽根（七角形クリスタルフレーム：リング1と同一太さ stroke-width="1.6"） -->
