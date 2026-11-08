@@ -307,10 +307,7 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
     transform-origin: 140px 140px;
   }
 
-  .animated .inner-ring {
-    animation: rotateCounter 12s linear infinite;
-    transform-origin: 140px 140px;
-  }
+  /* 中間の周円（内周リング）は静止（回さない） */
 
   .animated .supernova-star {
     animation: starPulse 2.8s infinite ease-in-out;
@@ -329,10 +326,6 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
     animation-duration: 8s;
   }
 
-  .animated.status-executing .inner-ring {
-    animation-duration: 4s;
-  }
-
   .animated.status-overclock .rotating-telemetry {
     animation-duration: 4s;
   }
@@ -343,10 +336,6 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
 
   .animated.status-overclock .jarvis-orbit-2 {
     animation-duration: 4s;
-  }
-
-  .animated.status-overclock .inner-ring {
-    animation-duration: 2s;
   }
 
   @keyframes rotateClockwise {
