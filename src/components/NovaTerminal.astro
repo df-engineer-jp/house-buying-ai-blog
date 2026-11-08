@@ -237,9 +237,9 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
     <g class="jarvis-3d-ring-1">
       <circle class="ring-core-1" cx="140" cy="140" r="55" fill="none" stroke={theme.primary} stroke-width="1.6" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/>
     </g>
-    <!-- 点線リング（+50度傾斜）：ユーザー指示により回転せず完全静止 -->
+    <!-- 点線リング（+50度傾斜）：円周方向の流れなし・純粋Y軸立体コイン公転 -->
     <g class="jarvis-3d-ring-2">
-      <ellipse class="ring-core-2" cx="140" cy="140" rx="82" ry="26" fill="none" stroke="#ffffff" stroke-width="1.2" stroke-dasharray="6,4" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/>
+      <circle class="ring-core-2" cx="140" cy="140" r="82" fill="none" stroke="#ffffff" stroke-width="1.2" stroke-dasharray="6,4" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/>
     </g>
 
     <!-- 中間の周円：静止（回らない） -->
@@ -309,7 +309,11 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
     animation: coinSpin1 7s linear infinite;
   }
 
-  /* 点線リング（ring-core-2）はユーザー指示により回転アニメーションなし（静止） */
+  /* 点線リング：円周方向の自転（流れ）なし・純粋Y軸立体コイン回転（9.5秒） */
+  .animated .ring-core-2 {
+    transform-origin: 140px 140px;
+    animation: coinSpin2 9.5s linear infinite;
+  }
 
   /* 中間の周円（内周リング）は静止（回さない） */
 
@@ -326,12 +330,20 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
     animation-duration: 3.5s;
   }
 
+  .animated.status-executing .ring-core-2 {
+    animation-duration: 4.8s;
+  }
+
   .animated.status-overclock .rotating-stream {
     animation-duration: 4s;
   }
 
   .animated.status-overclock .ring-core-1 {
     animation-duration: 1.8s;
+  }
+
+  .animated.status-overclock .ring-core-2 {
+    animation-duration: 2.4s;
   }
 
   @keyframes rotateClockwise {
@@ -351,6 +363,35 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
 
   /* ★ 余弦波（Cosine）コイン立体回転：下限0.012により一直線時でも線幅が絶対に0に潰れず、正面と同じ厚みを維持 ★ */
   @keyframes coinSpin1 {
+    0.00% { transform: scaleX(1.0000); }
+    4.17% { transform: scaleX(0.9659); }
+    8.33% { transform: scaleX(0.8660); }
+    12.50% { transform: scaleX(0.7071); }
+    16.67% { transform: scaleX(0.5000); }
+    20.83% { transform: scaleX(0.2588); }
+    25.00% { transform: scaleX(0.0120); }
+    29.17% { transform: scaleX(-0.2588); }
+    33.33% { transform: scaleX(-0.5000); }
+    37.50% { transform: scaleX(-0.7071); }
+    41.67% { transform: scaleX(-0.8660); }
+    45.83% { transform: scaleX(-0.9659); }
+    50.00% { transform: scaleX(-1.0000); }
+    54.17% { transform: scaleX(-0.9659); }
+    58.33% { transform: scaleX(-0.8660); }
+    62.50% { transform: scaleX(-0.7071); }
+    66.67% { transform: scaleX(-0.5000); }
+    70.83% { transform: scaleX(-0.2588); }
+    75.00% { transform: scaleX(-0.0120); }
+    79.17% { transform: scaleX(0.2588); }
+    83.33% { transform: scaleX(0.5000); }
+    87.50% { transform: scaleX(0.7071); }
+    91.67% { transform: scaleX(0.8660); }
+    95.83% { transform: scaleX(0.9659); }
+    100.00% { transform: scaleX(1.0000); }
+  }
+
+  /* ★ 点線リング2用 Cosine 余弦波コイン立体回転（点線の円周流れ自転ゼロ・純粋Y軸公転・厚み維持） ★ */
+  @keyframes coinSpin2 {
     0.00% { transform: scaleX(1.0000); }
     4.17% { transform: scaleX(0.9659); }
     8.33% { transform: scaleX(0.8660); }
