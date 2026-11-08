@@ -124,7 +124,7 @@ const COLOR_THEMES = {
 };
 
 const theme = COLOR_THEMES[status] || COLOR_THEMES.idle;
-const target_str = target >= 1000000 ? `¥${(target / 1000000).toFixed(1)}M` : `¥${target.toLocaleString()}`;
+const target_str = target >= 1000000 ? `¥${(target / 1000000) % 1 === 0 ? (target / 1000000) : (target / 1000000).toFixed(1)}M` : `¥${target.toLocaleString()}`;
 const earned_str = `¥${earned.toLocaleString()}`;
 const ratio = Math.min(Math.max(earned / target, 0.0), 1.0);
 
@@ -143,10 +143,10 @@ function polarToCart(r: number, deg: number) {
   };
 }
 
-// ★ 残金文字列「TARGET: ¥50.0M [EARNED: ¥0]」の初期幾何学位置（iPhone/Mac標準フォント実測スパン49.0°）
+// ★ 残金文字列「TARGET: ¥50M [¥0]」の初期幾何学位置（案Bデフォルメ実測値 27.2°〜90.9°）
 // クライアント側ではさらに <script> により端末実機の getStartPositionOfChar / getEndPositionOfChar でミリ単位自動吸着
-const deg1_g = 147.5; // 「TARGET」先頭Tの直下
-const deg2_g = 196.5; // 「[EARNED: ...]」末尾ブラケット直下 (iPhone/Mac実機完全一致: 147.5° + 49.0°)
+const deg1_g = 27.2; // 「TARGET」先頭Tの直下
+const deg2_g = 90.9; // 「[¥0]」末尾ブラケット直下
 
 const pt1_g = polarToCart(r_gauge, deg1_g);
 const pt2_g = polarToCart(r_gauge, deg2_g);
@@ -210,14 +210,12 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
 
     <!-- ★ 一緒に回転するデータストリーム＋寄り添いゲージ (r=104, r=98) ★ -->
     <g class="rotating-stream">
-      <!-- 一連の稼働データストリーム（TARGETも等間隔dx=22で並び、余白スペースが残るリアルHUD） -->
-      <text font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace" font-size="6.2" font-weight="bold" fill={theme.text} fill-opacity="0.95" letter-spacing="1.1">
+      <!-- 一連の稼働データストリーム（案B：PENモノリス連動・極限デフォルメ 9.5px） -->
+      <text font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace" font-size="9.5" font-weight="bold" fill={theme.text} fill-opacity="0.95" letter-spacing="1.1">
         <textPath href={`#streamPath-${componentId}`} startOffset="0%">
-          <tspan>ROOT PRIVILEGE: FULL ACCESS</tspan>
-          <tspan dx="22">DAEMONS: 5/5 ACTIVE</tspan>
-          <tspan dx="22">LAT: 26.21°N</tspan>
-          <tspan dx="22">LON: 127.68°E</tspan>
-          <tspan class="target-tspan" dx="22">TARGET: {target_str} [EARNED: {earned_str}]</tspan>
+          <tspan>SYS: ONLINE</tspan>
+          <tspan dx="28">DAEMONS: 5/5</tspan>
+          <tspan class="target-tspan" dx="28">TARGET: {target_str} [{earned_str}]</tspan>
         </textPath>
       </text>
 
