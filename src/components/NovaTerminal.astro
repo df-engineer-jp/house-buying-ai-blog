@@ -237,9 +237,13 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
     <circle cx="140" cy={cy + r_gauge} r="1.1" fill={theme.void_accent}/>
     <circle cx={pt2_g.x.toFixed(1)} cy={pt2_g.y.toFixed(1)} r="1.3" fill={theme.text}/>
 
-    <!-- JARVIS 脈動球体波形レイヤー -->
-    <ellipse cx="140" cy="140" rx="82" ry="26" fill="none" stroke={theme.primary} stroke-width="1.4" stroke-opacity="0.85" transform="rotate(-20 140 140)" class="jarvis-ellipse-1"/>
-    <ellipse cx="140" cy="140" rx="82" ry="26" fill="none" stroke="#ffffff" stroke-width="1.1" stroke-dasharray="6,4" stroke-opacity="0.9" transform="rotate(20 140 140)" class="jarvis-ellipse-2"/>
+    <!-- ★ コアの周りを動く2つの惑星リング（JARVIS球体波形レイヤー） ★ -->
+    <g class="jarvis-orbit-1">
+      <ellipse cx="140" cy="140" rx="82" ry="26" fill="none" stroke={theme.primary} stroke-width="1.4" stroke-opacity="0.85" transform="rotate(-20 140 140)"/>
+    </g>
+    <g class="jarvis-orbit-2">
+      <ellipse cx="140" cy="140" rx="82" ry="26" fill="none" stroke="#ffffff" stroke-width="1.1" stroke-dasharray="6,4" stroke-opacity="0.9" transform="rotate(20 140 140)"/>
+    </g>
 
     <!-- 内周高周波リング -->
     <circle cx="140" cy="140" r="68" fill="none" stroke={theme.text} stroke-width="1.1" stroke-opacity="0.85" stroke-dasharray="8,4,2,4" class="inner-ring"/>
@@ -292,6 +296,17 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
     transform-origin: 140px 140px;
   }
 
+  /* ★ コアの周りを動く2つの惑星リング ★ */
+  .animated .jarvis-orbit-1 {
+    animation: rotateClockwise 14s linear infinite;
+    transform-origin: 140px 140px;
+  }
+
+  .animated .jarvis-orbit-2 {
+    animation: rotateCounter 18s linear infinite;
+    transform-origin: 140px 140px;
+  }
+
   .animated .inner-ring {
     animation: rotateCounter 12s linear infinite;
     transform-origin: 140px 140px;
@@ -306,11 +321,27 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
     animation-duration: 8s;
   }
 
+  .animated.status-executing .jarvis-orbit-1 {
+    animation-duration: 6s;
+  }
+
+  .animated.status-executing .jarvis-orbit-2 {
+    animation-duration: 8s;
+  }
+
+  .animated.status-executing .inner-ring {
+    animation-duration: 4s;
+  }
+
   .animated.status-overclock .rotating-telemetry {
     animation-duration: 4s;
   }
 
-  .animated.status-executing .inner-ring {
+  .animated.status-overclock .jarvis-orbit-1 {
+    animation-duration: 3s;
+  }
+
+  .animated.status-overclock .jarvis-orbit-2 {
     animation-duration: 4s;
   }
 
