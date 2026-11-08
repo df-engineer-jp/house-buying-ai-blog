@@ -148,10 +148,10 @@ function polarToCart(r: number, deg: number) {
   };
 }
 
-// ★ 残金文字列「TARGET: ¥50M [¥0]」の初期幾何学位置（18px r=104 dx=32 実測値 112.8°〜226.5°）
+// ★ 残金文字列「TARGET: ¥50M [¥0]」の初期幾何学位置（18px r=104 dx=48 実測値 131.9°〜246.6°）
 // クライアント側ではさらに <script> により端末実機の getStartPositionOfChar / getEndPositionOfChar でミリ単位自動吸着
-const deg1_g = 112.8; // 「TARGET」先頭Tの直下
-const deg2_g = 226.5; // 「[¥0]」末尾ブラケット直下
+const deg1_g = 131.9; // 「TARGET」先頭Tの直下
+const deg2_g = 246.6; // 「[¥0]」末尾ブラケット直下
 
 const pt1_g = polarToCart(r_gauge, deg1_g);
 const pt2_g = polarToCart(r_gauge, deg2_g);
@@ -212,12 +212,12 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
 
     <!-- ★ 一緒に回転するデータストリーム＋寄り添いゲージ (r=104, r=90) ★ -->
     <g class="rotating-stream">
-      <!-- 一連の稼働データストリーム（特大 18px、文字間隔・ブロック間隔を広げたゆとり配置） -->
-      <text font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace" font-size="18" font-weight="bold" fill={theme.text} fill-opacity="0.95" letter-spacing="1.3">
+      <!-- 一連の稼働データストリーム（特大 18px、間隔1.5倍 dx=48 ゆったり配置） -->
+      <text font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace" font-size="18" font-weight="bold" fill={theme.text} fill-opacity="0.95" letter-spacing="1.4">
         <textPath href={`#streamPath-${componentId}`} startOffset="0%">
           <tspan>SYS: ONLINE</tspan>
-          <tspan dx="32">DAEMONS: 5/5</tspan>
-          <tspan class="target-tspan" dx="32">TARGET: {target_str} [{earned_str}]</tspan>
+          <tspan dx="48">DAEMONS: 5/5</tspan>
+          <tspan class="target-tspan" dx="48">TARGET: {target_str} [{earned_str}]</tspan>
         </textPath>
       </text>
 
@@ -237,9 +237,9 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
       <circle class="ring-core-1" cx="140" cy="140" r="80" fill="none" stroke={theme.primary} stroke-width="1.6" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/>
     </g>
 
-    <!-- ★ 中間点線リング（r=58）：リング1同一線幅1.6px ✕ 黄金10分割ダッシュ（14度長・22度隙）反時計回り公転 ★ -->
+    <!-- ★ 中間点線リング（r=58）：元の太さのまま、pathLength=360で完全10分割（12度ダッシュ/24度隙間）反時計回り公転 ★ -->
     <g class="inner-dash-ring">
-      <circle cx="140" cy="140" r="58" fill="none" stroke={theme.primary} stroke-width="1.6" pathLength="360" stroke-dasharray="14 22" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/>
+      <circle cx="140" cy="140" r="58" fill="none" stroke={theme.primary} stroke-width="1.6" pathLength="360" stroke-dasharray="12 24" stroke-opacity="0.85"/>
     </g>
 
     <!-- アパーチャ光彩羽根（七角形クリスタルフレーム：リング1と同一太さ stroke-width="1.6"） -->
