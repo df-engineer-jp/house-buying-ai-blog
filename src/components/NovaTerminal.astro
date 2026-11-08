@@ -234,10 +234,10 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
 
     <!-- ★ コアの周りをX,Y,Z軸に不規則立体公転する2つの惑星リング（数学的ジャイロ数式・乱数シード） ★ -->
     <g class="jarvis-3d-ring-1">
-      <circle cx="140" cy="140" r="82" fill="none" stroke={theme.primary} stroke-width="1.4" stroke-opacity="0.9"/>
+      <circle cx="140" cy="140" r="82" fill="none" stroke={theme.primary} stroke-width="1.4" stroke-opacity="0.9" vector-effect="non-scaling-stroke"/>
     </g>
     <g class="jarvis-3d-ring-2">
-      <circle cx="140" cy="140" r="82" fill="none" stroke="#ffffff" stroke-width="1.1" stroke-dasharray="6,4" stroke-opacity="0.95"/>
+      <circle cx="140" cy="140" r="82" fill="none" stroke="#ffffff" stroke-width="1.1" stroke-dasharray="6,4" stroke-opacity="0.95" vector-effect="non-scaling-stroke"/>
     </g>
 
     <!-- 中間の周円：静止（回らない） -->
@@ -356,16 +356,16 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
     50% { transform: scale(1.12); opacity: 1; filter: drop-shadow(0 0 6px var(--theme-color)); }
   }
 
-  /* パターンA: 傾斜固定（-25°）✕ Y軸奥方向回転（時計回り） */
+  /* パターンA: 傾斜固定（-60°）✕ Y軸奥方向回転（時計回り） */
   @keyframes spinPatternA1 {
-    from { transform: perspective(800px) rotateZ(-25deg) rotateY(0deg); }
-    to { transform: perspective(800px) rotateZ(-25deg) rotateY(360deg); }
+    from { transform: perspective(800px) rotateZ(-60deg) rotateY(0deg); }
+    to { transform: perspective(800px) rotateZ(-60deg) rotateY(360deg); }
   }
 
-  /* パターンA: 傾斜固定（+25°）✕ Y軸奥方向回転（反時計回り） */
+  /* パターンA: 傾斜固定（+50°）✕ Y軸奥方向回転（反時計回り） */
   @keyframes spinPatternA2 {
-    from { transform: perspective(800px) rotateZ(25deg) rotateY(0deg); }
-    to { transform: perspective(800px) rotateZ(25deg) rotateY(-360deg); }
+    from { transform: perspective(800px) rotateZ(50deg) rotateY(0deg); }
+    to { transform: perspective(800px) rotateZ(50deg) rotateY(-360deg); }
   }
 </style>
 
