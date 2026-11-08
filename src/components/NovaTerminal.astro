@@ -233,12 +233,12 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
       <circle cx={pt2_g.x.toFixed(1)} cy={pt2_g.y.toFixed(1)} r="1.3" fill={theme.text}/>
     </g>
 
-    <!-- ★ コアの周りを動く2つの惑星リング（JARVIS球体波形レイヤー） ★ -->
-    <g class="jarvis-orbit-1">
-      <ellipse cx="140" cy="140" rx="82" ry="26" fill="none" stroke={theme.primary} stroke-width="1.4" stroke-opacity="0.85" transform="rotate(-20 140 140)"/>
+    <!-- ★ コアの周りをX,Y,Z軸に不規則立体公転する2つの惑星リング（数学的ジャイロ数式・乱数シード） ★ -->
+    <g class="jarvis-3d-ring-1">
+      <circle cx="140" cy="140" r="82" fill="none" stroke={theme.primary} stroke-width="1.4" stroke-opacity="0.9"/>
     </g>
-    <g class="jarvis-orbit-2">
-      <ellipse cx="140" cy="140" rx="82" ry="26" fill="none" stroke="#ffffff" stroke-width="1.1" stroke-dasharray="6,4" stroke-opacity="0.9" transform="rotate(20 140 140)"/>
+    <g class="jarvis-3d-ring-2">
+      <circle cx="140" cy="140" r="82" fill="none" stroke="#ffffff" stroke-width="1.1" stroke-dasharray="6,4" stroke-opacity="0.95"/>
     </g>
 
     <!-- 中間の周円：静止（回らない） -->
@@ -292,15 +292,22 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
     transform-origin: 140px 140px;
   }
 
-  /* ★ コアの周りを動く2つの惑星リング ★ */
-  .animated .jarvis-orbit-1 {
-    animation: rotateClockwise 14s linear infinite;
+  /* ★ コアの周りをX,Y,Z軸に不規則立体公転する2つの惑星リング（数学的ジャイロ数式・乱数シード） ★ */
+  .jarvis-3d-ring-1 {
     transform-origin: 140px 140px;
+    transform-box: view-box;
+  }
+  .jarvis-3d-ring-2 {
+    transform-origin: 140px 140px;
+    transform-box: view-box;
   }
 
-  .animated .jarvis-orbit-2 {
-    animation: rotateCounter 18s linear infinite;
-    transform-origin: 140px 140px;
+  .animated .jarvis-3d-ring-1 {
+    animation: gyroOrganicOrbit1 14s linear infinite;
+  }
+
+  .animated .jarvis-3d-ring-2 {
+    animation: gyroOrganicOrbit2 19s linear infinite;
   }
 
   /* 中間の周円（内周リング）は静止（回さない） */
@@ -314,24 +321,24 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
     animation-duration: 8s;
   }
 
-  .animated.status-executing .jarvis-orbit-1 {
-    animation-duration: 6s;
+  .animated.status-executing .jarvis-3d-ring-1 {
+    animation-duration: 7s;
   }
 
-  .animated.status-executing .jarvis-orbit-2 {
-    animation-duration: 8s;
+  .animated.status-executing .jarvis-3d-ring-2 {
+    animation-duration: 9.5s;
   }
 
   .animated.status-overclock .rotating-stream {
     animation-duration: 4s;
   }
 
-  .animated.status-overclock .jarvis-orbit-1 {
-    animation-duration: 3s;
+  .animated.status-overclock .jarvis-3d-ring-1 {
+    animation-duration: 3.5s;
   }
 
-  .animated.status-overclock .jarvis-orbit-2 {
-    animation-duration: 4s;
+  .animated.status-overclock .jarvis-3d-ring-2 {
+    animation-duration: 4.5s;
   }
 
   @keyframes rotateClockwise {
@@ -347,5 +354,93 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
   @keyframes starPulse {
     0%, 100% { transform: scale(1); opacity: 0.95; }
     50% { transform: scale(1.12); opacity: 1; filter: drop-shadow(0 0 6px var(--theme-color)); }
+  }
+
+  @keyframes gyroOrganicOrbit1 {
+    0.0% { transform: perspective(1000px) rotateX(56.1deg) rotateY(-5.9deg) rotateZ(14.1deg); }
+    2.5% { transform: perspective(1000px) rotateX(51.1deg) rotateY(-9.3deg) rotateZ(16.4deg); }
+    5.0% { transform: perspective(1000px) rotateX(38.6deg) rotateY(-19.1deg) rotateZ(16.7deg); }
+    7.5% { transform: perspective(1000px) rotateX(23.3deg) rotateY(-30.7deg) rotateZ(16.9deg); }
+    10.0% { transform: perspective(1000px) rotateX(11.7deg) rotateY(-38.8deg) rotateZ(19.3deg); }
+    12.5% { transform: perspective(1000px) rotateX(8.4deg) rotateY(-40.9deg) rotateZ(25.3deg); }
+    15.0% { transform: perspective(1000px) rotateX(14.1deg) rotateY(-37.4deg) rotateZ(35.3deg); }
+    17.5% { transform: perspective(1000px) rotateX(24.4deg) rotateY(-31.3deg) rotateZ(48.4deg); }
+    20.0% { transform: perspective(1000px) rotateX(32.9deg) rotateY(-25.8deg) rotateZ(63.1deg); }
+    22.5% { transform: perspective(1000px) rotateX(33.9deg) rotateY(-22.0deg) rotateZ(77.2deg); }
+    25.0% { transform: perspective(1000px) rotateX(25.7deg) rotateY(-18.7deg) rotateZ(89.2deg); }
+    27.5% { transform: perspective(1000px) rotateX(11.2deg) rotateY(-13.5deg) rotateZ(98.2deg); }
+    30.0% { transform: perspective(1000px) rotateX(-4.2deg) rotateY(-4.9deg) rotateZ(104.1deg); }
+    32.5% { transform: perspective(1000px) rotateX(-15.1deg) rotateY(5.9deg) rotateZ(108.0deg); }
+    35.0% { transform: perspective(1000px) rotateX(-19.8deg) rotateY(15.7deg) rotateZ(111.2deg); }
+    37.5% { transform: perspective(1000px) rotateX(-20.3deg) rotateY(20.3deg) rotateZ(115.3deg); }
+    40.0% { transform: perspective(1000px) rotateX(-21.2deg) rotateY(17.9deg) rotateZ(121.5deg); }
+    42.5% { transform: perspective(1000px) rotateX(-26.9deg) rotateY(10.8deg) rotateZ(130.2deg); }
+    45.0% { transform: perspective(1000px) rotateX(-38.3deg) rotateY(4.4deg) rotateZ(141.2deg); }
+    47.5% { transform: perspective(1000px) rotateX(-52.9deg) rotateY(5.2deg) rotateZ(154.3deg); }
+    50.0% { transform: perspective(1000px) rotateX(-65.4deg) rotateY(17.0deg) rotateZ(168.6deg); }
+    52.5% { transform: perspective(1000px) rotateX(-71.0deg) rotateY(38.6deg) rotateZ(183.7deg); }
+    55.0% { transform: perspective(1000px) rotateX(-67.9deg) rotateY(63.7deg) rotateZ(199.1deg); }
+    57.5% { transform: perspective(1000px) rotateX(-57.6deg) rotateY(83.4deg) rotateZ(214.6deg); }
+    60.0% { transform: perspective(1000px) rotateX(-44.2deg) rotateY(90.5deg) rotateZ(229.9deg); }
+    62.5% { transform: perspective(1000px) rotateX(-31.5deg) rotateY(82.3deg) rotateZ(244.5deg); }
+    65.0% { transform: perspective(1000px) rotateX(-21.1deg) rotateY(62.2deg) rotateZ(257.7deg); }
+    67.5% { transform: perspective(1000px) rotateX(-11.9deg) rotateY(37.4deg) rotateZ(268.7deg); }
+    70.0% { transform: perspective(1000px) rotateX(-1.3deg) rotateY(15.1deg) rotateZ(277.0deg); }
+    72.5% { transform: perspective(1000px) rotateX(12.5deg) rotateY(-0.3deg) rotateZ(282.6deg); }
+    75.0% { transform: perspective(1000px) rotateX(28.6deg) rotateY(-8.9deg) rotateZ(285.9deg); }
+    77.5% { transform: perspective(1000px) rotateX(43.7deg) rotateY(-14.4deg) rotateZ(288.3deg); }
+    80.0% { transform: perspective(1000px) rotateX(53.6deg) rotateY(-20.8deg) rotateZ(291.4deg); }
+    82.5% { transform: perspective(1000px) rotateX(55.7deg) rotateY(-29.6deg) rotateZ(296.7deg); }
+    85.0% { transform: perspective(1000px) rotateX(51.0deg) rotateY(-39.1deg) rotateZ(305.2deg); }
+    87.5% { transform: perspective(1000px) rotateX(43.5deg) rotateY(-45.2deg) rotateZ(316.9deg); }
+    90.0% { transform: perspective(1000px) rotateX(38.6deg) rotateY(-44.3deg) rotateZ(330.9deg); }
+    92.5% { transform: perspective(1000px) rotateX(39.5deg) rotateY(-35.7deg) rotateZ(345.5deg); }
+    95.0% { transform: perspective(1000px) rotateX(45.7deg) rotateY(-22.8deg) rotateZ(358.5deg); }
+    97.5% { transform: perspective(1000px) rotateX(53.1deg) rotateY(-11.2deg) rotateZ(368.3deg); }
+    100.0% { transform: perspective(1000px) rotateX(56.1deg) rotateY(-5.9deg) rotateZ(374.1deg); }
+  }
+
+  @keyframes gyroOrganicOrbit2 {
+    0.0% { transform: perspective(1000px) rotateX(-0.2deg) rotateY(3.7deg) rotateZ(-3.7deg); }
+    2.5% { transform: perspective(1000px) rotateX(-3.0deg) rotateY(-10.7deg) rotateZ(-18.2deg); }
+    5.0% { transform: perspective(1000px) rotateX(-11.7deg) rotateY(-28.5deg) rotateZ(-30.2deg); }
+    7.5% { transform: perspective(1000px) rotateX(-23.0deg) rotateY(-45.1deg) rotateZ(-38.8deg); }
+    10.0% { transform: perspective(1000px) rotateX(-33.3deg) rotateY(-56.4deg) rotateZ(-44.3deg); }
+    12.5% { transform: perspective(1000px) rotateX(-39.9deg) rotateY(-60.2deg) rotateZ(-48.0deg); }
+    15.0% { transform: perspective(1000px) rotateX(-41.4deg) rotateY(-56.4deg) rotateZ(-52.2deg); }
+    17.5% { transform: perspective(1000px) rotateX(-37.6deg) rotateY(-46.6deg) rotateZ(-59.3deg); }
+    20.0% { transform: perspective(1000px) rotateX(-28.9deg) rotateY(-33.7deg) rotateZ(-70.7deg); }
+    22.5% { transform: perspective(1000px) rotateX(-16.2deg) rotateY(-20.2deg) rotateZ(-86.5deg); }
+    25.0% { transform: perspective(1000px) rotateX(-0.7deg) rotateY(-8.3deg) rotateZ(-105.5deg); }
+    27.5% { transform: perspective(1000px) rotateX(15.5deg) rotateY(0.8deg) rotateZ(-125.0deg); }
+    30.0% { transform: perspective(1000px) rotateX(29.5deg) rotateY(6.3deg) rotateZ(-142.0deg); }
+    32.5% { transform: perspective(1000px) rotateX(38.5deg) rotateY(8.1deg) rotateZ(-154.1deg); }
+    35.0% { transform: perspective(1000px) rotateX(41.2deg) rotateY(6.3deg) rotateZ(-160.3deg); }
+    37.5% { transform: perspective(1000px) rotateX(38.3deg) rotateY(1.7deg) rotateZ(-161.2deg); }
+    40.0% { transform: perspective(1000px) rotateX(32.8deg) rotateY(-4.9deg) rotateZ(-159.1deg); }
+    42.5% { transform: perspective(1000px) rotateX(29.0deg) rotateY(-12.1deg) rotateZ(-157.0deg); }
+    45.0% { transform: perspective(1000px) rotateX(30.7deg) rotateY(-18.8deg) rotateZ(-157.6deg); }
+    47.5% { transform: perspective(1000px) rotateX(38.7deg) rotateY(-24.0deg) rotateZ(-162.6deg); }
+    50.0% { transform: perspective(1000px) rotateX(50.7deg) rotateY(-27.4deg) rotateZ(-172.3deg); }
+    52.5% { transform: perspective(1000px) rotateX(61.8deg) rotateY(-29.0deg) rotateZ(-185.2deg); }
+    55.0% { transform: perspective(1000px) rotateX(66.9deg) rotateY(-28.7deg) rotateZ(-199.0deg); }
+    57.5% { transform: perspective(1000px) rotateX(62.9deg) rotateY(-26.0deg) rotateZ(-211.3deg); }
+    60.0% { transform: perspective(1000px) rotateX(50.5deg) rotateY(-20.4deg) rotateZ(-220.4deg); }
+    62.5% { transform: perspective(1000px) rotateX(33.8deg) rotateY(-11.3deg) rotateZ(-225.9deg); }
+    65.0% { transform: perspective(1000px) rotateX(18.3deg) rotateY(0.9deg) rotateZ(-228.5deg); }
+    67.5% { transform: perspective(1000px) rotateX(8.3deg) rotateY(14.6deg) rotateZ(-230.1deg); }
+    70.0% { transform: perspective(1000px) rotateX(4.8deg) rotateY(26.9deg) rotateZ(-232.6deg); }
+    72.5% { transform: perspective(1000px) rotateX(5.4deg) rotateY(34.8deg) rotateZ(-237.4deg); }
+    75.0% { transform: perspective(1000px) rotateX(5.4deg) rotateY(36.0deg) rotateZ(-245.0deg); }
+    77.5% { transform: perspective(1000px) rotateX(1.1deg) rotateY(30.3deg) rotateZ(-254.9deg); }
+    80.0% { transform: perspective(1000px) rotateX(-8.9deg) rotateY(19.8deg) rotateZ(-266.1deg); }
+    82.5% { transform: perspective(1000px) rotateX(-22.3deg) rotateY(8.4deg) rotateZ(-277.4deg); }
+    85.0% { transform: perspective(1000px) rotateX(-34.3deg) rotateY(0.1deg) rotateZ(-288.2deg); }
+    87.5% { transform: perspective(1000px) rotateX(-40.3deg) rotateY(-2.3deg) rotateZ(-298.4deg); }
+    90.0% { transform: perspective(1000px) rotateX(-37.9deg) rotateY(0.9deg) rotateZ(-308.8deg); }
+    92.5% { transform: perspective(1000px) rotateX(-28.3deg) rotateY(7.2deg) rotateZ(-320.3deg); }
+    95.0% { transform: perspective(1000px) rotateX(-15.5deg) rotateY(12.1deg) rotateZ(-333.5deg); }
+    97.5% { transform: perspective(1000px) rotateX(-4.8deg) rotateY(11.6deg) rotateZ(-348.3deg); }
+    100.0% { transform: perspective(1000px) rotateX(-0.2deg) rotateY(3.7deg) rotateZ(-363.7deg); }
   }
 </style>
