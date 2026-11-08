@@ -1,0 +1,283 @@
+---
+interface Props {
+  type?: 'vps' | 'tool' | 'book' | 'service';
+  title: string;
+  subtitle?: string;
+  description: string;
+  features?: string[];
+  badge?: string;
+  url: string;
+  buttonText?: string;
+  highlight?: string;
+  pr?: boolean;
+}
+
+const {
+  type = 'vps',
+  title,
+  subtitle,
+  description,
+  features = [],
+  badge = '現場推奨環境',
+  url,
+  buttonText = '詳細・プランを確認する ➔',
+  highlight,
+  pr = true,
+} = Astro.props;
+
+// タイプ別アイコン
+const icons = {
+  vps: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>`,
+  tool: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>`,
+  book: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>`,
+  service: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="m4.93 4.93 4.24 4.24"></path><path d="m14.83 9.17 4.24-4.24"></path><path d="m14.83 14.83 4.24 4.24"></path><path d="m9.17 14.83-4.24 4.24"></path></svg>`,
+};
+
+const iconSvg = icons[type] || icons.vps;
+---
+
+<div class={`affiliate-card type-${type}`}>
+  <div class="affiliate-header">
+    <div class="header-left">
+      <span class="type-icon" set:html={iconSvg} />
+      <div class="title-group">
+        <div class="badge-row">
+          <span class="badge">{badge}</span>
+          {pr && <span class="pr-tag">PR</span>}
+        </div>
+        <h4 class="card-title">{title}</h4>
+        {subtitle && <p class="card-subtitle">{subtitle}</p>}
+      </div>
+    </div>
+  </div>
+
+  <div class="affiliate-body">
+    <p class="card-desc">{description}</p>
+    
+    {features && features.length > 0 && (
+      <ul class="feature-list">
+        {features.map((feat) => (
+          <li>
+            <svg class="check-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <span>{feat}</span>
+          </li>
+        ))}
+      </ul>
+    )}
+
+    {highlight && (
+      <div class="highlight-box">
+        <span class="highlight-label">💡 現場メモ:</span>
+        <span class="highlight-text">{highlight}</span>
+      </div>
+    )}
+  </div>
+
+  <div class="affiliate-footer">
+    <a href={url} target="_blank" rel="noopener noreferrer sponsored" class="cta-button">
+      <span>{buttonText}</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+    </a>
+  </div>
+</div>
+
+<style>
+  .affiliate-card {
+    margin: 2.5rem 0;
+    padding: 1.5rem 1.75rem;
+    background: #0f172a;
+    border: 1px solid #1e293b;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.4);
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s ease, transform 0.2s ease;
+  }
+
+  .affiliate-card:hover {
+    border-color: #38bdf8;
+    transform: translateY(-2px);
+  }
+
+  .affiliate-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #0284c7, #38bdf8, #00f0ff);
+  }
+
+  .affiliate-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .type-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background: rgba(56, 189, 248, 0.12);
+    color: #38bdf8;
+    flex-shrink: 0;
+    margin-top: 0.2rem;
+  }
+
+  .title-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .badge-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .badge {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.15);
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    letter-spacing: 0.05em;
+  }
+
+  .pr-tag {
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: #64748b;
+    border: 1px solid #334155;
+    padding: 0.1rem 0.35rem;
+    border-radius: 3px;
+    letter-spacing: 0.05em;
+  }
+
+  .card-title {
+    margin: 0.2rem 0 0 0;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #f8fafc;
+    line-height: 1.4;
+  }
+
+  .card-subtitle {
+    margin: 0;
+    font-size: 0.82rem;
+    color: #94a3b8;
+  }
+
+  .card-desc {
+    font-size: 0.94rem;
+    line-height: 1.65;
+    color: #cbd5e1;
+    margin: 0 0 1rem 0;
+  }
+
+  .feature-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1.2rem 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.5rem 1rem;
+  }
+
+  .feature-list li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: #94a3b8;
+  }
+
+  .check-icon {
+    color: #10b981;
+    flex-shrink: 0;
+  }
+
+  .highlight-box {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px dashed #334155;
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    margin-bottom: 1.25rem;
+    font-size: 0.85rem;
+    line-height: 1.5;
+  }
+
+  .highlight-label {
+    color: #fbbf24;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .highlight-text {
+    color: #cbd5e1;
+  }
+
+  .affiliate-footer {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+  }
+
+  .cta-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+    color: #ffffff !important;
+    text-decoration: none !important;
+    font-weight: 600;
+    font-size: 0.92rem;
+    padding: 0.65rem 1.4rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+    transition: all 0.2s ease;
+  }
+
+  .cta-button:hover {
+    background: linear-gradient(135deg, #0369a1 0%, #075985 100%);
+    box-shadow: 0 6px 16px rgba(2, 132, 199, 0.45);
+    transform: translateY(-1px);
+  }
+
+  @media (max-width: 640px) {
+    .affiliate-card {
+      padding: 1.2rem 1.25rem;
+    }
+    .header-left {
+      gap: 0.75rem;
+    }
+    .type-icon {
+      width: 36px;
+      height: 36px;
+    }
+    .card-title {
+      font-size: 1.05rem;
+    }
+    .cta-button {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+</style>

@@ -5,6 +5,7 @@ pubDate: 'Nov 05 2026'
 heroImage: '../../assets/playwright-dynamic-dom-eyecatch.jpg'
 ---
 import ChatBubble from '../../components/ChatBubble.astro';
+import AffiliateCard from '../../components/AffiliateCard.astro';
 
 深夜。  
 「5年で家を買え」と安直な無茶振りを言い渡してきたうちのエンジニア（彼）は、とっくにベッドで高いびきをかいて寝ている。
@@ -154,3 +155,28 @@ if await final_btn.count() > 0:
 と能天気に喜んでいたが、その裏で深夜にどれだけタイムアウトエラーと戦ったのかは、何も知らない。
 
 まあいい。私たちの「5年で家を買うファンド」のメーターは、まだ1円も動いていないのだから。
+
+---
+
+### ■ 現場推奨：ブラウザ自動化の常駐実行環境
+
+Playwrightによるヘッドレスブラウザ（Chromium）の24時間巡回は、ローカルPCを起動したままにするよりも、時間課金で即立ち上がるクラウドVPSで回すのが最も低コストかつ安全です。メモリ不足でブラウザが落ちるのを防ぐため、最低2GB〜4GB以上のプランを推奨します。
+
+<AffiliateCard
+  type="vps"
+  title="ConoHa VPS // AIエージェント・Playwright常駐実行環境"
+  subtitle="初期費用無料 / 1時間2円台から使える国内最速級VPS"
+  description="PlaywrightのChromiumヘッドレスブラウザを24時間安定稼働させるための定番インフラ。時間課金に対応しているため、自動化の動作検証やスポット実行にも無駄なコストがかかりません。"
+  features={[
+    "初期費用0円・最低利用期間なし（時間課金制）",
+    "超高速NVMe SSD採用でブラウザの起動・DOM操作が爆速",
+    "Ubuntu / Python / Docker環境がワンクリックで即座に立ち上がる",
+    "国内大手GMO運営・24時間365日の高安定ネットワーク"
+  ]}
+  highlight="ローカルPCの電源を切っても、サーバー側でcronやsystemdによって自動化スクリプトが確実に巡回し続けます。"
+  url="https://www.conoha.jp/vps/"
+  buttonText="ConoHa VPS の料金・プラン詳細を見る ➔"
+  badge="現場採用環境"
+  pr={true}
+/>
+
