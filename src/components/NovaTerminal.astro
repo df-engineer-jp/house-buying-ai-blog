@@ -173,11 +173,11 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
 
     <!-- ★ 一緒に回転するデータストリーム＋寄り添いゲージ (r=104, r=90) ★ -->
     <g class="rotating-stream">
-      <!-- 一連の稼働データストリーム（リアクション文字は特大29px ✕ 外枠衝突を防ぐdy=5内側オフセット！） -->
+      <!-- 一連の稼働データストリーム（リアクション文字は特大29px ✕ 外枠衝突を防ぐdy=8内側オフセット！） -->
       <text font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace" font-size="18" font-weight="bold" fill={emotion.color} fill-opacity="0.95" letter-spacing="1.4">
         <textPath href={`#streamPath-${componentId}`} startOffset="0%">
-          <tspan class="status-tspan" font-size="29" font-weight="900" dy="5">{mainStatusText}</tspan>
-          <tspan dx="48" dy="-5">DAEMONS: 5/5</tspan>
+          <tspan class="status-tspan" font-size="29" font-weight="900" dy="8">{mainStatusText}</tspan>
+          <tspan dx="48" dy="-8">DAEMONS: 5/5</tspan>
           <tspan class="target-tspan" dx="48">TARGET: {target_str} [{earned_str}]</tspan>
         </textPath>
       </text>
