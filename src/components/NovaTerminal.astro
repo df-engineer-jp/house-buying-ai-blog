@@ -173,10 +173,10 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
 
     <!-- ★ 一緒に回転するデータストリーム＋寄り添いゲージ (r=104, r=90) ★ -->
     <g class="rotating-stream">
-      <!-- 一連の稼働データストリーム（感情によって全ての文字列の色が変わる！） -->
+      <!-- 一連の稼働データストリーム（感情によって全ての文字列の色が変わり、リアクション文字は特大1.4倍！） -->
       <text font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace" font-size="18" font-weight="bold" fill={emotion.color} fill-opacity="0.95" letter-spacing="1.4">
         <textPath href={`#streamPath-${componentId}`} startOffset="0%">
-          <tspan class="status-tspan" font-size="21" font-weight="900">{mainStatusText}</tspan>
+          <tspan class="status-tspan" font-size="29" font-weight="900">{mainStatusText}</tspan>
           <tspan dx="48">DAEMONS: 5/5</tspan>
           <tspan class="target-tspan" dx="48">TARGET: {target_str} [{earned_str}]</tspan>
         </textPath>
@@ -203,19 +203,19 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
       <circle cx="140" cy="140" r="58" fill="none" stroke={BASE_THEME.accent} stroke-width="1" stroke-dasharray="8,4,2,4" stroke-opacity="0.85" vector-effect="non-scaling-stroke"/>
     </g>
 
-    <!-- アパーチャ光彩羽根（七角形クリスタルフレーム：ホログラム同系統 #0ea5e9、stroke-width="1.6"） -->
-    <polygon points="140,98 166,114 176,144 156,172 124,176 102,150 108,120" fill="none" stroke={BASE_THEME.accent} stroke-width="1.6" stroke-opacity="0.85" vector-effect="non-scaling-stroke"/>
+    <!-- アパーチャ光彩羽根（七角形クリスタルフレーム：白 #ffffff に復元、stroke-width="1.6"） -->
+    <polygon points="140,98 166,114 176,144 156,172 124,176 102,150 108,120" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-opacity="0.95" vector-effect="non-scaling-stroke"/>
 
-    <!-- ★ NOVA公式決定稿：超新星・八芒星コア（薄さ・蛍光色を脱却し、他のホログラムと完全に系統一致した青色グラデーション） -->
+    <!-- ★ NOVA公式決定稿：超新星・八芒星コア（大星[青]と小星[白]の交互パルス呼吸） -->
     <g transform="translate(140, 140)">
-      <g class="supernova-star">
-        <!-- 1. 外側四芒星（上下左右、ディープシアン #0284c7） -->
-        <path d="M 0,-34 L 5,-10 L 30,0 L 5,10 L 0,34 L -5,10 L -30,0 L -5,-10 Z" fill={BASE_THEME.primary}/>
-        <!-- 2. 内側四芒星（45度回転、スカイブルー #38bdf8） -->
-        <path d="M 0,-20 L 3.5,-6 L 18,0 L 3.5,6 L 0,20 L -3.5,6 L -18,0 L -3.5,-6 Z" fill={BASE_THEME.secondary} transform="rotate(45)"/>
-        <!-- 3. 中心円（淡い水色ハイライト #bae6fd） -->
-        <circle cx="0" cy="0" r="3.8" fill={BASE_THEME.halo.light}/>
+      <!-- 1. 外側四芒星（大、ディープシアン #0284c7、交互パルスA） -->
+      <path class="star-large" d="M 0,-34 L 5,-10 L 30,0 L 5,10 L 0,34 L -5,10 L -30,0 L -5,-10 Z" fill={BASE_THEME.primary}/>
+      <!-- 2. 内側四芒星（小、純白 #ffffff、45度回転、交互パルスB） -->
+      <g class="star-small-wrap" transform="rotate(45)">
+        <path class="star-small" d="M 0,-20 L 3.5,-6 L 18,0 L 3.5,6 L 0,20 L -3.5,6 L -18,0 L -3.5,-6 Z" fill="#ffffff"/>
       </g>
+      <!-- 3. 中心円（純白 #ffffff） -->
+      <circle cx="0" cy="0" r="3.8" fill="#ffffff"/>
     </g>
   </svg>
 </div>
@@ -265,8 +265,13 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
     transform-origin: 140px 140px;
   }
 
-  .animated .supernova-star {
-    animation: starPulse 2.8s infinite ease-in-out;
+  /* ★ 大星（青）と小星（白）の交互パルス呼吸アニメーション ★ */
+  .animated .star-large {
+    animation: starPulseLarge 2.6s infinite ease-in-out;
+    transform-origin: 0px 0px;
+  }
+  .animated .star-small {
+    animation: starPulseSmall 2.6s infinite ease-in-out;
     transform-origin: 0px 0px;
   }
 
@@ -282,6 +287,11 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
     animation-duration: 6s;
   }
 
+  .animated.status-executing .star-large,
+  .animated.status-executing .star-small {
+    animation-duration: 1.3s;
+  }
+
   .animated.status-overclock .rotating-stream {
     animation-duration: 4s;
   }
@@ -294,6 +304,11 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
     animation-duration: 3s;
   }
 
+  .animated.status-overclock .star-large,
+  .animated.status-overclock .star-small {
+    animation-duration: 0.8s;
+  }
+
   @keyframes rotateClockwise {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
@@ -304,9 +319,30 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
     to { transform: rotate(-360deg); }
   }
 
-  @keyframes starPulse {
-    0%, 100% { transform: scale(1); opacity: 0.95; }
-    50% { transform: scale(1.10); opacity: 1; filter: drop-shadow(0 0 6px rgba(2, 132, 199, 0.5)); }
+  /* 大きい星（青）：0%で通常(0.96)、50%で最大拡大(1.18)、100%で通常(0.96) */
+  @keyframes starPulseLarge {
+    0%, 100% {
+      transform: scale(0.96);
+      opacity: 0.90;
+    }
+    50% {
+      transform: scale(1.18);
+      opacity: 1;
+      filter: drop-shadow(0 0 6px rgba(2, 132, 199, 0.6));
+    }
+  }
+
+  /* 小さい星（白）：大きい星と完全逆位相（0%で最大拡大(1.25)、50%で縮小(0.90)、100%で最大拡大） */
+  @keyframes starPulseSmall {
+    0%, 100% {
+      transform: scale(1.25);
+      opacity: 1;
+      filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.85));
+    }
+    50% {
+      transform: scale(0.90);
+      opacity: 0.85;
+    }
   }
 
   /* ★ 余弦波（Cosine）コイン立体回転：下限0.012により一直線時でも線幅が絶対に0に潰れず、正面と同じ厚みを維持 ★ */
