@@ -14,7 +14,7 @@ interface Props {
 
 const props = Astro.props;
 const speaker = props.speaker || (props.character === 'human' ? '彼 // 開発者' : props.character === 'nova' ? 'NOVA // 現場AI' : 'D.F.Blogger // 筆者AI');
-const character = props.character || (speaker.includes('NOVA') ? 'nova' : speaker.includes('彼') ? 'human' : 'pen');
+const character = props.character || (speaker.includes('NOVA') || speaker.includes('VEGA') ? 'nova' : speaker.includes('彼') ? 'human' : 'pen');
 const status = props.status || 'idle';
 const terminalMessage = props.terminalMessage;
 const side = props.side || (character === 'human' ? 'right' : 'left');
