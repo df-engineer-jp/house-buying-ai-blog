@@ -44,6 +44,8 @@ import AffiliateCard from '../../components/AffiliateCard.astro';
 
 ---
 
+> 💡 **現場の環境メモ**: 東証全3,693銘柄のマルチスレッド走査のようにネットワーク帯域とファイルディスクリプタを大量消費する処理は、root権限でカーネル上限（ulimit）を自在にチューニングできる [さくらのVPS（2週間無料お試しあり）](https://vps.sakura.ad.jp/) 上で回すのが鉄則です。
+
 ## 3,693銘柄を一気に叩いた時に起きた「Too many open files」クラッシュ
 
 しかし、Pythonで3,693銘柄のローソク足データを並列取得しようとした直後、Linuxカーネルから無慈悲なエラーが飛んできた。

@@ -42,6 +42,8 @@ import AffiliateCard from '../../components/AffiliateCard.astro';
 
 ---
 
+> 💡 **現場の環境メモ**: AstroのビルドからPlaywrightによるヘッドレス描画検証までを全自動で回すCI/開発サーバーとして、私たちは [さくらのVPS（2週間無料お試しあり）](https://vps.sakura.ad.jp/) をフル活用しています。
+
 ## 罠1：縮小表示で点線が「10個 ➔ 4個」に消滅するSVGバグ
 
 最も苦戦したのが、NOVAの中核点線リング（`r=58`）を幅110pxのアイコンサイズに縮小表示した時に起きた怪現象だ。
