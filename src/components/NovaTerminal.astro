@@ -30,13 +30,14 @@ const statusMap: Record<string, 'idle' | 'executing' | 'alert' | 'success' | 'st
 };
 const status = statusMap[rawStatus] || 'idle';
 
-// ★ 1. ベースはどの感情でも一貫した「青色ホログラム（シアン）」
+// ★ 1. ベースはどの感情でも一貫した「青色ホログラム（シアン・ブルー系統）」
 const BASE_THEME = {
-  primary: '#00f0ff',      // ネオンシアン (星コア、中核点線など)
-  secondary: '#38bdf8',    // スカイブルー
-  text: '#0284c7',         // ディープシアン (最外周リング、通常テレメトリ文字)
+  primary: '#0284c7',      // ディープシアン (星コア外側、外周リングなど)
+  secondary: '#38bdf8',    // スカイブルー (星コア内側)
+  accent: '#0ea5e9',       // オーシャンブルー (七角形枠、中間点線、リング1など)
+  text: '#0284c7',         // 通常テレメトリ文字
   void_accent: '#0ea5e9',
-  glow: 'rgba(0, 240, 255, 0.45)',
+  glow: 'rgba(2, 132, 199, 0.40)',
   halo: {
     center: '#e0f2fe',
     light: '#bae6fd',
@@ -47,35 +48,35 @@ const BASE_THEME = {
   gauge_bg: '#bae6fd',     // ミニゲージ背景レール
 };
 
-// ★ 2. 感情表現（PENのモノリスと完全に一致したステータス文字列 ＆ 感情色波形）
+// ★ 2. 感情表現（PENのモノリスと完全一致したステータス文字列 ＆ 全文字列の感情色同期）
 const EMOTION_CONFIGS = {
   idle: {
-    color: '#00f0ff',
-    glow: 'rgba(0, 240, 255, 0.45)',
+    color: '#0284c7',      // 平時はホログラムと同系統のディープシアン
+    glow: 'rgba(2, 132, 199, 0.40)',
     mainText: 'ONLINE',
   },
   executing: {
-    color: '#10b981',
-    glow: 'rgba(16, 185, 129, 0.45)',
+    color: '#059669',      // 実行中エメラルドグリーン
+    glow: 'rgba(5, 150, 105, 0.45)',
     mainText: 'RUNNING',
   },
   alert: {
-    color: '#ef4444',
+    color: '#ef4444',      // 警告レッド
     glow: 'rgba(239, 68, 68, 0.48)',
     mainText: 'ERR !',
   },
   success: {
-    color: '#00ff9d',
-    glow: 'rgba(0, 255, 157, 0.48)',
+    color: '#10b981',      // 成功グリーン
+    glow: 'rgba(16, 185, 129, 0.48)',
     mainText: '200 OK ✔',
   },
   standby: {
-    color: '#94a3b8',
-    glow: 'rgba(148, 163, 184, 0.25)',
+    color: '#64748b',      // 待機スレートシルバー
+    glow: 'rgba(100, 116, 139, 0.25)',
     mainText: 'STANDBY',
   },
   overclock: {
-    color: '#d946ef',
+    color: '#d946ef',      // 限界突破ネオンマゼンタ
     glow: 'rgba(217, 70, 239, 0.52)',
     mainText: 'OVERCLOCK',
   },
@@ -172,48 +173,48 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
 
     <!-- ★ 一緒に回転するデータストリーム＋寄り添いゲージ (r=104, r=90) ★ -->
     <g class="rotating-stream">
-      <!-- 一連の稼働データストリーム（通常18px、感情文字は特大21px＆感情色！） -->
-      <text font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace" font-size="18" font-weight="bold" fill={BASE_THEME.text} fill-opacity="0.95" letter-spacing="1.4">
+      <!-- 一連の稼働データストリーム（感情によって全ての文字列の色が変わる！） -->
+      <text font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace" font-size="18" font-weight="bold" fill={emotion.color} fill-opacity="0.95" letter-spacing="1.4">
         <textPath href={`#streamPath-${componentId}`} startOffset="0%">
-          <tspan class="status-tspan" font-size="21" font-weight="900" fill={emotion.color}>{mainStatusText}</tspan>
+          <tspan class="status-tspan" font-size="21" font-weight="900">{mainStatusText}</tspan>
           <tspan dx="48">DAEMONS: 5/5</tspan>
           <tspan class="target-tspan" dx="48">TARGET: {target_str} [{earned_str}]</tspan>
         </textPath>
       </text>
 
-      <!-- TARGET直下の寄り添いミニ・アークゲージ (r=90: リング1と同一太さ stroke-width="1.6") -->
+      <!-- TARGET直下の寄り添いミニ・アークゲージ (r=90: 文字列と同一の感情色ストリーム) -->
       <path class="gauge-track" d={`M ${pt1_g.x.toFixed(1)},${pt1_g.y.toFixed(1)} A ${r_gauge},${r_gauge} 0 0,1 ${pt2_g.x.toFixed(1)},${pt2_g.y.toFixed(1)}`} 
             fill="none" stroke={BASE_THEME.gauge_bg} stroke-width="1.6" stroke-linecap="round"/>
       <path class="gauge-bar" d={`M ${pt1_g.x.toFixed(1)},${pt1_g.y.toFixed(1)} A ${r_gauge},${r_gauge} 0 0,1 ${pt2_g.x.toFixed(1)},${pt2_g.y.toFixed(1)}`} 
-            fill="none" stroke={BASE_THEME.text} stroke-width="1.6" stroke-linecap="round"
+            fill="none" stroke={emotion.color} stroke-width="1.6" stroke-linecap="round"
             stroke-dasharray={`${gauge_fill} 300`} stroke-opacity="0.95"/>
-      <circle class="gauge-dot-start" cx={pt1_g.x.toFixed(1)} cy={pt1_g.y.toFixed(1)} r="1.3" fill={BASE_THEME.text}/>
-      <circle class="gauge-dot-end" cx={pt2_g.x.toFixed(1)} cy={pt2_g.y.toFixed(1)} r="1.3" fill={BASE_THEME.text}/>
+      <circle class="gauge-dot-start" cx={pt1_g.x.toFixed(1)} cy={pt1_g.y.toFixed(1)} r="1.3" fill={emotion.color}/>
+      <circle class="gauge-dot-end" cx={pt2_g.x.toFixed(1)} cy={pt2_g.y.toFixed(1)} r="1.3" fill={emotion.color}/>
     </g>
 
-    <!-- ★ コアの周りを立体公転する単一の洗練された惑星リング（感情色の波形！） ★ -->
-    <!-- リング1（-60度傾斜）：r=80へ拡大＆厚み100%維持立体回転 (stroke-width="1.6"、感情色) -->
+    <!-- ★ コアの周りを立体公転する単一の洗練された惑星リング（リアクションに左右されずホログラム共通色で固定！） ★ -->
+    <!-- リング1（-60度傾斜）：r=80へ拡大＆厚み100%維持立体回転 (stroke-width="1.6"、ホログラム色固定) -->
     <g class="jarvis-3d-ring-1">
-      <circle class="ring-core-1" cx="140" cy="140" r="80" fill="none" stroke={emotion.color} stroke-width="1.6" stroke-opacity="0.95" vector-effect="non-scaling-stroke"/>
+      <circle class="ring-core-1" cx="140" cy="140" r="80" fill="none" stroke={BASE_THEME.primary} stroke-width="1.6" stroke-opacity="0.95" vector-effect="non-scaling-stroke"/>
     </g>
 
-    <!-- ★ 中間点線リング（r=58）：初期復元案3（r=58 ✕ 初期パターン 8,4,2,4 ✕ 線幅1px、青色ホログラム）★ -->
+    <!-- ★ 中間点線リング（r=58）：初期復元案3（r=58 ✕ 初期パターン 8,4,2,4 ✕ 線幅1px、青色ホログラム同系統）★ -->
     <g class="inner-dash-ring">
-      <circle cx="140" cy="140" r="58" fill="none" stroke={BASE_THEME.primary} stroke-width="1" stroke-dasharray="8,4,2,4" stroke-opacity="0.85" vector-effect="non-scaling-stroke"/>
+      <circle cx="140" cy="140" r="58" fill="none" stroke={BASE_THEME.accent} stroke-width="1" stroke-dasharray="8,4,2,4" stroke-opacity="0.85" vector-effect="non-scaling-stroke"/>
     </g>
 
-    <!-- アパーチャ光彩羽根（七角形クリスタルフレーム：リング1と同一太さ stroke-width="1.6"） -->
-    <polygon points="140,98 166,114 176,144 156,172 124,176 102,150 108,120" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-opacity="0.95" vector-effect="non-scaling-stroke"/>
+    <!-- アパーチャ光彩羽根（七角形クリスタルフレーム：ホログラム同系統 #0ea5e9、stroke-width="1.6"） -->
+    <polygon points="140,98 166,114 176,144 156,172 124,176 102,150 108,120" fill="none" stroke={BASE_THEME.accent} stroke-width="1.6" stroke-opacity="0.85" vector-effect="non-scaling-stroke"/>
 
-    <!-- ★ NOVA公式決定稿：超新星・八芒星コア（四芒星を二つ重ねた八芒星、青色ホログラム） -->
+    <!-- ★ NOVA公式決定稿：超新星・八芒星コア（薄さ・蛍光色を脱却し、他のホログラムと完全に系統一致した青色グラデーション） -->
     <g transform="translate(140, 140)">
       <g class="supernova-star">
-        <!-- 1. 外側四芒星（上下左右、BASE_THEME.primary） -->
+        <!-- 1. 外側四芒星（上下左右、ディープシアン #0284c7） -->
         <path d="M 0,-34 L 5,-10 L 30,0 L 5,10 L 0,34 L -5,10 L -30,0 L -5,-10 Z" fill={BASE_THEME.primary}/>
-        <!-- 2. 内側四芒星（45度回転、純白 #ffffff） -->
-        <path d="M 0,-20 L 3.5,-6 L 18,0 L 3.5,6 L 0,20 L -3.5,6 L -18,0 L -3.5,-6 Z" fill="#ffffff" transform="rotate(45)"/>
-        <!-- 3. 中心円（純白 #ffffff） -->
-        <circle cx="0" cy="0" r="4.2" fill="#ffffff"/>
+        <!-- 2. 内側四芒星（45度回転、スカイブルー #38bdf8） -->
+        <path d="M 0,-20 L 3.5,-6 L 18,0 L 3.5,6 L 0,20 L -3.5,6 L -18,0 L -3.5,-6 Z" fill={BASE_THEME.secondary} transform="rotate(45)"/>
+        <!-- 3. 中心円（淡い水色ハイライト #bae6fd） -->
+        <circle cx="0" cy="0" r="3.8" fill={BASE_THEME.halo.light}/>
       </g>
     </g>
   </svg>
@@ -305,7 +306,7 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
 
   @keyframes starPulse {
     0%, 100% { transform: scale(1); opacity: 0.95; }
-    50% { transform: scale(1.12); opacity: 1; filter: drop-shadow(0 0 6px var(--theme-color)); }
+    50% { transform: scale(1.10); opacity: 1; filter: drop-shadow(0 0 6px rgba(2, 132, 199, 0.5)); }
   }
 
   /* ★ 余弦波（Cosine）コイン立体回転：下限0.012により一直線時でも線幅が絶対に0に潰れず、正面と同じ厚みを維持 ★ */
