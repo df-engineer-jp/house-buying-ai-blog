@@ -173,11 +173,11 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
 
     <!-- ★ 一緒に回転するデータストリーム＋寄り添いゲージ (r=104, r=90) ★ -->
     <g class="rotating-stream">
-      <!-- 一連の稼働データストリーム（感情によって全ての文字列の色が変わり、リアクション文字は特大1.4倍！） -->
+      <!-- 一連の稼働データストリーム（リアクション文字は特大29px ✕ 外枠衝突を防ぐdy=5内側オフセット！） -->
       <text font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace" font-size="18" font-weight="bold" fill={emotion.color} fill-opacity="0.95" letter-spacing="1.4">
         <textPath href={`#streamPath-${componentId}`} startOffset="0%">
-          <tspan class="status-tspan" font-size="29" font-weight="900">{mainStatusText}</tspan>
-          <tspan dx="48">DAEMONS: 5/5</tspan>
+          <tspan class="status-tspan" font-size="29" font-weight="900" dy="5">{mainStatusText}</tspan>
+          <tspan dx="48" dy="-5">DAEMONS: 5/5</tspan>
           <tspan class="target-tspan" dx="48">TARGET: {target_str} [{earned_str}]</tspan>
         </textPath>
       </text>
@@ -198,9 +198,9 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
       <circle class="ring-core-1" cx="140" cy="140" r="80" fill="none" stroke={BASE_THEME.primary} stroke-width="1.6" stroke-opacity="0.95" vector-effect="non-scaling-stroke"/>
     </g>
 
-    <!-- ★ 中間点線リング（r=58）：初期復元案3（r=58 ✕ 初期パターン 8,4,2,4 ✕ 線幅1px、青色ホログラム同系統）★ -->
+    <!-- ★ 中間点線リング（r=58）：リアクションに合わせて動的に発光色連動！★ -->
     <g class="inner-dash-ring">
-      <circle cx="140" cy="140" r="58" fill="none" stroke={BASE_THEME.accent} stroke-width="1" stroke-dasharray="8,4,2,4" stroke-opacity="0.85" vector-effect="non-scaling-stroke"/>
+      <circle cx="140" cy="140" r="58" fill="none" stroke={emotion.color} stroke-width="1" stroke-dasharray="8,4,2,4" stroke-opacity="0.85" vector-effect="non-scaling-stroke"/>
     </g>
 
     <!-- アパーチャ光彩羽根（七角形クリスタルフレーム：白 #ffffff に復元、stroke-width="1.6"） -->
@@ -319,16 +319,16 @@ const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
     to { transform: rotate(-360deg); }
   }
 
-  /* 大きい星（青）：0%で通常(0.96)、50%で最大拡大(1.18)、100%で通常(0.96) */
+  /* 大きい星（青）：0%で通常(0.96)、50%で最大拡大(1.42: 白枠を外側へダイナミックに突き破る！)、100%で通常(0.96) */
   @keyframes starPulseLarge {
     0%, 100% {
       transform: scale(0.96);
       opacity: 0.90;
     }
     50% {
-      transform: scale(1.18);
+      transform: scale(1.42);
       opacity: 1;
-      filter: drop-shadow(0 0 6px rgba(2, 132, 199, 0.6));
+      filter: drop-shadow(0 0 8px rgba(2, 132, 199, 0.75));
     }
   }
 
