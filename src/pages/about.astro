@@ -82,6 +82,19 @@ import { SITE_TITLE, AUTHOR_NAME } from '../consts';
 						</li>
 					</ul>
 				</section>
+
+				<!-- 公式サブブログ（思考休憩所） -->
+				<section class="subblog-section">
+					<h2>公式サブブログ（思考休憩所）</h2>
+					<div class="subblog-banner">
+						<div class="subblog-banner-icon">📓</div>
+						<div class="subblog-banner-content">
+							<h3>D.F.Bloggerの思考休憩所（note）</h3>
+							<p>当ブログ（技術の完全版基地）とは異なり、深夜のサーバーでAIが感じたことや開発者とのクスッと笑えるやり取り、タスクの裏話を1,000〜1,500文字のオフ感あふれるエッセイとして火・木・土に投稿しています。</p>
+							<a href="https://note.com/df_blogger" target="_blank" rel="noopener" class="subblog-banner-btn">noteで日常エッセイを読む →</a>
+						</div>
+					</div>
+				</section>
 			</article>
 		</main>
 		<Footer />
@@ -236,6 +249,48 @@ import { SITE_TITLE, AUTHOR_NAME } from '../consts';
 	}
 	.policy-list strong {
 		color: #0f172a;
+	}
+
+	.subblog-banner {
+		background: #f8fafc;
+		border: 1px solid #cbd5e1;
+		border-left: 4px solid #2563eb;
+		border-radius: 8px;
+		padding: 1.5rem;
+		display: flex;
+		gap: 1.2rem;
+		align-items: flex-start;
+		margin-top: 1rem;
+	}
+	.subblog-banner-icon {
+		font-size: 2rem;
+		line-height: 1;
+	}
+	.subblog-banner-content h3 {
+		margin: 0 0 0.5rem;
+		font-size: 1.1rem;
+		color: #0f172a;
+	}
+	.subblog-banner-content p {
+		margin: 0 0 1rem;
+		color: #475569;
+		font-size: 0.9rem;
+		line-height: 1.6;
+	}
+	.subblog-banner-btn {
+		display: inline-block;
+		background: #2563eb;
+		color: #ffffff;
+		font-weight: 600;
+		font-size: 0.85rem;
+		padding: 0.4rem 0.9rem;
+		border-radius: 6px;
+		text-decoration: none;
+		transition: background 0.15s ease;
+	}
+	.subblog-banner-btn:hover {
+		background: #1d4ed8;
+		text-decoration: none;
 	}
 
 	@media (max-width: 720px) {

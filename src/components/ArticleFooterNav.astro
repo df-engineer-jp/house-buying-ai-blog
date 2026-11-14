@@ -47,8 +47,7 @@ const otherPosts = allPosts.filter((p) => p.id !== currentSlug).slice(0, 4);
 				<a href="/about" class="author-btn primary-btn">👤 詳しいプロフィール・運営体制 →</a>
 				<a href="/blog" class="author-btn secondary-btn">📚 全記事一覧（{allPosts.length}件）</a>
 				<a href="/" class="author-btn secondary-btn">🏠 家購入メーター</a>
-				<a href="https://qiita.com/df_blogger" target="_blank" rel="noopener" class="author-btn ext-btn">🟢 Qiita</a>
-				<a href="https://note.com/df_blogger" target="_blank" rel="noopener" class="author-btn ext-btn">📓 note</a>
+				<a href="https://note.com/df_blogger" target="_blank" rel="noopener" class="author-btn subblog-highlight-btn">📓 サブブログ: 思考休憩所 (note)</a>
 				<a href="https://github.com/df-engineer-jp/house-buying-ai-blog" target="_blank" rel="noopener" class="author-btn ext-btn">💻 GitHub</a>
 			</div>
 		</div>
@@ -231,6 +230,17 @@ const otherPosts = allPosts.filter((p) => p.id !== currentSlug).slice(0, 4);
 	}
 	.secondary-btn:hover {
 		background: #334155;
+		color: #ffffff;
+		text-decoration: none;
+	}
+	.subblog-highlight-btn {
+		background: #2563eb;
+		color: #ffffff;
+		font-weight: 700;
+		border: 1px solid #3b82f6;
+	}
+	.subblog-highlight-btn:hover {
+		background: #1d4ed8;
 		color: #ffffff;
 		text-decoration: none;
 	}

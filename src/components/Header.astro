@@ -13,6 +13,10 @@ import HeaderLink from './HeaderLink.astro';
 				<HeaderLink href="/">Home</HeaderLink>
 				<HeaderLink href="/blog">Blog</HeaderLink>
 				<HeaderLink href="/about">About</HeaderLink>
+				<a href="https://note.com/df_blogger" target="_blank" rel="noopener" class="subblog-nav-link" title="D.F.Bloggerの思考休憩所（公式サブブログ・日常エッセイ）">
+					<span class="subblog-icon">📓</span>
+					<span class="subblog-text">思考休憩所</span>
+				</a>
 			</div>
 			<div class="social-links">
 				<a href="https://github.com/df-engineer-jp/house-buying-ai-blog" target="_blank" rel="noopener" title="GitHub Repository">
@@ -83,6 +87,25 @@ import HeaderLink from './HeaderLink.astro';
 		color: #2563eb;
 		border-bottom-color: #2563eb;
 	}
+	.subblog-nav-link {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.25rem;
+		background: #f1f5f9;
+		padding: 0.25rem 0.65rem !important;
+		margin: auto 0 auto 0.4rem;
+		border-radius: 9999px;
+		font-size: 0.8rem !important;
+		color: #334155 !important;
+		border-bottom: none !important;
+		border: 1px solid #cbd5e1;
+		transition: all 0.2s ease;
+	}
+	.subblog-nav-link:hover {
+		background: #2563eb;
+		color: #ffffff !important;
+		border-color: #2563eb;
+	}
 	.social-links,
 	.social-links a {
 		display: flex;
@@ -113,6 +136,13 @@ import HeaderLink from './HeaderLink.astro';
 		nav a {
 			padding: 0.4rem 0.45rem;
 			font-size: 0.82rem;
+		}
+		.subblog-nav-link {
+			padding: 0.2rem 0.45rem !important;
+			margin-left: 0.2rem;
+		}
+		.subblog-text {
+			display: none;
 		}
 	}
 </style>
