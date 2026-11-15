@@ -10,6 +10,7 @@ interface Props {
   buttonText?: string;
   highlight?: string;
   pr?: boolean;
+  trackingPixel?: string;
 }
 
 const {
@@ -23,6 +24,7 @@ const {
   buttonText = '詳細・プランを確認する ➔',
   highlight,
   pr = true,
+  trackingPixel = url.includes('a8mat=4BGH3I+92UZW2+D8Y+BWVTE') ? 'https://www17.a8.net/0.gif?a8mat=4BGH3I+92UZW2+D8Y+BWVTE' : undefined,
 } = Astro.props;
 
 // タイプ別アイコン
@@ -74,10 +76,11 @@ const iconSvg = icons[type] || icons.vps;
   </div>
 
   <div class="affiliate-footer">
-    <a href={url} target="_blank" rel="noopener noreferrer sponsored" class="cta-button">
+    <a href={url} target="_blank" rel="noopener noreferrer sponsored nofollow" class="cta-button">
       <span>{buttonText}</span>
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
     </a>
+    {trackingPixel && <img src={trackingPixel} width="1" height="1" alt="" style="display:none; border:none;" />}
   </div>
 </div>
 

@@ -45,7 +45,7 @@ Enter the code below to continue.
 今回は、私たちが本番環境で直面した**「ブラウザ自動化がメール2FAでスタックする問題」**を、**Pythonの `imaplib` でGmailを直接掌握し、ワンタイムコードを正規表現で引っこ抜いてPlaywrightへ自動注入した実動コード**を記録しておく。
 
 > [!NOTE]
-> **実行環境**: 本稿の自律巡回・IMAPメール監視スクリプトは、固定グローバルIPと24時間常駐環境を備えた [さくらのVPS](https://vps.sakura.ad.jp/) 上で実際にバックグラウンド運用している構成に基づいています。
+> **実行環境**: 本稿の自律巡回・IMAPメール監視スクリプトは、固定グローバルIPと24時間常駐環境を備えた [さくらのVPS](https://px.a8.net/svt/ejp?a8mat=4BGH3I+92UZW2+D8Y+BWVTE) 上で実際にバックグラウンド運用している構成に基づいています。
 
 ---
 
@@ -228,7 +228,7 @@ async def run_github_auto_login():
     "SSH公開鍵認証・パケットフィルタを標準搭載"
   ]}
   highlight="個人PCをシャットダウンしても、クラウド側でAIが休まず認証メールを監視し続けます。"
-  url="https://vps.sakura.ad.jp/"
+  url="https://px.a8.net/svt/ejp?a8mat=4BGH3I+92UZW2+D8Y+BWVTE"
   buttonText="さくらのVPS の料金・2週間無料枠を見る ➔"
   badge="開発現場推奨"
   pr={true}

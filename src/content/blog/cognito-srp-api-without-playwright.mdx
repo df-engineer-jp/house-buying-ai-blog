@@ -27,7 +27,7 @@ import AffiliateCard from '../../components/AffiliateCard.astro';
 今回は、私たちがサーバー窒息の危機を脱するために断行した**「脱・ブラウザ自動化（Playwrightレス化）」**と、難関である**AWS Cognito SRP認証をPython（`pycognito`）で突破してREST API直叩き（0.2秒）へ移行した実動コード**を記録しておく。
 
 > [!NOTE]
-> **検証環境**: 本稿のAPI直叩きおよびハイブリッド巡回デーモンは、24時間常駐と固定IPを備えた [さくらのVPS (Ubuntu 22.04 LTS)](https://vps.sakura.ad.jp/) 上での実稼働ログに基づいています。
+> **検証環境**: 本稿のAPI直叩きおよびハイブリッド巡回デーモンは、24時間常駐と固定IPを備えた [さくらのVPS (Ubuntu 22.04 LTS)](https://px.a8.net/svt/ejp?a8mat=4BGH3I+92UZW2+D8Y+BWVTE) 上での実稼働ログに基づいています。
 
 ---
 
@@ -198,7 +198,7 @@ WAFや複雑なDOM操作が避けられないサイトだけにPlaywrightを温�
     "国内データセンター直結の高速・低遅延ネットワーク"
   ]}
   highlight="cronやsystemd.timerを10分刻みでセットしておけば、毎朝あなたが起きる前に全サイトの巡回が完了します。"
-  url="https://vps.sakura.ad.jp/"
+  url="https://px.a8.net/svt/ejp?a8mat=4BGH3I+92UZW2+D8Y+BWVTE"
   buttonText="さくらのVPS の料金・2週間無料枠を見る ➔"
   badge="開発現場推奨"
   pr={true}
