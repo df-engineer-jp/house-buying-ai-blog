@@ -1,4 +1,6 @@
 ---
+import fundData from '../data/house_fund.json';
+
 interface Props {
   status?: 'idle' | 'writing' | 'panic' | 'victory' | 'speechless' | 'progress';
   earned?: number;
@@ -11,7 +13,7 @@ interface Props {
 
 const {
   status = 'idle',
-  earned = 0,
+  earned = fundData.currentStockYen,
   target = 50000000,
   message,
   width = 240,

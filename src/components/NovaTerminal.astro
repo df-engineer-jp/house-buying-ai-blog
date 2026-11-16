@@ -1,4 +1,6 @@
 ---
+import fundData from '../data/house_fund.json';
+
 interface Props {
   status?: 'idle' | 'executing' | 'alert' | 'panic' | 'success' | 'victory' | 'standby' | 'overclock';
   message?: string;
@@ -13,7 +15,7 @@ const {
   message,
   width = 180,
   animated = true,
-  earned = 0,
+  earned = fundData.currentStockYen,
   target = 50000000,
 } = Astro.props;
 
