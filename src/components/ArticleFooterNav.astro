@@ -3,7 +3,7 @@ import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
 import FormattedDate from './FormattedDate.astro';
 import PenTerminal from './PenTerminal.astro';
-import { AUTHOR_NAME } from '../consts';
+import { AUTHOR_NAME, PORTFOLIO_URL } from '../consts';
 
 interface Props {
 	currentSlug?: string;
@@ -45,11 +45,31 @@ const otherPosts = allPosts.filter((p) => p.id !== currentSlug).slice(0, 4);
 			</p>
 			<div class="author-links-row">
 				<a href="/about" class="author-btn primary-btn">👤 詳しいプロフィール・運営体制 →</a>
+				<a href={PORTFOLIO_URL} target="_blank" rel="noopener" class="author-btn portfolio-btn">💼 制作実績・お仕事のご依頼 →</a>
 				<a href="/blog" class="author-btn secondary-btn">📚 全記事一覧（{allPosts.length}件）</a>
 				<a href="/" class="author-btn secondary-btn">🏠 家購入メーター</a>
 				<a href="https://note.com/df_blogger" target="_blank" rel="noopener" class="author-btn subblog-highlight-btn">📓 サブブログ: 思考休憩所 (note)</a>
 				<a href="https://github.com/df-engineer-jp/house-buying-ai-blog" target="_blank" rel="noopener" class="author-btn ext-btn">💻 GitHub</a>
 			</div>
+		</div>
+	</div>
+
+	<!-- 1.5. 開発相談・ポートフォリオCTAバナー（Work Inquiry Banner） -->
+	<div class="work-inquiry-box">
+		<div class="work-inquiry-header">
+			<span class="inquiry-badge">DEVELOPMENT & AUTOMATION</span>
+			<h4 class="inquiry-title">💡 Webシステム開発・自動化のご相談はこちら</h4>
+		</div>
+		<p class="inquiry-desc">
+			当ブログで検証・記録しているブラウザ自動化（Playwright）、スクレイピング、Cloudflareサーバレス基盤構築など、一端の現役エンジニア（D.F.Architect）へ直接お仕事のご相談・ご依頼が可能です。
+		</p>
+		<div class="inquiry-action-row">
+			<a href={PORTFOLIO_URL} target="_blank" rel="noopener" class="inquiry-cta-btn">
+				💼 D.F.Architect 制作実績・ポートフォリオを見る →
+			</a>
+			<a href={`${PORTFOLIO_URL}#contact`} target="_blank" rel="noopener" class="inquiry-contact-link">
+				✉️ 直契約窓口でお問い合わせ →
+			</a>
 		</div>
 	</div>
 
@@ -223,6 +243,17 @@ const otherPosts = allPosts.filter((p) => p.id !== currentSlug).slice(0, 4);
 		color: #0b0f19;
 		text-decoration: none;
 	}
+	.portfolio-btn {
+		background: #0284c7;
+		color: #ffffff;
+		font-weight: 700;
+		border: 1px solid #38bdf8;
+	}
+	.portfolio-btn:hover {
+		background: #0369a1;
+		color: #ffffff;
+		text-decoration: none;
+	}
 	.secondary-btn {
 		background: #1e293b;
 		color: #f8fafc;
@@ -253,6 +284,79 @@ const otherPosts = allPosts.filter((p) => p.id !== currentSlug).slice(0, 4);
 		background: #1e293b;
 		color: #e2e8f0;
 		text-decoration: none;
+	}
+
+	/* 1.5. 開発相談・ポートフォリオCTAバナー */
+	.work-inquiry-box {
+		background: #f8fafc;
+		border: 1px solid #cbd5e1;
+		border-left: 4px solid #0284c7;
+		border-radius: 8px;
+		padding: 1.25rem 1.5rem;
+		margin-bottom: 2rem;
+	}
+	.work-inquiry-header {
+		display: flex;
+		align-items: center;
+		gap: 0.6rem;
+		margin-bottom: 0.5rem;
+		flex-wrap: wrap;
+	}
+	.inquiry-badge {
+		background: #0284c7;
+		color: #ffffff;
+		font-family: monospace;
+		font-size: 0.68rem;
+		font-weight: 800;
+		padding: 0.15rem 0.5rem;
+		border-radius: 4px;
+		letter-spacing: 0.05em;
+	}
+	.inquiry-title {
+		font-size: 1.05rem;
+		font-weight: 800;
+		color: #0f172a;
+		margin: 0;
+	}
+	.inquiry-desc {
+		font-size: 0.88rem;
+		line-height: 1.6;
+		color: #475569;
+		margin: 0 0 1rem 0;
+	}
+	.inquiry-action-row {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		flex-wrap: wrap;
+	}
+	.inquiry-cta-btn {
+		display: inline-flex;
+		align-items: center;
+		background: #0f172a;
+		color: #ffffff;
+		font-size: 0.85rem;
+		font-weight: 700;
+		padding: 0.5rem 1rem;
+		border-radius: 6px;
+		text-decoration: none;
+		transition: all 0.15s ease;
+	}
+	.inquiry-cta-btn:hover {
+		background: #0284c7;
+		color: #ffffff;
+		transform: translateY(-1px);
+		text-decoration: none;
+	}
+	.inquiry-contact-link {
+		font-size: 0.85rem;
+		font-weight: 600;
+		color: #0284c7;
+		text-decoration: none;
+	}
+	.inquiry-contact-link:hover {
+		color: #0369a1;
+		text-decoration: underline;
 	}
 
 	/* 2. 前後の記事ナビゲーション */

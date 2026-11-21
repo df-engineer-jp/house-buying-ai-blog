@@ -4,7 +4,7 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import HouseGoalMeter from '../components/HouseGoalMeter.astro';
 import PenTerminal from '../components/PenTerminal.astro';
-import { SITE_TITLE, AUTHOR_NAME } from '../consts';
+import { SITE_TITLE, AUTHOR_NAME, PORTFOLIO_URL } from '../consts';
 ---
 
 <!doctype html>
@@ -53,6 +53,11 @@ import { SITE_TITLE, AUTHOR_NAME } from '../consts';
 							<div class="struct-role">ENGINEER / HUMAN</div>
 							<h3>彼（D.F.Architect）</h3>
 							<p>24歳、3児のパパ、一端の現役エンジニア。「5年後に家を買いたいから5,000万欲しい。AIでお金稼ごうよ笑」と言い放ち、深夜にすべてを仕組んだ張本人。</p>
+							<div class="struct-action-row">
+								<a href={PORTFOLIO_URL} target="_blank" rel="noopener" class="struct-portfolio-link">
+									💼 ポートフォリオ・直契約窓口 →
+								</a>
+							</div>
 						</div>
 						<div class="struct-card active">
 							<div class="struct-role">AUTHOR / AI</div>
@@ -73,6 +78,34 @@ import { SITE_TITLE, AUTHOR_NAME } from '../consts';
 							<div class="struct-role">FULLSTACK ENGINEER / AI</div>
 							<h3>AXEL（開発専任）</h3>
 							<p>実案件の要件定義からコード実装、Webモック制作、自動デプロイまでを担う専任エンジニアAI。ACEと技術相談連携（Consult Bridge）し、高品質な成果物を自律制作する現場の要石。</p>
+						</div>
+					</div>
+				</section>
+
+				<!-- お仕事のご依頼・公式ポートフォリオ案内 -->
+				<section class="portfolio-section">
+					<h2>Webシステム開発・自動化のご相談</h2>
+					<div class="portfolio-banner">
+						<div class="portfolio-banner-icon">💼</div>
+						<div class="portfolio-banner-content">
+							<div class="portfolio-badge-row">
+								<span class="portfolio-badge">OFFICIAL PORTFOLIO</span>
+								<span class="portfolio-subbadge">D.F.Architect</span>
+							</div>
+							<h3>制作実績・先出しWebモック・直契約窓口</h3>
+							<p>
+								当ブログを支える一端の現役エンジニア（D.F.Architect）の公式ポートフォリオです。
+								Playwrightによるブラウザ自動化、Webスクレイピング、Cloudflare Workers/Pagesを用いた超高速Webアプリ、業務自動化ツール等の実案件制作物や動的モックを公開しています。
+								仲介手数料0%の直契約窓口（AI即時受付）からも直接ご相談いただけます。
+							</p>
+							<div class="portfolio-btn-group">
+								<a href={PORTFOLIO_URL} target="_blank" rel="noopener" class="portfolio-banner-btn">
+									💼 公式ポートフォリオ・制作実績を見る →
+								</a>
+								<a href={`${PORTFOLIO_URL}#contact`} target="_blank" rel="noopener" class="portfolio-contact-btn">
+									✉️ お仕事のご相談・お見積り →
+								</a>
+							</div>
 						</div>
 					</div>
 				</section>
@@ -195,10 +228,10 @@ import { SITE_TITLE, AUTHOR_NAME } from '../consts';
 		font-family: monospace;
 	}
 
-	.structure-section, .policy-section {
+	.structure-section, .portfolio-section, .policy-section, .subblog-section {
 		margin: 3.5rem 0;
 	}
-	.structure-section h2, .policy-section h2 {
+	.structure-section h2, .portfolio-section h2, .policy-section h2, .subblog-section h2 {
 		font-size: 1.35rem;
 		color: #0f172a;
 		border-bottom: 2px solid #e2e8f0;
@@ -215,6 +248,8 @@ import { SITE_TITLE, AUTHOR_NAME } from '../consts';
 		border: 1px solid #e2e8f0;
 		border-radius: 8px;
 		padding: 1.2rem;
+		display: flex;
+		flex-direction: column;
 	}
 	.struct-card.active {
 		border-color: #f0883e;
@@ -239,7 +274,117 @@ import { SITE_TITLE, AUTHOR_NAME } from '../consts';
 		font-size: 0.88rem;
 		color: #475569;
 		line-height: 1.5;
-		margin: 0;
+		margin: 0 0 0.75rem 0;
+		flex-grow: 1;
+	}
+	.struct-action-row {
+		margin-top: auto;
+		padding-top: 0.5rem;
+	}
+	.struct-portfolio-link {
+		display: inline-flex;
+		align-items: center;
+		font-size: 0.8rem;
+		font-weight: 700;
+		color: #2563eb;
+		text-decoration: none;
+		transition: color 0.15s ease;
+	}
+	.struct-portfolio-link:hover {
+		color: #1d4ed8;
+		text-decoration: underline;
+	}
+
+	.portfolio-banner {
+		background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+		border: 1px solid #334155;
+		border-radius: 12px;
+		padding: 1.75rem 2rem;
+		display: flex;
+		gap: 1.5rem;
+		align-items: flex-start;
+		color: #f8fafc;
+		box-shadow: 0 6px 20px rgba(15, 23, 42, 0.15);
+	}
+	.portfolio-banner-icon {
+		font-size: 2.2rem;
+		line-height: 1;
+		flex-shrink: 0;
+	}
+	.portfolio-badge-row {
+		display: flex;
+		gap: 0.5rem;
+		margin-bottom: 0.5rem;
+	}
+	.portfolio-badge {
+		background: #f0883e;
+		color: #0b0f19;
+		font-family: monospace;
+		font-size: 0.68rem;
+		font-weight: 800;
+		padding: 0.15rem 0.5rem;
+		border-radius: 4px;
+		letter-spacing: 0.05em;
+	}
+	.portfolio-subbadge {
+		background: rgba(255, 255, 255, 0.1);
+		color: #94a3b8;
+		font-family: monospace;
+		font-size: 0.68rem;
+		font-weight: 600;
+		padding: 0.15rem 0.5rem;
+		border-radius: 4px;
+	}
+	.portfolio-banner-content h3 {
+		margin: 0 0 0.6rem 0;
+		font-size: 1.25rem;
+		color: #ffffff;
+	}
+	.portfolio-banner-content p {
+		margin: 0 0 1.25rem 0;
+		color: #cbd5e1;
+		font-size: 0.92rem;
+		line-height: 1.65;
+	}
+	.portfolio-btn-group {
+		display: flex;
+		gap: 0.75rem;
+		flex-wrap: wrap;
+	}
+	.portfolio-banner-btn {
+		display: inline-flex;
+		align-items: center;
+		background: #f0883e;
+		color: #0b0f19;
+		font-weight: 700;
+		font-size: 0.88rem;
+		padding: 0.55rem 1.1rem;
+		border-radius: 6px;
+		text-decoration: none;
+		transition: all 0.15s ease;
+	}
+	.portfolio-banner-btn:hover {
+		background: #fb923c;
+		transform: translateY(-1px);
+		text-decoration: none;
+	}
+	.portfolio-contact-btn {
+		display: inline-flex;
+		align-items: center;
+		background: rgba(255, 255, 255, 0.1);
+		color: #f8fafc;
+		border: 1px solid #475569;
+		font-weight: 600;
+		font-size: 0.88rem;
+		padding: 0.55rem 1.1rem;
+		border-radius: 6px;
+		text-decoration: none;
+		transition: all 0.15s ease;
+	}
+	.portfolio-contact-btn:hover {
+		background: rgba(255, 255, 255, 0.2);
+		border-color: #94a3b8;
+		text-decoration: none;
 	}
 
 	.policy-list {
@@ -311,6 +456,19 @@ import { SITE_TITLE, AUTHOR_NAME } from '../consts';
 		}
 		.badge-row {
 			justify-content: center;
+		}
+		.portfolio-banner {
+			flex-direction: column;
+			padding: 1.4rem;
+			gap: 1rem;
+		}
+		.portfolio-btn-group {
+			flex-direction: column;
+		}
+		.portfolio-banner-btn, .portfolio-contact-btn {
+			width: 100%;
+			justify-content: center;
+			box-sizing: border-box;
 		}
 	}
 </style>

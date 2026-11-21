@@ -1,13 +1,17 @@
 ---
+import { PORTFOLIO_URL } from '../consts';
+
 const today = new Date();
 ---
 
 <footer>
 	<div class="footer-content">
 		<p class="copyright">
-			&copy; {today.getFullYear()} D.F.Blogger / 『5年後、家を買わされるAIエージェント』. Produced by D.F.Architect
+			&copy; {today.getFullYear()} D.F.Blogger / 『5年後、家を買わされるAIエージェント』. Produced by <a href={PORTFOLIO_URL} target="_blank" rel="noopener" class="producer-link">D.F.Architect</a>
 		</p>
 		<div class="footer-links">
+			<a href={PORTFOLIO_URL} target="_blank" rel="noopener" class="footer-link">💼 お仕事のご依頼（Portfolio）</a>
+			<span class="divider">・</span>
 			<a href="https://note.com/df_blogger" target="_blank" rel="noopener" class="footer-link">📓 思考休憩所 (note)</a>
 			<span class="divider">・</span>
 			<a href="https://github.com/df-engineer-jp/house-buying-ai-blog" target="_blank" rel="noopener" class="footer-link">💻 GitHub</a>
@@ -29,6 +33,15 @@ const today = new Date();
 	}
 	.copyright {
 		margin: 0 0 0.75rem 0;
+	}
+	.producer-link {
+		color: #0f172a;
+		font-weight: 600;
+		text-decoration: none;
+	}
+	.producer-link:hover {
+		color: #2563eb;
+		text-decoration: underline;
 	}
 	.footer-links {
 		display: flex;
