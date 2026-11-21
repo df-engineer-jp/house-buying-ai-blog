@@ -1,5 +1,5 @@
 ---
-import { SITE_TITLE, PORTFOLIO_URL } from '../consts';
+import { SITE_TITLE } from '../consts';
 import HeaderLink from './HeaderLink.astro';
 ---
 
@@ -13,11 +13,6 @@ import HeaderLink from './HeaderLink.astro';
 				<HeaderLink href="/">Home</HeaderLink>
 				<HeaderLink href="/blog">Blog</HeaderLink>
 				<HeaderLink href="/about">About</HeaderLink>
-				<a href={PORTFOLIO_URL} target="_blank" rel="noopener" class="portfolio-nav-link" title="D.F.Architect 公式ポートフォリオ・制作実績・お仕事のご依頼">
-					<span class="nav-icon">💼</span>
-					<span class="portfolio-text">お仕事のご依頼</span>
-					<span class="portfolio-text-mobile">ご依頼</span>
-				</a>
 				<a href="https://note.com/df_blogger" target="_blank" rel="noopener" class="subblog-nav-link" title="D.F.Bloggerの思考休憩所（公式サブブログ・日常エッセイ）">
 					<span class="subblog-icon">📓</span>
 					<span class="subblog-text">思考休憩所</span>
@@ -93,37 +88,13 @@ import HeaderLink from './HeaderLink.astro';
 		color: #2563eb;
 		border-bottom-color: #2563eb;
 	}
-	.portfolio-nav-link {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.3rem;
-		background: #0f172a;
-		padding: 0.25rem 0.7rem !important;
-		margin: auto 0 auto 0.4rem;
-		border-radius: 9999px;
-		font-size: 0.8rem !important;
-		font-weight: 700 !important;
-		color: #ffffff !important;
-		border-bottom: none !important;
-		border: 1px solid #334155;
-		transition: all 0.2s ease;
-	}
-	.portfolio-nav-link:hover {
-		background: #1e293b;
-		color: #38bdf8 !important;
-		border-color: #38bdf8;
-		transform: translateY(-1px);
-	}
-	.portfolio-text-mobile {
-		display: none;
-	}
 	.subblog-nav-link {
 		display: inline-flex;
 		align-items: center;
 		gap: 0.25rem;
 		background: #f1f5f9;
 		padding: 0.25rem 0.65rem !important;
-		margin: auto 0 auto 0.35rem;
+		margin: auto 0 auto 0.4rem;
 		border-radius: 9999px;
 		font-size: 0.8rem !important;
 		color: #334155 !important;
@@ -160,26 +131,16 @@ import HeaderLink from './HeaderLink.astro';
 			text-overflow: ellipsis;
 		}
 		nav {
-			gap: 0.3rem;
+			gap: 0.4rem;
 			flex-shrink: 0;
 		}
 		nav a {
-			padding: 0.4rem 0.35rem;
-			font-size: 0.8rem;
-		}
-		.portfolio-nav-link {
-			padding: 0.2rem 0.45rem !important;
-			margin-left: 0.15rem;
-		}
-		.portfolio-text {
-			display: none;
-		}
-		.portfolio-text-mobile {
-			display: inline;
+			padding: 0.4rem 0.45rem;
+			font-size: 0.82rem;
 		}
 		.subblog-nav-link {
 			padding: 0.2rem 0.45rem !important;
-			margin-left: 0.15rem;
+			margin-left: 0.2rem;
 		}
 		.subblog-text {
 			display: none;
