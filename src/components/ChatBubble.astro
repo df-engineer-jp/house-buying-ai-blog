@@ -1,33 +1,36 @@
 ---
 import PenTerminal from './PenTerminal.astro';
 import NovaTerminal from './NovaTerminal.astro';
+import VegaCrystal from './VegaCrystal.astro';
 
 interface Props {
-  character?: 'pen' | 'nova' | 'human';
+  character?: 'pen' | 'nova' | 'vega' | 'human';
   speaker?: string;
   status?: string;
   terminalMessage?: string;
   side?: 'left' | 'right';
-  theme?: 'default' | 'panic' | 'victory' | 'nova' | 'overclock' | 'human';
+  theme?: 'default' | 'panic' | 'victory' | 'nova' | 'vega' | 'overclock' | 'human';
   timestamp?: string;
 }
 
 const props = Astro.props;
-const speaker = props.speaker || (props.character === 'human' ? '彼 // 開発者' : props.character === 'nova' ? 'NOVA // 現場AI' : 'D.F.Blogger // 筆者AI');
-const character = props.character || (speaker.includes('NOVA') || speaker.includes('VEGA') || speaker.includes('ACE') || speaker.includes('AXEL') ? 'nova' : speaker.includes('彼') ? 'human' : 'pen');
+const speaker = props.speaker || (props.character === 'human' ? '彼 // 開発者' : props.character === 'vega' ? 'VEGA // 株取引AI' : props.character === 'nova' ? 'NOVA // 現場AI' : 'D.F.Blogger // 筆者AI');
+const character = props.character || (speaker.includes('VEGA') ? 'vega' : (speaker.includes('NOVA') || speaker.includes('ACE') || speaker.includes('AXEL')) ? 'nova' : speaker.includes('彼') ? 'human' : 'pen');
 const status = props.status || 'idle';
 const terminalMessage = props.terminalMessage;
 const side = props.side || (character === 'human' ? 'right' : 'left');
 const theme = props.theme || (
   character === 'human'
     ? 'human'
-    : character === 'nova'
+    : (character === 'nova' || character === 'vega')
     ? (status === 'overclock'
         ? 'overclock'
         : status === 'alert' || status === 'panic'
         ? 'panic'
-        : status === 'success' || status === 'victory'
+        : status === 'success' || status === 'victory' || status === 'profit'
         ? 'victory'
+        : character === 'vega'
+        ? 'vega'
         : 'nova')
     : (status === 'panic'
         ? 'panic'
@@ -57,6 +60,8 @@ const timestamp = props.timestamp;
           <text x="50" y="81" fill="#ffffff" font-size="6.5" font-family="ui-monospace, monospace" font-weight="bold" text-anchor="middle">&lt;/&gt;</text>
         </svg>
       </div>
+    ) : character === 'vega' ? (
+      <VegaCrystal status={status as any} width={110} />
     ) : character === 'nova' ? (
       <NovaTerminal status={status as any} message={terminalMessage} width={110} />
     ) : (
@@ -240,16 +245,20 @@ const timestamp = props.timestamp;
   }
 
   /* NOVAシアンテーマ */
-  .terminal-dialogue-container.nova .speech-content {
+  .terminal-dialogue-container.nova .speech-content,
+  .terminal-dialogue-container.vega .speech-content {
     border-left-color: #0ea5e9;
   }
-  .terminal-dialogue-container.nova.right .speech-content {
+  .terminal-dialogue-container.nova.right .speech-content,
+  .terminal-dialogue-container.vega.right .speech-content {
     border-right-color: #0ea5e9;
   }
-  .terminal-dialogue-container.nova .speaker-meta {
+  .terminal-dialogue-container.nova .speaker-meta,
+  .terminal-dialogue-container.vega .speaker-meta {
     color: #0284c7;
   }
-  .terminal-dialogue-container.nova .status-dot {
+  .terminal-dialogue-container.nova .status-dot,
+  .terminal-dialogue-container.vega .status-dot {
     background: #00f0ff;
     box-shadow: 0 0 8px rgba(0, 240, 255, 0.7);
   }

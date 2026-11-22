@@ -1,0 +1,358 @@
+---
+interface Props {
+  status?: 'idle' | 'executing' | 'alert' | 'panic' | 'success' | 'victory' | 'profit' | 'standby' | 'overclock';
+  width?: number;
+  animated?: boolean;
+}
+
+const {
+  status: rawStatus = 'idle',
+  width = 110,
+  animated = true,
+} = Astro.props;
+
+const statusMap: Record<string, 'idle' | 'executing' | 'profit' | 'alert' | 'standby' | 'overclock'> = {
+  idle: 'idle',
+  executing: 'executing',
+  profit: 'profit',
+  success: 'profit',
+  victory: 'profit',
+  alert: 'alert',
+  panic: 'alert',
+  standby: 'standby',
+  overclock: 'overclock',
+};
+const status = statusMap[rawStatus] || 'idle';
+
+// VEGA感情カラー定義（小星型十二面体クリスタル中心に宿る光の色）
+const VEGA_COLORS: Record<string, { core: string; mid: string; outer: string }> = {
+  idle:      { core: '#ffffff', mid: '#38bdf8', outer: '#0284c7' },
+  executing: { core: '#e0f2fe', mid: '#3b82f6', outer: '#1d4ed8' },
+  profit:    { core: '#ecfdf5', mid: '#34d399', outer: '#059669' },
+  alert:     { core: '#fef2f2', mid: '#f87171', outer: '#dc2626' },
+  overclock: { core: '#fefce8', mid: '#facc15', outer: '#d97706' },
+  standby:   { core: '#f8fafc', mid: '#94a3b8', outer: '#475569' },
+};
+
+const em = VEGA_COLORS[status] || VEGA_COLORS.idle;
+const uid = `vega_${status}_${Math.random().toString(36).slice(2, 9)}`;
+
+// サーバービルド時に厳密な「小星型十二面体（60面・5回対称垂直Y軸アライン）」の頂点＆面データを構築
+type Vec3 = [number, number, number];
+const sub = (a: Vec3, b: Vec3): Vec3 => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
+const add = (a: Vec3, b: Vec3): Vec3 => [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
+const mul = (a: Vec3, s: number): Vec3 => [a[0] * s, a[1] * s, a[2] * s];
+const cross = (a: Vec3, b: Vec3): Vec3 => [
+  a[1] * b[2] - a[2] * b[1],
+  a[2] * b[0] - a[0] * b[2],
+  a[0] * b[1] - a[1] * b[0],
+];
+const dot = (a: Vec3, b: Vec3): number => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+const norm = (v: Vec3): Vec3 => {
+  const l = Math.hypot(v[0], v[1], v[2]) || 1.0;
+  return [v[0] / l, v[1] / l, v[2] / l];
+};
+
+function rotAlignToY(v: Vec3, dirVec: Vec3): Vec3 {
+  const target: Vec3 = [0, -1, 0];
+  const d = norm(dirVec);
+  const c = dot(d, target);
+  if (c > 0.99999) return v;
+  if (c < -0.99999) return [v[0], -v[1], -v[2]];
+  const axis = norm(cross(d, target));
+  const ang = Math.acos(Math.max(-1, Math.min(1, c)));
+  const ca = Math.cos(ang);
+  const sa = Math.sin(ang);
+  return add(
+    add(mul(v, ca), mul(cross(axis, v), sa)),
+    mul(axis, dot(axis, v) * (1 - ca)),
+  );
+}
+
+const phi = (1 + Math.sqrt(5)) / 2;
+const invPhi = 1 / phi;
+const dodecVerts: Vec3[] = [];
+for (const x of [-1, 1]) {
+  for (const y of [-1, 1]) {
+    for (const z of [-1, 1]) {
+      dodecVerts.push([x, y, z]);
+    }
+  }
+}
+for (const s1 of [-1, 1]) {
+  for (const s2 of [-1, 1]) {
+    dodecVerts.push([0, s1 * invPhi, s2 * phi]);
+    dodecVerts.push([s2 * phi, 0, s1 * invPhi]);
+    dodecVerts.push([s1 * invPhi, s2 * phi, 0]);
+  }
+}
+const icoDirs: Vec3[] = [];
+for (const s1 of [-1, 1]) {
+  for (const s2 of [-1, 1]) {
+    icoDirs.push(norm([0, s1, s2 * phi]));
+    icoDirs.push(norm([s2 * phi, 0, s1]));
+    icoDirs.push(norm([s1, s2 * phi, 0]));
+  }
+}
+
+const refAxis = icoDirs[0];
+const aEdge = 2 / phi;
+const hSlant = (aEdge / 2) * Math.tan((72 * Math.PI) / 180);
+const rApothem = (aEdge / 2) / Math.tan((36 * Math.PI) / 180);
+const hPyramid = Math.sqrt(Math.max(0, hSlant * hSlant - rApothem * rApothem));
+
+const vertsMap = new Map<string, number>();
+const verts: Vec3[] = [];
+function getVid(v: Vec3): number {
+  const va = mul(rotAlignToY(v, refAxis), 0.68);
+  const rx = Math.round(va[0] * 1e5) / 1e5;
+  const ry = Math.round(va[1] * 1e5) / 1e5;
+  const rz = Math.round(va[2] * 1e5) / 1e5;
+  const key = `${rx},${ry},${rz}`;
+  const found = vertsMap.get(key);
+  if (found !== undefined) return found;
+  const idx = verts.length;
+  vertsMap.set(key, idx);
+  verts.push([rx, ry, rz]);
+  return idx;
+}
+
+const faces: [number, number, number][] = [];
+for (const d of icoDirs) {
+  const ringRaw = [...dodecVerts].sort((a, b) => dot(b, d) - dot(a, d)).slice(0, 5);
+  const center: Vec3 = [
+    ringRaw.reduce((acc, v) => acc + v[0], 0) * 0.2,
+    ringRaw.reduce((acc, v) => acc + v[1], 0) * 0.2,
+    ringRaw.reduce((acc, v) => acc + v[2], 0) * 0.2,
+  ];
+  const ref: Vec3 = Math.abs(d[0]) < 0.8 ? [1, 0, 0] : [0, 1, 0];
+  const u = norm(cross(d, ref));
+  const w = norm(cross(d, u));
+  const ring = ringRaw.sort(
+    (a, b) => Math.atan2(dot(a, w), dot(a, u)) - Math.atan2(dot(b, w), dot(b, u)),
+  );
+  const tip = add(center, mul(d, hPyramid));
+  const itip = getVid(tip);
+  const iring = ring.map(getVid);
+  for (let k = 0; k < 5; k++) {
+    faces.push([itip, iring[k], iring[(k + 1) % 5]]);
+  }
+}
+
+const vertsJson = JSON.stringify(verts);
+const facesJson = JSON.stringify(faces);
+---
+
+<div
+  class={`vega-crystal-wrapper status-${status} ${animated ? 'animated' : ''}`}
+  data-status={status}
+  data-vega-uid={uid}
+  style={`width: ${width}px; height: ${width}px;`}
+>
+  <svg
+    id={`${uid}_svg`}
+    viewBox="0 0 400 400"
+    width="100%"
+    height="100%"
+    xmlns="http://www.w3.org/2000/svg"
+    class="vega-crystal-svg"
+    role="img"
+    aria-label={`VEGA (${status})`}
+  >
+    <defs>
+      <radialGradient id={`${uid}_bg_aura`} cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color={em.mid} stop-opacity="0.32" />
+        <stop offset="55%" stop-color="#0ea5e9" stop-opacity="0.16" />
+        <stop offset="100%" stop-color="#0284c7" stop-opacity="0.0" />
+      </radialGradient>
+
+      <radialGradient id={`${uid}_inner_emotion_core`} cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#ffffff" stop-opacity="1.0" />
+        <stop offset="22%" stop-color={em.core} stop-opacity="0.95" />
+        <stop offset="50%" stop-color={em.mid} stop-opacity="0.72" />
+        <stop offset="80%" stop-color={em.outer} stop-opacity="0.28" />
+        <stop offset="100%" stop-color={em.outer} stop-opacity="0.0" />
+      </radialGradient>
+
+      <filter id={`${uid}_core_blur`} x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur stdDeviation="8" result="b" />
+        <feMerge>
+          <feMergeNode in="b" />
+          <feMergeNode in="SourceGraphic" />
+        </feMerge>
+      </filter>
+    </defs>
+
+    <circle cx="200" cy="200" r="185" fill={`url(#${uid}_bg_aura)`} />
+    <g id={`${uid}_back_polys`}></g>
+
+    <!-- 結晶内部の中心に宿る感情の光 -->
+    <g filter={`url(#${uid}_core_blur)`} style="pointer-events:none;">
+      <circle cx="200" cy="200" r="76" fill={`url(#${uid}_inner_emotion_core)`} />
+      <circle cx="200" cy="200" r="20" fill="#ffffff" fill-opacity="0.88" />
+    </g>
+
+    <g id={`${uid}_front_polys`}></g>
+    <g id={`${uid}_front_edges`}></g>
+  </svg>
+</div>
+
+<script is:inline define:vars={{ uid, vertsJson, facesJson, emMid: em.mid, animated }}>
+(function() {
+  const svgEl = document.getElementById(uid + "_svg");
+  if (!svgEl || svgEl.dataset.initialized) return;
+  svgEl.dataset.initialized = "1";
+
+  const VERTS = JSON.parse(vertsJson);
+  const FACES = JSON.parse(facesJson);
+  const backG  = document.getElementById(uid + "_back_polys");
+  const frontG = document.getElementById(uid + "_front_polys");
+  const edgesG = document.getElementById(uid + "_front_edges");
+  const NS = "http://www.w3.org/2000/svg";
+
+  const lx = -0.45, ly = -0.58, lz = 0.68;
+  const llen = Math.hypot(lx, ly, lz);
+  const L = [lx / llen, ly / llen, lz / llen];
+  const hx = L[0], hy = L[1], hz = L[2] + 1.0;
+  const hlen = Math.hypot(hx, hy, hz);
+  const H = [hx / hlen, hy / hlen, hz / hlen];
+
+  const hex = emMid.replace("#", "");
+  const n = parseInt(hex, 16);
+  const emRgb = [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+
+  const backNodes = FACES.map(() => {
+    const p = document.createElementNS(NS, "polygon");
+    p.setAttribute("stroke", "#7dd3fc");
+    p.setAttribute("stroke-width", "0.75");
+    p.setAttribute("stroke-linejoin", "round");
+    backG.appendChild(p);
+    return p;
+  });
+  const frontNodes = FACES.map(() => {
+    const p = document.createElementNS(NS, "polygon");
+    p.setAttribute("stroke", "#bae6fd");
+    p.setAttribute("stroke-width", "0.85");
+    p.setAttribute("stroke-linejoin", "round");
+    frontG.appendChild(p);
+    return p;
+  });
+  const edgeNodes = FACES.map(() => {
+    const p = document.createElementNS(NS, "polygon");
+    p.setAttribute("fill", "none");
+    p.setAttribute("stroke", "#e0f2fe");
+    p.setAttribute("stroke-width", "1.05");
+    p.setAttribute("stroke-linejoin", "round");
+    edgesG.appendChild(p);
+    return p;
+  });
+
+  let yaw = 18 * Math.PI / 180;
+  const pitch = 14.0 * Math.PI / 180;
+  const cosP = Math.cos(pitch), sinP = Math.sin(pitch);
+
+  function renderFrame(angleY) {
+    const cosY = Math.cos(angleY), sinY = Math.sin(angleY);
+    const tv = VERTS.map(([x, y, z]) => {
+      const x1 = x * cosY + z * sinY;
+      const y1 = y;
+      const z1 = -x * sinY + z * cosY;
+      const y2 = y1 * cosP - z1 * sinP;
+      const z2 = y1 * sinP + z1 * cosP;
+      return [x1, y2, z2];
+    });
+
+    const fData = FACES.map((tri) => {
+      const a = tv[tri[0]], b = tv[tri[1]], c = tv[tri[2]];
+      const cx = (a[0] + b[0] + c[0]) / 3;
+      const cy = (a[1] + b[1] + c[1]) / 3;
+      const cz = (a[2] + b[2] + c[2]) / 3;
+      let nx = (b[1] - a[1]) * (c[2] - a[2]) - (b[2] - a[2]) * (c[1] - a[1]);
+      let ny = (b[2] - a[2]) * (c[0] - a[0]) - (b[0] - a[0]) * (c[2] - a[2]);
+      let nz = (b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0]);
+      const nlen = Math.hypot(nx, ny, nz) || 1;
+      nx /= nlen; ny /= nlen; nz /= nlen;
+      if (nx * cx + ny * cy + nz * cz < 0) { nx = -nx; ny = -ny; nz = -nz; }
+
+      const diff = Math.max(0, nx * L[0] + ny * L[1] + nz * L[2]);
+      const spec = Math.pow(Math.max(0, nx * H[0] + ny * H[1] + nz * H[2]), 14);
+      const rCent = Math.hypot(cx, cy);
+      const innerTint = Math.max(0, 1.0 - rCent * 0.72) * 0.28;
+      const br = Math.min(1.0, Math.max(0.16, 0.20 + 0.50 * diff + 0.45 * spec));
+
+      const iceR = 16 + 215 * br;
+      const iceG = 105 + 145 * br;
+      const iceB = 185 + 70 * br;
+      const r = Math.min(255, Math.round(iceR * (1 - innerTint) + emRgb[0] * innerTint));
+      const g = Math.min(255, Math.round(iceG * (1 - innerTint) + emRgb[1] * innerTint));
+      const bl = Math.min(255, Math.round(iceB * (1 - innerTint) + emRgb[2] * innerTint));
+
+      const pts = [a, b, c].map(([vx, vy, vz]) => {
+        const persp = 1.0 / (1.0 - vz * 0.08);
+        return (200 + vx * 88 * persp).toFixed(1) + "," + (200 + vy * 88 * persp).toFixed(1);
+      }).join(" ");
+
+      return { z: cz, pts, r, g, bl };
+    });
+
+    fData.sort((u, v) => u.z - v.z);
+
+    let bIdx = 0, fIdx = 0;
+    for (let i = 0; i < fData.length; i++) {
+      const fd = fData[i];
+      if (fd.z < 0.0) {
+        const bn = backNodes[bIdx++];
+        bn.setAttribute("points", fd.pts);
+        bn.setAttribute("fill", `rgba(${fd.r},${fd.g},${fd.bl},0.42)`);
+        bn.setAttribute("stroke-opacity", "0.35");
+        bn.style.display = "";
+      } else {
+        const fn = frontNodes[fIdx];
+        fn.setAttribute("points", fd.pts);
+        fn.setAttribute("fill", `rgba(${fd.r},${fd.g},${fd.bl},0.56)`);
+        fn.setAttribute("stroke-opacity", "0.75");
+        fn.style.display = "";
+
+        const en = edgeNodes[fIdx];
+        en.setAttribute("points", fd.pts);
+        en.setAttribute("stroke-opacity", fd.z > 0.25 ? "0.68" : "0.28");
+        en.style.display = "";
+        fIdx++;
+      }
+    }
+    for (let k = bIdx; k < backNodes.length; k++) backNodes[k].style.display = "none";
+    for (let k = fIdx; k < frontNodes.length; k++) {
+      frontNodes[k].style.display = "none";
+      edgeNodes[k].style.display = "none";
+    }
+  }
+
+  renderFrame(yaw);
+  if (animated) {
+    let last = performance.now();
+    function tick(now) {
+      const dt = Math.min(0.1, (now - last) / 1000);
+      last = now;
+      yaw -= dt * 0.48; // Y軸を中心にゆっくり逆回転
+      renderFrame(yaw);
+      requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+})();
+</script>
+
+<style>
+  .vega-crystal-wrapper {
+    display: inline-block;
+    user-select: none;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .vega-crystal-wrapper:hover {
+    transform: scale(1.05);
+  }
+  .vega-crystal-svg {
+    display: block;
+    overflow: visible;
+  }
+</style>
