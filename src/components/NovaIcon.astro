@@ -1,5 +1,5 @@
 ---
-import { Image } from 'astro:assets';
+import NovaTerminal from './NovaTerminal.astro';
 
 interface Props {
   status?: 'idle' | 'executing' | 'alert' | 'success' | 'standby' | 'overclock';
@@ -14,29 +14,11 @@ const {
   caption,
   float = 'none'
 } = Astro.props;
-
-// 動的インポートマップ
-const icons = {
-  idle: import('../assets/nova/nova_idle.webp'),
-  executing: import('../assets/nova/nova_executing.webp'),
-  alert: import('../assets/nova/nova_alert.webp'),
-  success: import('../assets/nova/nova_success.webp'),
-  standby: import('../assets/nova/nova_standby.webp'),
-  overclock: import('../assets/nova/nova_overclock.webp'),
-};
-
-const iconImage = await (icons[status] || icons.idle);
 ---
 
 <div class={`nova-icon-container float-${float}`}>
   <div class={`nova-icon-wrap status-${status}`}>
-    <Image 
-      src={iconImage.default} 
-      alt={`NOVA Status: ${status}`} 
-      width={size} 
-      height={Math.round(size * 1.1)}
-      loading="lazy"
-    />
+    <NovaTerminal status={status} width={size} animated={true} />
   </div>
   {caption && <p class="nova-caption">{caption}</p>}
 </div>
@@ -58,10 +40,6 @@ const iconImage = await (icons[status] || icons.idle);
   }
   .nova-icon-wrap {
     display: inline-block;
-    transition: transform 0.2s ease;
-  }
-  .nova-icon-wrap:hover {
-    transform: scale(1.03);
   }
   .nova-caption {
     font-size: 0.8rem;

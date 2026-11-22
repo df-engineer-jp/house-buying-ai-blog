@@ -1,25 +1,20 @@
 ---
-import fundData from '../data/house_fund.json';
-
 interface Props {
   status?: 'idle' | 'executing' | 'alert' | 'panic' | 'success' | 'victory' | 'standby' | 'overclock';
   message?: string;
-  width?: number; // 表示幅 (px)
+  width?: number;
   animated?: boolean;
   earned?: number;
   target?: number;
+  interactive?: boolean;
 }
 
 const {
   status: rawStatus = 'idle',
-  message,
   width = 180,
   animated = true,
-  earned = fundData.currentStockYen,
-  target = 50000000,
 } = Astro.props;
 
-// ステータスマッピング (互換性: panic -> alert, victory -> success)
 const statusMap: Record<string, 'idle' | 'executing' | 'alert' | 'success' | 'standby' | 'overclock'> = {
   idle: 'idle',
   executing: 'executing',
@@ -32,424 +27,246 @@ const statusMap: Record<string, 'idle' | 'executing' | 'alert' | 'success' | 'st
 };
 const status = statusMap[rawStatus] || 'idle';
 
-// ★ 1. ベースはどの感情でも一貫した「青色ホログラム（シアン・ブルー系統）」
-const BASE_THEME = {
-  primary: '#0284c7',      // ディープシアン (星コア外側、外周リングなど)
-  secondary: '#38bdf8',    // スカイブルー (星コア内側)
-  accent: '#0ea5e9',       // オーシャンブルー (七角形枠、中間点線、リング1など)
-  text: '#0284c7',         // 通常テレメトリ文字
-  void_accent: '#0ea5e9',
-  glow: 'rgba(2, 132, 199, 0.40)',
-  halo: {
-    center: '#e0f2fe',
-    light: '#bae6fd',
-    mid: '#7dd3fc',
-    main: '#38bdf8',
-    edge: '#0284c7',
-  },
-  gauge_bg: '#bae6fd',     // ミニゲージ背景レール
+// 感情表現は「一筆書き {8/3} 星の線の色」のみを変化させる（球体と中心コア光は純白シアン固定）
+const STAR_COLORS: Record<string, { core: string; glow: string; mid: string }> = {
+  idle:      { core: '#ffffff', glow: '#67e8f9', mid: '#22d3ee' },
+  executing: { core: '#ecfdf5', glow: '#34d399', mid: '#059669' },
+  alert:     { core: '#fee2e2', glow: '#f87171', mid: '#ef4444' },
+  success:   { core: '#dcfce7', glow: '#4ade80', mid: '#16a34a' },
+  standby:   { core: '#f1f5f9', glow: '#cbd5e1', mid: '#64748b' },
+  overclock: { core: '#fae8ff', glow: '#e879f9', mid: '#c026d3' },
 };
 
-// ★ 2. 感情表現（PENのモノリスと完全一致したステータス文字列 ＆ 全文字列の感情色同期）
-const EMOTION_CONFIGS = {
-  idle: {
-    color: '#0284c7',      // 平時はホログラムと同系統のディープシアン
-    glow: 'rgba(2, 132, 199, 0.40)',
-    mainText: 'ONLINE',
-  },
-  executing: {
-    color: '#059669',      // 実行中エメラルドグリーン
-    glow: 'rgba(5, 150, 105, 0.45)',
-    mainText: 'RUNNING',
-  },
-  alert: {
-    color: '#ef4444',      // 警告レッド
-    glow: 'rgba(239, 68, 68, 0.48)',
-    mainText: 'ERR !',
-  },
-  success: {
-    color: '#10b981',      // 成功グリーン
-    glow: 'rgba(16, 185, 129, 0.48)',
-    mainText: '200 OK ✔',
-  },
-  standby: {
-    color: '#64748b',      // 待機スレートシルバー
-    glow: 'rgba(100, 116, 139, 0.25)',
-    mainText: 'STANDBY',
-  },
-  overclock: {
-    color: '#d946ef',      // 限界突破ネオンマゼンタ
-    glow: 'rgba(217, 70, 239, 0.52)',
-    mainText: 'OVERCLOCK',
-  },
-};
+const starColor = STAR_COLORS[status] || STAR_COLORS.idle;
+const uid = `nova_${status}_${Math.random().toString(36).slice(2, 9)}`;
 
-const emotion = EMOTION_CONFIGS[status] || EMOTION_CONFIGS.idle;
-const mainStatusText = message || emotion.mainText;
-const theme = BASE_THEME;
-const target_str = target >= 1000000 ? `¥${(target / 1000000) % 1 === 0 ? (target / 1000000) : (target / 1000000).toFixed(1)}M` : `¥${target.toLocaleString()}`;
-const earned_str = `¥${earned.toLocaleString()}`;
-const ratio = Math.min(Math.max(earned / target, 0.0), 1.0);
-
-const cx = 140;
-const cy = 140;
-// ★ 外枠からしっかり離したモノリス同等18pxフォント配置（r_text=104: 外枠124との間に十分な呼吸感）
-const r_text = 104; 
-// ★ 文字直下に寄り添うミニゲージ(r_gauge=90)
-const r_gauge = 90; 
-// ★ コア周りの拡大リング1(r=80)
-const r_ring1 = 80;
-// ★ 中間点線リング(r=58, 反時計回り, 独立10分割ドット)
-const r_inner_dash = 58;
-
-// 幾何学座標の計算 (度数法からデカルト座標)
-function polarToCart(r: number, deg: number) {
-  const rad = (deg * Math.PI) / 180.0;
-  return {
-    x: cx + r * Math.cos(rad),
-    y: cy + r * Math.sin(rad),
-  };
+// 正八芒星 {8/3} 完全一筆書きパス生成
+function buildOctagram83Path(cx: number, cy: number, r: number, rotDeg = -90): string {
+  const pts: string[] = [];
+  let idx = 0;
+  for (let i = 0; i < 8; i++) {
+    const ang = ((rotDeg + idx * 45) * Math.PI) / 180.0;
+    const x = cx + r * Math.cos(ang);
+    const y = cy + r * Math.sin(ang);
+    pts.push(`${i === 0 ? 'M' : 'L'} ${x.toFixed(2)},${y.toFixed(2)}`);
+    idx = (idx + 3) % 8;
+  }
+  return pts.join(' ') + ' Z';
 }
 
-// ★ 残金文字列「TARGET: ¥50M [¥0]」の初期幾何学位置（18px r=104 dx=48 実測値 131.9°〜246.6°）
-// クライアント側ではさらに <script> により端末実機の getStartPositionOfChar / getEndPositionOfChar でミリ単位自動吸着
-const deg1_g = 131.9; // 「TARGET」先頭Tの直下
-const deg2_g = 246.6; // 「[¥0]」末尾ブラケット直下
-
-const pt1_g = polarToCart(r_gauge, deg1_g);
-const pt2_g = polarToCart(r_gauge, deg2_g);
-const gauge_total_arc = r_gauge * (deg2_g - deg1_g) * (Math.PI / 180.0);
-const gauge_fill = Math.max(Math.floor(gauge_total_arc * ratio), 4);
-
-const height = width;
-const componentId = `nova-orb-${Math.random().toString(36).substring(2, 8)}`;
+const pathOuter = buildOctagram83Path(200, 200, 122, -90);
+const pathInner = buildOctagram83Path(200, 200, 108, -90);
 ---
 
-<div 
-  class={`nova-core-wrapper status-${status} ${animated ? 'animated' : ''}`}
+<div
+  class={`nova-orb-wrapper status-${status} ${animated ? 'animated' : ''}`}
   data-status={status}
-  data-ratio={ratio}
-  style={`--theme-color: ${emotion.color}; --theme-accent: ${BASE_THEME.secondary}; --theme-glow: ${emotion.glow}; width: ${width}px; height: ${height}px;`}
+  style={`width: ${width}px; height: ${width}px;`}
 >
-  <svg 
-    viewBox="0 0 280 280" 
-    width="100%" 
-    height="100%" 
+  <svg
+    viewBox="0 0 400 400"
+    width="100%"
+    height="100%"
     xmlns="http://www.w3.org/2000/svg"
-    class="nova-core-svg"
+    class="nova-orb-svg"
+    role="img"
+    aria-label={`NOVA (${status})`}
   >
     <defs>
-      <!-- 1. 中心から均一になだらかに広がるソフトグラデーション（どの感情でも常に青色ホログラム光） -->
-      <radialGradient id={`haloLight-${componentId}`} cx="50%" cy="50%" r="50%">
-        <stop offset="0%" stop-color={BASE_THEME.halo.center} stop-opacity="0.75"/>
-        <stop offset="30%" stop-color={BASE_THEME.halo.light} stop-opacity="0.55"/>
-        <stop offset="60%" stop-color={BASE_THEME.halo.mid} stop-opacity="0.35"/>
-        <stop offset="80%" stop-color={BASE_THEME.halo.main} stop-opacity="0.18"/>
-        <stop offset="95%" stop-color={BASE_THEME.halo.edge} stop-opacity="0.05"/>
-        <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+      <!-- 外周オーラハロー -->
+      <radialGradient id={`${uid}_outer_halo`} cx="50%" cy="50%" r="50%">
+        <stop offset="68%" stop-color="#22d3ee" stop-opacity="0.0" />
+        <stop offset="76%" stop-color="#38bdf8" stop-opacity="0.48" />
+        <stop offset="85%" stop-color="#0ea5e9" stop-opacity="0.18" />
+        <stop offset="100%" stop-color="#0284c7" stop-opacity="0.0" />
       </radialGradient>
 
-      <!-- 2. 背景光ソフトぼかしフィルター（blur=6px: 縁をくっきりさせず滑らかにグラデーション化） -->
-      <filter id={`bgLightBlur-${componentId}`} x="-20%" y="-20%" width="140%" height="140%">
-        <feGaussianBlur stdDeviation="6"/>
+      <!-- フレネル球体リム -->
+      <radialGradient id={`${uid}_fresnel`} cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#082f49" stop-opacity="0.08" />
+        <stop offset="50%" stop-color="#0e7490" stop-opacity="0.24" />
+        <stop offset="77%" stop-color="#22d3ee" stop-opacity="0.62" />
+        <stop offset="91%" stop-color="#67e8f9" stop-opacity="0.92" />
+        <stop offset="96%" stop-color="#ecfeff" stop-opacity="0.94" />
+        <stop offset="100%" stop-color="#22d3ee" stop-opacity="0.0" />
+      </radialGradient>
+
+      <!-- 上部ガラス艶 -->
+      <radialGradient id={`${uid}_rim_sheen`} cx="42%" cy="28%" r="52%">
+        <stop offset="0%" stop-color="#e0f2fe" stop-opacity="0.28" />
+        <stop offset="52%" stop-color="#38bdf8" stop-opacity="0.08" />
+        <stop offset="100%" stop-color="#000000" stop-opacity="0" />
+      </radialGradient>
+
+      <!-- 中央コア光はどの感情でも純白シアン固定 -->
+      <radialGradient id={`${uid}_core_glow`} cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#ffffff" stop-opacity="0.92" />
+        <stop offset="20%" stop-color="#cffafe" stop-opacity="0.64" />
+        <stop offset="52%" stop-color="#22d3ee" stop-opacity="0.20" />
+        <stop offset="100%" stop-color="#06b6d4" stop-opacity="0.0" />
+      </radialGradient>
+
+      <!-- オーロラ・プラズマ雲1 -->
+      <filter id={`${uid}_plasma1`} x="-15%" y="-15%" width="130%" height="130%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.017" numOctaves="5" seed="11" result="n1" />
+        <feColorMatrix
+          type="matrix"
+          in="n1"
+          values="
+            0 0 0 0 0.50
+            0 0 0 0 0.92
+            0 0 0 0 1.00
+            0 0 0 2.2 -0.48"
+          result="c1"
+        />
+        <feComposite in="c1" in2="SourceAlpha" operator="in" />
       </filter>
 
-      <!-- 3. 一連のデータストリーム用360度パス (r=104: 外枠からしっかり離した配置・時計回り) -->
-      <path id={`streamPath-${componentId}`} d="M 140,36 A 104,104 0 1,1 139.9,36 Z" fill="none"/>
+      <!-- プラズマ雲2 -->
+      <filter id={`${uid}_plasma2`} x="-15%" y="-15%" width="130%" height="130%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.038 0.024" numOctaves="4" seed="42" result="n2" />
+        <feColorMatrix
+          type="matrix"
+          in="n2"
+          values="
+            0 0 0 0 0.85
+            0 0 0 0 0.98
+            0 0 0 0 1.00
+            0 0 0 1.9 -0.58"
+          result="c2"
+        />
+        <feComposite in="c2" in2="SourceAlpha" operator="in" />
+      </filter>
 
-      <!-- 4. ホログラムソフトグロー -->
-      <filter id={`holoGlow-${componentId}`} x="-30%" y="-30%" width="160%" height="160%">
-        <feGaussianBlur stdDeviation="0.8" result="blur"/>
+      <!-- リム発光ぼかし -->
+      <filter id={`${uid}_rim_blur`} x="-30%" y="-30%" width="160%" height="160%">
+        <feGaussianBlur stdDeviation="3.2" result="rb1" />
+        <feGaussianBlur stdDeviation="8.5" result="rb2" />
         <feMerge>
-          <feMergeNode in="blur"/>
-          <feMergeNode in="SourceGraphic"/>
+          <feMergeNode in="rb2" />
+          <feMergeNode in="rb1" />
         </feMerge>
       </filter>
+
+      <!-- 星の線発光 -->
+      <filter id={`${uid}_star_glow`} x="-30%" y="-30%" width="160%" height="160%">
+        <feGaussianBlur stdDeviation="2.4" result="sb1" />
+        <feGaussianBlur stdDeviation="6.5" result="sb2" />
+        <feMerge>
+          <feMergeNode in="sb2" />
+          <feMergeNode in="sb1" />
+          <feMergeNode in="SourceGraphic" />
+        </feMerge>
+      </filter>
+
+      <clipPath id={`${uid}_sphere_clip`}>
+        <circle cx="200" cy="200" r="152" />
+      </clipPath>
+
+      <radialGradient id={`${uid}_cloud_mask_grad`} cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#ffffff" stop-opacity="0.24" />
+        <stop offset="45%" stop-color="#ffffff" stop-opacity="0.52" />
+        <stop offset="78%" stop-color="#ffffff" stop-opacity="0.94" />
+        <stop offset="96%" stop-color="#ffffff" stop-opacity="1.0" />
+        <stop offset="100%" stop-color="#ffffff" stop-opacity="0.0" />
+      </radialGradient>
+      <mask id={`${uid}_cloud_mask`}>
+        <circle cx="200" cy="200" r="152" fill={`url(#${uid}_cloud_mask_grad)`} />
+      </mask>
     </defs>
 
-    <!-- 中心から均一に広がるソフトグラデーション背景（どの感情でも常に青色ホログラム光） -->
-    <circle cx="140" cy="140" r="120" fill={`url(#haloLight-${componentId})`} filter={`url(#bgLightBlur-${componentId})`}/>
+    <!-- 1. 外周オーラ -->
+    <circle cx="200" cy="200" r="196" fill={`url(#${uid}_outer_halo)`} />
 
-    <!-- 最外周：測位リング（回らない・静止、1.6px、光が透ける0.38透過、pathLength=360で全12ブロック3連ドット完全保証） -->
-    <circle cx="140" cy="140" r="124" fill="none" stroke={BASE_THEME.text} stroke-width="1.6" stroke-opacity="0.38" pathLength="360" stroke-dasharray="13 3.5 1.5 2.5 1.5 2.5 1.5 4" class="outer-ring"/>
-
-    <!-- ★ 一緒に回転するデータストリーム＋寄り添いゲージ (r=104, r=90) ★ -->
-    <g class="rotating-stream">
-      <!-- 一連の稼働データストリーム（リアクション文字は特大29px ✕ 外枠衝突を防ぐdy=8内側オフセット！） -->
-      <text font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace" font-size="18" font-weight="bold" fill={emotion.color} fill-opacity="0.95" letter-spacing="1.4">
-        <textPath href={`#streamPath-${componentId}`} startOffset="0%">
-          <tspan class="status-tspan" font-size="29" font-weight="900" dy="8">{mainStatusText}</tspan>
-          <tspan dx="48" dy="-8">DAEMONS: 5/5</tspan>
-          <tspan class="target-tspan" dx="48">TARGET: {target_str} [{earned_str}]</tspan>
-        </textPath>
-      </text>
-
-      <!-- TARGET直下の寄り添いミニ・アークゲージ (r=90: 文字列と同一の感情色ストリーム) -->
-      <path class="gauge-track" d={`M ${pt1_g.x.toFixed(1)},${pt1_g.y.toFixed(1)} A ${r_gauge},${r_gauge} 0 0,1 ${pt2_g.x.toFixed(1)},${pt2_g.y.toFixed(1)}`} 
-            fill="none" stroke={BASE_THEME.gauge_bg} stroke-width="1.6" stroke-linecap="round"/>
-      <path class="gauge-bar" d={`M ${pt1_g.x.toFixed(1)},${pt1_g.y.toFixed(1)} A ${r_gauge},${r_gauge} 0 0,1 ${pt2_g.x.toFixed(1)},${pt2_g.y.toFixed(1)}`} 
-            fill="none" stroke={emotion.color} stroke-width="1.6" stroke-linecap="round"
-            stroke-dasharray={`${gauge_fill} 300`} stroke-opacity="0.95"/>
-      <circle class="gauge-dot-start" cx={pt1_g.x.toFixed(1)} cy={pt1_g.y.toFixed(1)} r="1.3" fill={emotion.color}/>
-      <circle class="gauge-dot-end" cx={pt2_g.x.toFixed(1)} cy={pt2_g.y.toFixed(1)} r="1.3" fill={emotion.color}/>
-    </g>
-
-    <!-- ★ コアの周りを立体公転する単一の洗練された惑星リング（リアクションに左右されずホログラム共通色で固定！） ★ -->
-    <!-- リング1（-60度傾斜）：r=80へ拡大＆厚み100%維持立体回転 (stroke-width="1.6"、ホログラム色固定) -->
-    <g class="jarvis-3d-ring-1">
-      <circle class="ring-core-1" cx="140" cy="140" r="80" fill="none" stroke={BASE_THEME.primary} stroke-width="1.6" stroke-opacity="0.95" vector-effect="non-scaling-stroke"/>
-    </g>
-
-    <!-- ★ 中間点線リング（r=58）：リアクションに合わせて動的に発光色連動！★ -->
-    <g class="inner-dash-ring">
-      <circle cx="140" cy="140" r="58" fill="none" stroke={emotion.color} stroke-width="1" stroke-dasharray="8,4,2,4" stroke-opacity="0.85" vector-effect="non-scaling-stroke"/>
-    </g>
-
-    <!-- アパーチャ光彩羽根（七角形クリスタルフレーム：白 #ffffff に復元、stroke-width="1.6"） -->
-    <polygon points="140,98 166,114 176,144 156,172 124,176 102,150 108,120" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-opacity="0.95" vector-effect="non-scaling-stroke"/>
-
-    <!-- ★ NOVA公式決定稿：超新星・八芒星コア（大星[青]と小星[白]の交互パルス呼吸） -->
-    <g transform="translate(140, 140)">
-      <!-- 1. 外側四芒星（大、ディープシアン #0284c7、交互パルスA） -->
-      <path class="star-large" d="M 0,-34 L 5,-10 L 30,0 L 5,10 L 0,34 L -5,10 L -30,0 L -5,-10 Z" fill={BASE_THEME.primary}/>
-      <!-- 2. 内側四芒星（小、純白 #ffffff、45度回転、交互パルスB） -->
-      <g class="star-small-wrap" transform="rotate(45)">
-        <path class="star-small" d="M 0,-20 L 3.5,-6 L 18,0 L 3.5,6 L 0,20 L -3.5,6 L -18,0 L -3.5,-6 Z" fill="#ffffff"/>
+    <!-- 2. プラズマ球体内部 -->
+    <g clip-path={`url(#${uid}_sphere_clip)`}>
+      <circle cx="200" cy="200" r="152" fill="#0c4a6e" fill-opacity="0.68" />
+      <g mask={`url(#${uid}_cloud_mask)`}>
+        <g class="nova-cloud-layer">
+          <circle cx="200" cy="200" r="152" fill="#22d3ee" filter={`url(#${uid}_plasma1)`} opacity="0.95" />
+          <circle cx="200" cy="200" r="152" fill="#ecfeff" filter={`url(#${uid}_plasma2)`} opacity="0.72" />
+        </g>
       </g>
-      <!-- 3. 中心円（純白 #ffffff） -->
-      <circle cx="0" cy="0" r="3.8" fill="#ffffff"/>
+      <circle cx="200" cy="200" r="152" fill={`url(#${uid}_fresnel)`} />
+      <circle cx="200" cy="200" r="152" fill={`url(#${uid}_rim_sheen)`} />
+    </g>
+
+    <!-- 3. 球体外周の柔らかい発光膜 -->
+    <circle
+      cx="200"
+      cy="200"
+      r="150"
+      fill="none"
+      stroke="#67e8f9"
+      stroke-width="4.5"
+      opacity="0.88"
+      filter={`url(#${uid}_rim_blur)`}
+    />
+
+    <!-- 4. 中央コア光（固定の純白シアン） -->
+    <circle cx="200" cy="200" r="64" fill={`url(#${uid}_core_glow)`} />
+
+    <!-- 5. 一筆書き {8/3} 正八芒星（星の線のみ感情カラーに変化） -->
+    <g class="nova-star-group" filter={`url(#${uid}_star_glow)`} stroke-linejoin="miter" stroke-linecap="round">
+      <path d={pathOuter} fill="none" stroke={starColor.mid} stroke-width="4.2" opacity="0.78" />
+      <path d={pathOuter} fill="none" stroke={starColor.glow} stroke-width="2.6" opacity="0.96" />
+      <path d={pathInner} fill="none" stroke={starColor.glow} stroke-width="1.8" opacity="0.90" />
+      <path d={pathOuter} fill="none" stroke={starColor.core} stroke-width="1.25" opacity="0.98" />
+      <path d={pathInner} fill="none" stroke={starColor.core} stroke-width="0.85" opacity="0.94" />
     </g>
   </svg>
 </div>
 
 <style>
-  .nova-core-wrapper {
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    filter: drop-shadow(0 0 16px var(--theme-glow));
-    transition: filter 0.3s ease, transform 0.2s ease;
+  .nova-orb-wrapper {
+    display: inline-block;
+    user-select: none;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
-
-  .nova-core-wrapper:hover {
+  .nova-orb-wrapper:hover {
     transform: scale(1.05);
-    filter: drop-shadow(0 0 28px var(--theme-glow));
   }
-
-  .nova-core-svg {
+  .nova-orb-svg {
     display: block;
     overflow: visible;
   }
 
-  /* 最外周円は静止（回らない） */
-
-  /* 一緒に回転するデータストリーム＋TARGETメーター（時計回り25秒） */
-  .animated .rotating-stream {
-    animation: rotateClockwise 25s linear infinite;
-    transform-origin: 140px 140px;
+  .nova-orb-wrapper.animated .nova-star-group {
+    transform-origin: 200px 200px;
+    animation: novaStarBreath 3.6s ease-in-out infinite;
+  }
+  .nova-orb-wrapper.animated .nova-cloud-layer {
+    transform-origin: 200px 200px;
+    animation: novaCloudDrift 9s ease-in-out infinite;
   }
 
-  /* 親グループで傾斜（-60°）を完全固定 */
-  .jarvis-3d-ring-1 {
-    transform-origin: 140px 140px;
-    transform: rotate(-60deg);
-  }
-
-  /* 子の circle で Cosine 余弦波 scaleX（下限0.012 ✕ non-scaling-stroke: 横向き時も厚み100%維持） */
-  .animated .ring-core-1 {
-    transform-origin: 140px 140px;
-    animation: coinSpin1 7s linear infinite;
-  }
-
-  /* ★ 中間点線リング：反時計回り公転（18秒周期） ★ */
-  .animated .inner-dash-ring {
-    animation: rotateCounter 18s linear infinite;
-    transform-origin: 140px 140px;
-  }
-
-  /* ★ 大星（青）と小星（白）の交互パルス呼吸アニメーション ★ */
-  .animated .star-large {
-    animation: starPulseLarge 2.6s infinite ease-in-out;
-    transform-origin: 0px 0px;
-  }
-  .animated .star-small {
-    animation: starPulseSmall 2.6s infinite ease-in-out;
-    transform-origin: 0px 0px;
-  }
-
-  .animated.status-executing .rotating-stream {
-    animation-duration: 8s;
-  }
-
-  .animated.status-executing .ring-core-1 {
-    animation-duration: 3.5s;
-  }
-
-  .animated.status-executing .inner-dash-ring {
-    animation-duration: 6s;
-  }
-
-  .animated.status-executing .star-large,
-  .animated.status-executing .star-small {
-    animation-duration: 1.3s;
-  }
-
-  .animated.status-overclock .rotating-stream {
-    animation-duration: 4s;
-  }
-
-  .animated.status-overclock .ring-core-1 {
+  .status-executing.animated .nova-star-group {
     animation-duration: 1.8s;
   }
-
-  .animated.status-overclock .inner-dash-ring {
-    animation-duration: 3s;
+  .status-alert.animated .nova-star-group {
+    animation-duration: 1.1s;
+  }
+  .status-overclock.animated .nova-star-group {
+    animation-duration: 1.4s;
   }
 
-  .animated.status-overclock .star-large,
-  .animated.status-overclock .star-small {
-    animation-duration: 0.8s;
-  }
-
-  @keyframes rotateClockwise {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-  }
-
-  @keyframes rotateCounter {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(-360deg); }
-  }
-
-  /* 大きい星（青）：0%で通常(0.96)、50%で最大拡大(1.42: 白枠を外側へダイナミックに突き破る！)、100%で通常(0.96) */
-  @keyframes starPulseLarge {
+  @keyframes novaStarBreath {
     0%, 100% {
-      transform: scale(0.96);
-      opacity: 0.90;
+      transform: scale(1);
+      opacity: 0.94;
     }
     50% {
-      transform: scale(1.42);
+      transform: scale(1.03);
       opacity: 1;
-      filter: drop-shadow(0 0 8px rgba(2, 132, 199, 0.75));
     }
   }
 
-  /* 小さい星（白）：大きい星と完全逆位相（0%で最大拡大(1.25)、50%で縮小(0.90)、100%で最大拡大） */
-  @keyframes starPulseSmall {
+  @keyframes novaCloudDrift {
     0%, 100% {
-      transform: scale(1.25);
-      opacity: 1;
-      filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.85));
+      transform: rotate(0deg) scale(1);
     }
     50% {
-      transform: scale(0.90);
-      opacity: 0.85;
+      transform: rotate(8deg) scale(1.03);
     }
-  }
-
-  /* ★ 余弦波（Cosine）コイン立体回転：下限0.012により一直線時でも線幅が絶対に0に潰れず、正面と同じ厚みを維持 ★ */
-  @keyframes coinSpin1 {
-    0.00% { transform: scaleX(1.0000); }
-    4.17% { transform: scaleX(0.9659); }
-    8.33% { transform: scaleX(0.8660); }
-    12.50% { transform: scaleX(0.7071); }
-    16.67% { transform: scaleX(0.5000); }
-    20.83% { transform: scaleX(0.2588); }
-    25.00% { transform: scaleX(0.0120); }
-    29.17% { transform: scaleX(-0.2588); }
-    33.33% { transform: scaleX(-0.5000); }
-    37.50% { transform: scaleX(-0.7071); }
-    41.67% { transform: scaleX(-0.8660); }
-    45.83% { transform: scaleX(-0.9659); }
-    50.00% { transform: scaleX(-1.0000); }
-    54.17% { transform: scaleX(-0.9659); }
-    58.33% { transform: scaleX(-0.8660); }
-    62.50% { transform: scaleX(-0.7071); }
-    66.67% { transform: scaleX(-0.5000); }
-    70.83% { transform: scaleX(-0.2588); }
-    75.00% { transform: scaleX(-0.0120); }
-    79.17% { transform: scaleX(0.2588); }
-    83.33% { transform: scaleX(0.5000); }
-    87.50% { transform: scaleX(0.7071); }
-    91.67% { transform: scaleX(0.8660); }
-    95.83% { transform: scaleX(0.9659); }
-    100.00% { transform: scaleX(1.0000); }
   }
 </style>
-
-<script>
-  // ★ 全OS・全ブラウザ（iOS/Mac/Windows/Linux/Android）完全自動同期エンジン ★
-  // フォントの字幅メトリクス差異をリアルタイム吸収し、実際の文字位置にミリ単位でピタッと吸着
-  function autoAlignNovaGauges() {
-    const svgs = document.querySelectorAll('svg.nova-core-svg');
-    svgs.forEach((svg) => {
-      try {
-        const targetTspan = svg.querySelector('.target-tspan') as SVGTSpanElement | null;
-        if (!targetTspan) return;
-        
-        const numChars = targetTspan.getNumberOfChars();
-        if (!numChars || numChars === 0) return;
-        
-        const pt1 = targetTspan.getStartPositionOfChar(0);
-        const pt2 = targetTspan.getEndPositionOfChar(numChars - 1);
-        
-        if (!pt1 || !pt2 || (pt1.x === 0 && pt1.y === 0)) return;
-        
-        const cx = 140;
-        const cy = 140;
-        const deg1 = (Math.atan2(pt1.y - cy, pt1.x - cx) * 180 / Math.PI + 360) % 360;
-        const deg2 = (Math.atan2(pt2.y - cy, pt2.x - cx) * 180 / Math.PI + 360) % 360;
-        
-        const r_gauge = 90;
-        const rad1 = (deg1 * Math.PI) / 180;
-        const rad2 = (deg2 * Math.PI) / 180;
-        
-        const p1x = (cx + r_gauge * Math.cos(rad1)).toFixed(1);
-        const p1y = (cy + r_gauge * Math.sin(rad1)).toFixed(1);
-        const p2x = (cx + r_gauge * Math.cos(rad2)).toFixed(1);
-        const p2y = (cy + r_gauge * Math.sin(rad2)).toFixed(1);
-        
-        const newD = `M ${p1x},${p1y} A ${r_gauge},${r_gauge} 0 0,1 ${p2x},${p2y}`;
-        
-        const track = svg.querySelector('.gauge-track');
-        const bar = svg.querySelector('.gauge-bar');
-        const dotStart = svg.querySelector('.gauge-dot-start');
-        const dotEnd = svg.querySelector('.gauge-dot-end');
-        
-        if (track) track.setAttribute('d', newD);
-        if (bar) {
-          bar.setAttribute('d', newD);
-          let arcDeg = deg2 - deg1;
-          if (arcDeg < 0) arcDeg += 360;
-          const totalArc = r_gauge * arcDeg * (Math.PI / 180);
-          const ratioAttr = svg.closest('.nova-core-wrapper')?.getAttribute('data-ratio');
-          const ratio = ratioAttr ? parseFloat(ratioAttr) : 0;
-          const fill = Math.max(Math.floor(totalArc * ratio), 4);
-          bar.setAttribute('stroke-dasharray', `${fill} 300`);
-        }
-        if (dotStart) {
-          dotStart.setAttribute('cx', p1x);
-          dotStart.setAttribute('cy', p1y);
-        }
-        if (dotEnd) {
-          dotEnd.setAttribute('cx', p2x);
-          dotEnd.setAttribute('cy', p2y);
-        }
-      } catch (err) {
-        // SVG getStartPositionOfChar can throw if not attached or rendered yet
-      }
-    });
-  }
-
-  // ライフサイクル全フェーズで確実に同期
-  if (typeof window !== 'undefined') {
-    if (document.fonts && document.fonts.ready) {
-      document.fonts.ready.then(autoAlignNovaGauges);
-    }
-    window.addEventListener('load', autoAlignNovaGauges);
-    requestAnimationFrame(autoAlignNovaGauges);
-    setTimeout(autoAlignNovaGauges, 50);
-    setTimeout(autoAlignNovaGauges, 200);
-    setTimeout(autoAlignNovaGauges, 800);
-  }
-</script>
