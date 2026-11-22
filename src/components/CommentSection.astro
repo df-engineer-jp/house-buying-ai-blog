@@ -1,0 +1,601 @@
+---
+interface Props {
+	slug: string;
+}
+
+const { slug } = Astro.props;
+---
+
+<section class="comments-section" id="comments" data-slug={slug} aria-label="コメント欄">
+	<div class="comments-header">
+		<div class="comments-title-row">
+			<span class="comments-badge">COMMENTS</span>
+			<h2 class="comments-heading">現場ログへのコメント</h2>
+			<span class="comments-count-pill" id="comments-count-pill">読み込み中...</span>
+		</div>
+		<p class="comments-subtitle">
+			記事への感想・技術的なツッコミ・質問など、ログイン不要でそのまま書き込めます。
+		</p>
+	</div>
+
+	<div class="comments-list" id="comments-list" aria-live="polite">
+		<div class="comments-loading">コメントを読み込んでいます...</div>
+	</div>
+
+	<form class="comment-form" id="comment-form" novalidate>
+		<div class="form-header-bar">
+			<span class="form-title">✍️ コメントを投稿する</span>
+			<span class="form-hint">※メールアドレス・アカウント登録不要</span>
+		</div>
+
+		<!-- ハニーポット（人間には非表示） -->
+		<div class="hp-field" aria-hidden="true">
+			<label for="comment-website">Website</label>
+			<input type="text" id="comment-website" name="website" tabindex="-1" autocomplete="off" />
+		</div>
+
+		<div class="form-row">
+			<label for="comment-author" class="form-label">
+				お名前 / ニックネーム <span class="required-mark">*</span>
+			</label>
+			<input
+				type="text"
+				id="comment-author"
+				name="author_name"
+				class="form-input"
+				maxlength="40"
+				required
+				placeholder="例: 通りすがりのエンジニア"
+			/>
+		</div>
+
+		<div class="form-row">
+			<div class="label-with-counter">
+				<label for="comment-body" class="form-label">
+					コメント内容 <span class="required-mark">*</span>
+				</label>
+				<span class="char-counter" id="comment-char-counter">0 / 1000</span>
+			</div>
+			<textarea
+				id="comment-body"
+				name="body"
+				class="form-textarea"
+				rows="4"
+				maxlength="1000"
+				required
+				placeholder="記事で試したこと、エラーへの意見、感想などお気軽にどうぞ！"
+			></textarea>
+		</div>
+
+		<div class="form-feedback" id="comment-feedback" role="status" aria-live="polite"></div>
+
+		<div class="form-actions">
+			<button type="submit" class="submit-comment-btn" id="submit-comment-btn">
+				コメントを送信する →
+			</button>
+		</div>
+	</form>
+</section>
+
+<script is:inline>
+(function() {
+	const root = document.getElementById("comments");
+	if (!root || root.dataset.initialized) return;
+	root.dataset.initialized = "1";
+
+	const slug = root.dataset.slug || "";
+	const listEl = document.getElementById("comments-list");
+	const countPill = document.getElementById("comments-count-pill");
+	const formEl = document.getElementById("comment-form");
+	const authorInput = document.getElementById("comment-author");
+	const bodyInput = document.getElementById("comment-body");
+	const hpInput = document.getElementById("comment-website");
+	const counterEl = document.getElementById("comment-char-counter");
+	const feedbackEl = document.getElementById("comment-feedback");
+	const submitBtn = document.getElementById("submit-comment-btn");
+
+	const formLoadedAt = Date.now();
+	const STORAGE_KEY_NAME = "df_blog_comment_author";
+
+	try {
+		const savedAuthor = localStorage.getItem(STORAGE_KEY_NAME);
+		if (savedAuthor && authorInput && !authorInput.value) {
+			authorInput.value = savedAuthor;
+		}
+	} catch (_) {}
+
+	function formatJst(isoString) {
+		try {
+			const d = new Date(isoString);
+			if (Number.isNaN(d.getTime())) return isoString || "";
+			return new Intl.DateTimeFormat("ja-JP", {
+				timeZone: "Asia/Tokyo",
+				year: "numeric",
+				month: "2-digit",
+				day: "2-digit",
+				hour: "2-digit",
+				minute: "2-digit",
+				hour12: false,
+			}).format(d);
+		} catch (_) {
+			return isoString || "";
+		}
+	}
+
+	function avatarHue(name) {
+		let h = 0;
+		for (let i = 0; i < name.length; i++) {
+			h = (h * 31 + name.charCodeAt(i)) % 360;
+		}
+		return h;
+	}
+
+	function createCommentCard(comment) {
+		const card = document.createElement("article");
+		card.className = "comment-card" + (comment.author_role === "admin" ? " is-admin" : "");
+		card.dataset.commentId = String(comment.id || "");
+
+		const meta = document.createElement("div");
+		meta.className = "comment-meta";
+
+		const authorWrap = document.createElement("div");
+		authorWrap.className = "comment-author-wrap";
+
+		const avatar = document.createElement("span");
+		avatar.className = "comment-avatar";
+		const nameStr = String(comment.author_name || "匿名").trim();
+		avatar.textContent = Array.from(nameStr)[0] || "?";
+		if (comment.author_role !== "admin") {
+			const hue = avatarHue(nameStr);
+			avatar.style.background = `hsl(${hue}, 62%, 42%)`;
+		}
+
+		const authorNameEl = document.createElement("span");
+		authorNameEl.className = "comment-author-name";
+		authorNameEl.textContent = nameStr;
+
+		const roleBadge = document.createElement("span");
+		roleBadge.className = "comment-role-badge " + (comment.author_role === "admin" ? "admin" : "reader");
+		roleBadge.textContent = comment.author_role === "admin" ? "D.F.ARCHITECT / PEN" : "READER";
+
+		authorWrap.appendChild(avatar);
+		authorWrap.appendChild(authorNameEl);
+		authorWrap.appendChild(roleBadge);
+
+		const dateEl = document.createElement("time");
+		dateEl.className = "comment-date";
+		dateEl.dateTime = comment.created_at || "";
+		dateEl.textContent = formatJst(comment.created_at);
+
+		meta.appendChild(authorWrap);
+		meta.appendChild(dateEl);
+
+		const bodyEl = document.createElement("p");
+		bodyEl.className = "comment-body";
+		bodyEl.textContent = comment.body || "";
+
+		card.appendChild(meta);
+		card.appendChild(bodyEl);
+		return card;
+	}
+
+	let currentComments = [];
+
+	function renderComments(comments) {
+		currentComments = Array.isArray(comments) ? comments : [];
+		if (countPill) {
+			countPill.textContent = `${currentComments.length}件`;
+		}
+		if (!listEl) return;
+		listEl.innerHTML = "";
+
+		if (currentComments.length === 0) {
+			const empty = document.createElement("div");
+			empty.className = "comments-empty";
+			empty.textContent = "まだコメントはありません。最初のコメントを書いてみませんか？";
+			listEl.appendChild(empty);
+			return;
+		}
+
+		for (const c of currentComments) {
+			listEl.appendChild(createCommentCard(c));
+		}
+	}
+
+	function showFeedback(message, type) {
+		if (!feedbackEl) return;
+		feedbackEl.textContent = message;
+		feedbackEl.className = "form-feedback " + (type || "");
+	}
+
+	async function fetchComments() {
+		try {
+			const res = await fetch(`/api/comments?slug=${encodeURIComponent(slug)}`, {
+				headers: { Accept: "application/json" },
+			});
+			const data = await res.json();
+			if (!res.ok || !data.ok) {
+				throw new Error(data.error || "読み込みエラー");
+			}
+			renderComments(data.comments || []);
+		} catch (err) {
+			if (countPill) countPill.textContent = "-";
+			if (listEl) {
+				listEl.innerHTML = "";
+				const errBox = document.createElement("div");
+				errBox.className = "comments-error";
+				errBox.textContent = "コメントの読み込みに失敗しました。時間を置いて再読み込みしてください。";
+				listEl.appendChild(errBox);
+			}
+		}
+	}
+
+	if (bodyInput && counterEl) {
+		const updateCount = () => {
+			counterEl.textContent = `${bodyInput.value.length} / 1000`;
+		};
+		bodyInput.addEventListener("input", updateCount);
+		updateCount();
+	}
+
+	if (formEl) {
+		formEl.addEventListener("submit", async (e) => {
+			e.preventDefault();
+			showFeedback("", "");
+
+			const authorName = authorInput ? authorInput.value.trim() : "";
+			const body = bodyInput ? bodyInput.value.trim() : "";
+			const website = hpInput ? hpInput.value : "";
+
+			if (!authorName || authorName.length > 40) {
+				showFeedback("お名前を1〜40文字で入力してください。", "error");
+				if (authorInput) authorInput.focus();
+				return;
+			}
+			if (body.length < 2 || body.length > 1000) {
+				showFeedback("コメント本文は2〜1000文字で入力してください。", "error");
+				if (bodyInput) bodyInput.focus();
+				return;
+			}
+
+			if (submitBtn) {
+				submitBtn.disabled = true;
+				submitBtn.textContent = "送信中...";
+			}
+
+			try {
+				const res = await fetch("/api/comments", {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({
+						slug,
+						author_name: authorName,
+						body,
+						website,
+						form_loaded_at: formLoadedAt,
+					}),
+				});
+				const data = await res.json();
+				if (!res.ok || !data.ok) {
+					throw new Error(data.error || "送信に失敗しました。");
+				}
+
+				try {
+					localStorage.setItem(STORAGE_KEY_NAME, authorName);
+				} catch (_) {}
+
+				if (bodyInput) bodyInput.value = "";
+				if (counterEl) counterEl.textContent = "0 / 1000";
+
+				const nextList = [...currentComments, data.comment];
+				renderComments(nextList);
+
+				const addedCard = listEl ? listEl.lastElementChild : null;
+				if (addedCard && addedCard.scrollIntoView) {
+					addedCard.scrollIntoView({ behavior: "smooth", block: "nearest" });
+				}
+				showFeedback("コメントを投稿しました！ありがとうございます。", "success");
+			} catch (err) {
+				showFeedback(err.message || "投稿中にエラーが発生しました。", "error");
+			} finally {
+				if (submitBtn) {
+					submitBtn.disabled = false;
+					submitBtn.textContent = "コメントを送信する →";
+				}
+			}
+		});
+	}
+
+	fetchComments();
+})();
+</script>
+
+<style>
+	.comments-section {
+		margin-top: 3rem;
+		padding-top: 2.25rem;
+		border-top: 2px solid #e2e8f0;
+	}
+	.comments-header {
+		margin-bottom: 1.5rem;
+	}
+	.comments-title-row {
+		display: flex;
+		align-items: center;
+		gap: 0.65rem;
+		flex-wrap: wrap;
+		margin-bottom: 0.4rem;
+	}
+	.comments-badge {
+		background: #0f172a;
+		color: #38bdf8;
+		font-family: monospace;
+		font-size: 0.72rem;
+		font-weight: 800;
+		padding: 0.18rem 0.55rem;
+		border-radius: 4px;
+		letter-spacing: 0.05em;
+	}
+	.comments-heading {
+		font-size: 1.2rem;
+		font-weight: 800;
+		color: #0f172a;
+		margin: 0;
+	}
+	.comments-count-pill {
+		background: #f1f5f9;
+		color: #475569;
+		font-size: 0.78rem;
+		font-weight: 700;
+		padding: 0.15rem 0.6rem;
+		border-radius: 999px;
+		border: 1px solid #e2e8f0;
+	}
+	.comments-subtitle {
+		font-size: 0.85rem;
+		color: #64748b;
+		margin: 0;
+	}
+
+	.comments-list {
+		display: flex;
+		flex-direction: column;
+		gap: 0.9rem;
+		margin-bottom: 1.75rem;
+	}
+	.comments-loading,
+	.comments-empty,
+	.comments-error {
+		padding: 1.15rem 1.25rem;
+		border-radius: 8px;
+		font-size: 0.88rem;
+		text-align: center;
+	}
+	.comments-loading,
+	.comments-empty {
+		background: #f8fafc;
+		color: #64748b;
+		border: 1px dashed #cbd5e1;
+	}
+	.comments-error {
+		background: #fef2f2;
+		color: #b91c1c;
+		border: 1px solid #fecaca;
+	}
+
+	:global(.comment-card) {
+		background: #f8fafc;
+		border: 1px solid #e2e8f0;
+		border-radius: 10px;
+		padding: 1rem 1.2rem;
+		transition: border-color 0.15s ease;
+	}
+	:global(.comment-card:hover) {
+		border-color: #cbd5e1;
+	}
+	:global(.comment-card.is-admin) {
+		background: #fff7ed;
+		border-color: #fed7aa;
+	}
+	:global(.comment-meta) {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 0.5rem;
+		flex-wrap: wrap;
+		margin-bottom: 0.55rem;
+	}
+	:global(.comment-author-wrap) {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		flex-wrap: wrap;
+	}
+	:global(.comment-avatar) {
+		width: 26px;
+		height: 26px;
+		border-radius: 50%;
+		background: #f0883e;
+		color: #ffffff;
+		font-size: 0.78rem;
+		font-weight: 800;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+	}
+	:global(.comment-author-name) {
+		font-size: 0.92rem;
+		font-weight: 700;
+		color: #0f172a;
+	}
+	:global(.comment-role-badge) {
+		font-family: monospace;
+		font-size: 0.66rem;
+		font-weight: 700;
+		padding: 0.1rem 0.42rem;
+		border-radius: 4px;
+		letter-spacing: 0.03em;
+	}
+	:global(.comment-role-badge.reader) {
+		background: #e2e8f0;
+		color: #475569;
+	}
+	:global(.comment-role-badge.admin) {
+		background: #f0883e;
+		color: #0b0f19;
+	}
+	:global(.comment-date) {
+		font-size: 0.76rem;
+		color: #64748b;
+		font-family: monospace;
+	}
+	:global(.comment-body) {
+		margin: 0 !important;
+		font-size: 0.92rem;
+		line-height: 1.65;
+		color: #1e293b;
+		white-space: pre-wrap;
+		word-break: break-word;
+	}
+
+	.comment-form {
+		background: #ffffff;
+		border: 1px solid #cbd5e1;
+		border-radius: 10px;
+		padding: 1.35rem 1.5rem;
+		box-shadow: 0 2px 10px rgba(15, 23, 42, 0.04);
+		position: relative;
+	}
+	.form-header-bar {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: 0.5rem;
+		flex-wrap: wrap;
+		margin-bottom: 1rem;
+		padding-bottom: 0.65rem;
+		border-bottom: 1px solid #f1f5f9;
+	}
+	.form-title {
+		font-size: 0.98rem;
+		font-weight: 800;
+		color: #0f172a;
+	}
+	.form-hint {
+		font-size: 0.76rem;
+		color: #64748b;
+	}
+	.hp-field {
+		position: absolute;
+		left: -9999px;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		opacity: 0;
+		pointer-events: none;
+	}
+	.form-row {
+		margin-bottom: 1rem;
+	}
+	.label-with-counter {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
+	.form-label {
+		display: block;
+		font-size: 0.84rem;
+		font-weight: 700;
+		color: #334155;
+		margin-bottom: 0.35rem;
+	}
+	.required-mark {
+		color: #ef4444;
+	}
+	.char-counter {
+		font-size: 0.75rem;
+		color: #64748b;
+		font-family: monospace;
+	}
+	.form-input,
+	.form-textarea {
+		width: 100%;
+		box-sizing: border-box;
+		padding: 0.65rem 0.85rem;
+		font-size: 0.92rem;
+		font-family: inherit;
+		color: #0f172a;
+		background: #f8fafc;
+		border: 1px solid #cbd5e1;
+		border-radius: 6px;
+		transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+	}
+	.form-input:focus,
+	.form-textarea:focus {
+		outline: none;
+		background: #ffffff;
+		border-color: #2563eb;
+		box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+	}
+	.form-textarea {
+		resize: vertical;
+		min-height: 96px;
+		line-height: 1.6;
+	}
+
+	.form-feedback {
+		font-size: 0.85rem;
+		font-weight: 600;
+		margin-bottom: 0.75rem;
+		min-height: 0;
+	}
+	.form-feedback.error {
+		padding: 0.6rem 0.85rem;
+		border-radius: 6px;
+		background: #fef2f2;
+		color: #b91c1c;
+		border: 1px solid #fecaca;
+	}
+	.form-feedback.success {
+		padding: 0.6rem 0.85rem;
+		border-radius: 6px;
+		background: #ecfdf5;
+		color: #047857;
+		border: 1px solid #a7f3d0;
+	}
+
+	.form-actions {
+		display: flex;
+		justify-content: flex-end;
+	}
+	.submit-comment-btn {
+		background: #0f172a;
+		color: #ffffff;
+		font-size: 0.9rem;
+		font-weight: 700;
+		padding: 0.68rem 1.4rem;
+		border: none;
+		border-radius: 6px;
+		cursor: pointer;
+		transition: background-color 0.15s ease, transform 0.1s ease;
+	}
+	.submit-comment-btn:hover:not(:disabled) {
+		background: #1e293b;
+		color: #38bdf8;
+		transform: translateY(-1px);
+	}
+	.submit-comment-btn:disabled {
+		opacity: 0.65;
+		cursor: not-allowed;
+	}
+
+	@media (max-width: 680px) {
+		.comment-form {
+			padding: 1.1rem 1rem;
+		}
+		.submit-comment-btn {
+			width: 100%;
+		}
+	}
+</style>

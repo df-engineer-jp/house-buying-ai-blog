@@ -1,0 +1,8 @@
+name = "house-buying-ai-blog"
+pages_build_output_dir = "dist"
+compatibility_date = "2026-11-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "house-buying-ai-blog-db"
+database_id = "66a4ea63-5f65-44d5-afbc-279e4a116449"
