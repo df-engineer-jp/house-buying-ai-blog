@@ -1,12 +1,12 @@
 ---
 interface Props {
   type?: 'vps' | 'tool' | 'book' | 'service';
-  title: string;
+  title?: string;
   subtitle?: string;
-  description: string;
+  description?: string;
   features?: string[];
   badge?: string;
-  url: string;
+  url?: string;
   buttonText?: string;
   highlight?: string;
   pr?: boolean;
@@ -15,16 +15,20 @@ interface Props {
 
 const {
   type = 'vps',
-  title,
-  subtitle,
-  description,
-  features = [],
+  title = 'さくらのVPS // 24時間自律稼働AI・取引Bot推奨インフラ',
+  subtitle = '月額換算600円台から / 2週間無料お試し期間つき国産クラウド',
+  description = 'Python常駐デーモンやリアルタイム監視システムを24時間安定稼働させるための定番国産VPS。低レイテンシ・固定IPv4・root権限完全付与により、自宅PCを閉じたまま自動化基盤を運用できます。',
+  features = [
+    'root権限完全付与でsystemd常駐デーモンや自動取引Botが自在に動く',
+    '通信量無制限・国内データセンター直結の高速＆安定ネットワーク',
+    '2週間無料お試し期間あり（テスト環境を即日構築可能）',
+  ],
   badge = '現場推奨環境',
-  url,
+  url = 'https://px.a8.net/svt/ejp?a8mat=4BGH3I+92UZW2+D8Y+BWVTE',
   buttonText = '詳細・プランを確認する ➔',
   highlight,
   pr = true,
-  trackingPixel = url.includes('a8mat=4BGH3I+92UZW2+D8Y+BWVTE') ? 'https://www17.a8.net/0.gif?a8mat=4BGH3I+92UZW2+D8Y+BWVTE' : undefined,
+  trackingPixel = (url || '').includes('a8mat=4BGH3I+92UZW2+D8Y+BWVTE') ? 'https://www17.a8.net/0.gif?a8mat=4BGH3I+92UZW2+D8Y+BWVTE' : undefined,
 } = Astro.props;
 
 // タイプ別アイコン
