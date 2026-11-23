@@ -26,14 +26,14 @@ const ratio = Math.min(Math.max(earned / target, 0.0), 1.0);
 const barWidth = Math.max(Math.floor(ratio * 80), 1);
 const earnedStr = `¥${earned.toLocaleString()}`;
 
-// ステータス設定（上段特大ステータス ＆ 93px心電図ベースライン）
+// ステータス設定（上段特大ステータス ＆ 85px心電図ベースライン）
 const configs = {
   idle: {
     color: '#f0883e',
     glow: 'rgba(240, 136, 62, 0.25)',
     chassisBg: '#0d1117',
     chassisBorder: '#30363d',
-    defaultPolyline: '58,93 80,93 85,87 90,99 95,89.5 100,94.5 105,93 138,93',
+    defaultPolyline: '58,85 80,85 85,79 90,91 95,81.5 100,86.5 105,85 138,85',
     mainText: 'ONLINE',
   },
   writing: {
@@ -41,7 +41,7 @@ const configs = {
     glow: 'rgba(88, 166, 255, 0.25)',
     chassisBg: '#0d1117',
     chassisBorder: '#30363d',
-    defaultPolyline: '58,93 75,93 80,85 85,101 90,87 95,96 100,93 138,93',
+    defaultPolyline: '58,85 75,85 80,77 85,93 90,79 95,88 100,85 138,85',
     mainText: 'WRITING_',
   },
   panic: {
@@ -49,7 +49,7 @@ const configs = {
     glow: 'rgba(248, 81, 73, 0.35)',
     chassisBg: '#1c0d0d',
     chassisBorder: '#f85149',
-    defaultPolyline: '58,93 75,93 80,81 85,105 90,83 95,100 100,93 138,93',
+    defaultPolyline: '58,85 75,85 80,73 85,97 90,75 95,92 100,85 138,85',
     mainText: 'ERR !',
   },
   victory: {
@@ -57,7 +57,7 @@ const configs = {
     glow: 'rgba(46, 160, 67, 0.3)',
     chassisBg: '#0d1c12',
     chassisBorder: '#3fb950',
-    defaultPolyline: '58,93 80,93 85,86 90,100 95,89 100,94 105,93 138,93',
+    defaultPolyline: '58,85 80,85 85,78 90,92 95,81 100,86 105,85 138,85',
     mainText: '200 OK ✔',
   },
   speechless: {
@@ -73,7 +73,7 @@ const configs = {
     glow: 'rgba(210, 153, 34, 0.35)',
     chassisBg: '#1c180d',
     chassisBorder: '#e3b341',
-    defaultPolyline: '58,93 80,93 85,84 90,102 95,87 100,95 105,93 138,93',
+    defaultPolyline: '58,85 80,85 85,76 90,94 95,79 100,87 105,85 138,85',
     mainText: '+¥1,000',
   },
 };
@@ -83,9 +83,9 @@ const mainText = message || cfg.mainText;
 const height = Math.round(width * 1.15);
 const uid = `pen_${Math.random().toString(36).slice(2, 9)}`;
 
-// 横幅96pxディスプレイの安全描画幅（約80px）に絶対収まるよう動的フォントサイズを算出
+// 横幅96pxディスプレイの安全描画幅（約80px）に絶対収まるよう動的フォントサイズを算出（EARNEDは元の11pxを維持）
 const mainFontSize = Math.max(9.5, Math.min(14.5, Number((80 / Math.max(mainText.length * 0.64, 1)).toFixed(1))));
-const earnedFontSize = Math.max(8.0, Math.min(13.0, Number((78 / Math.max(earnedStr.length * 0.66, 1)).toFixed(1))));
+const earnedFontSize = earnedStr.length <= 11 ? 11 : Math.max(8.5, Number((80 / (earnedStr.length * 0.66)).toFixed(1)));
 ---
 
 <div 
@@ -138,7 +138,7 @@ const earnedFontSize = Math.max(8.0, Math.min(13.0, Number((78 / Math.max(earned
       <!-- 1. 最上段：特大ステータステキスト（ERR ! / 200 OK ✔ / ONLINE） -->
       <text 
         x="100" 
-        y="66" 
+        y="61" 
         fill={cfg.color} 
         font-size={mainFontSize} 
         font-family="ui-monospace, SFMono-Regular, Menlo, monospace" 
@@ -150,10 +150,10 @@ const earnedFontSize = Math.max(8.0, Math.min(13.0, Number((78 / Math.max(earned
         {mainText}
       </text>
 
-      <!-- 2. 上〜中段：心電図波形（ベースラインを y=93 に引き上げ） -->
+      <!-- 2. 上〜中段：心電図波形（ベースラインを y=85 に上寄せ） -->
       {status === 'speechless' ? (
         <g class="cursor-group">
-          <text x="100" y="98" fill="#8b949e" font-size="20" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" text-anchor="middle" class="blinking-cursor">_</text>
+          <text x="100" y="90" fill="#8b949e" font-size="20" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" text-anchor="middle" class="blinking-cursor">_</text>
         </g>
       ) : (
         <g class="wave-group">
@@ -169,34 +169,33 @@ const earnedFontSize = Math.max(8.0, Math.min(13.0, Number((78 / Math.max(earned
         </g>
       )}
 
-      <!-- 3. 中〜下段：進捗ゲージバー（心電図のすぐ下 y=118） -->
-      <rect x="60" y="118" width="80" height="3.5" rx="1.5" fill="#21262d" />
-      <rect x="60" y="118" width={barWidth} height="3.5" rx="1.5" fill={cfg.color} />
+      <!-- 3. 中〜下段：進捗ゲージバー（心電図の下 y=108） -->
+      <rect x="60" y="108" width="80" height="3.5" rx="1.5" fill="#21262d" />
+      <rect x="60" y="108" width={barWidth} height="3.5" rx="1.5" fill={cfg.color} />
 
-      <!-- 4. 最下段：earned 金額表示（2段組み＋文字数連動縮小で枠内確実フィット） -->
+      <!-- 4. 最下段：earned 金額表示（元と同じ11pxサイズのまま2段組で左右余白を確保） -->
       <text 
         x="100" 
-        y="135" 
+        y="131" 
         fill={cfg.color} 
-        fill-opacity="0.82"
-        font-size="7.5" 
+        font-size="11" 
         font-family="ui-monospace, SFMono-Regular, Menlo, monospace" 
-        font-weight="700" 
+        font-weight="800" 
         text-anchor="middle" 
-        letter-spacing="0.14em"
+        letter-spacing="0.04em"
         class="live-earned-label"
       >
-        EARNED
+        EARNED:
       </text>
       <text 
         x="100" 
-        y="151" 
+        y="149" 
         fill={cfg.color} 
         font-size={earnedFontSize} 
         font-family="ui-monospace, SFMono-Regular, Menlo, monospace" 
         font-weight="800" 
         text-anchor="middle" 
-        letter-spacing="0.02em" 
+        letter-spacing="0.04em" 
         class="live-earned"
       >
         {earnedStr}
@@ -261,7 +260,7 @@ const earnedFontSize = Math.max(8.0, Math.min(13.0, Number((78 / Math.max(earned
 </style>
 
 <script>
-  // 心電図パルスが左から右へスーッと流れていくアニメーション（ベースライン y=93）
+  // 心電図パルスが左から右へスーッと流れていくアニメーション（ベースライン y=85）
   function initLiveTerminals() {
     const terminals = document.querySelectorAll('.pen-terminal-wrapper.interactive');
     
@@ -333,7 +332,7 @@ const earnedFontSize = Math.max(8.0, Math.min(13.0, Number((78 / Math.max(earned
         for (let x = startX; x <= endX; x += 2) {
           const d = x - pulseX;
           const offset = getECGPulseOffset(d, status);
-          const y = 93 + offset; // ベースライン y=93
+          const y = 85 + offset; // ベースライン y=85
           points.push(`${x},${y.toFixed(1)}`);
         }
 
