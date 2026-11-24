@@ -24,11 +24,15 @@ const {
     '2週間無料お試し期間あり（テスト環境を即日構築可能）',
   ],
   badge = '現場推奨環境',
-  url = 'https://px.a8.net/svt/ejp?a8mat=4BGH3I+92UZW2+D8Y+BWVTE',
+  url = 'https://px.a8.net/svt/ejp?a8mat=4BGLSC+DPKD9U+D8Y+BZO4I',
   buttonText = '詳細・プランを確認する ➔',
   highlight,
   pr = true,
-  trackingPixel = (url || '').includes('a8mat=4BGH3I+92UZW2+D8Y+BWVTE') ? 'https://www17.a8.net/0.gif?a8mat=4BGH3I+92UZW2+D8Y+BWVTE' : undefined,
+  trackingPixel = (url || '').includes('a8mat=4BGLSC+DPKD9U+D8Y+BZO4I')
+    ? 'https://www13.a8.net/0.gif?a8mat=4BGLSC+DPKD9U+D8Y+BZO4I'
+    : (url || '').includes('a8mat=4BGH3I+92UZW2+D8Y+BWVTE')
+      ? 'https://www17.a8.net/0.gif?a8mat=4BGH3I+92UZW2+D8Y+BWVTE'
+      : undefined,
 } = Astro.props;
 
 // タイプ別アイコン

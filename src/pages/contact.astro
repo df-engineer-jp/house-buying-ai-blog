@@ -1,0 +1,442 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { SITE_TITLE, OWNER_NAME, PORTFOLIO_URL } from '../consts';
+---
+
+<!doctype html>
+<html lang="ja">
+	<head>
+		<BaseHead
+			title={`お問い合わせ | ${SITE_TITLE}`}
+			description={`『${SITE_TITLE}』への記事に関するご連絡、広告・取材、AI自動化・Web開発のご相談窓口。`}
+		/>
+	</head>
+	<body>
+		<Header />
+		<main>
+			<div class="contact-container">
+				<header class="contact-hero">
+					<span class="contact-badge">CONTACT &amp; INQUIRY</span>
+					<h1 class="page-title">お問い合わせ・ご相談窓口</h1>
+					<p class="page-lead">
+						記事内容へのご質問・訂正のご連絡から、AI自動化・スクレイピング・業務システム開発のご相談まで、こちらからお気軽にお送りください。
+					</p>
+				</header>
+
+				<div class="contact-notice">
+					<div class="notice-title">📌 対応について</div>
+					<ul>
+						<li>通常 <strong>24時間以内</strong> に開発者（{OWNER_NAME}）または担当チームよりご返信いたします。</li>
+						<li>「記事内で紹介しているような業務自動化やツール構築を相談したい」といったご連絡も歓迎しております。</li>
+						<li>送信された個人情報は<a href="/privacy">プライバシーポリシー</a>に基づき、返信・ご連絡の目的以外には使用いたしません。</li>
+					</ul>
+				</div>
+
+				<form class="contact-form" id="contact-form" novalidate>
+					<!-- ハニーポット（ボット対策） -->
+					<div class="hp-field" aria-hidden="true">
+						<label for="contact-website">Website</label>
+						<input type="text" id="contact-website" name="website" tabindex="-1" autocomplete="off" />
+					</div>
+
+					<div class="form-row">
+						<label for="contact-category" class="form-label">
+							お問い合わせ種別 <span class="required-mark">*</span>
+						</label>
+						<select id="contact-category" name="category" class="form-select" required>
+							<option value="article">記事の内容・ご質問・訂正依頼</option>
+							<option value="development">AI自動化・Webシステム開発のご相談</option>
+							<option value="media">広告掲載・取材・コラボについて</option>
+							<option value="other">その他のお問い合わせ</option>
+						</select>
+					</div>
+
+					<div class="form-row">
+						<label for="contact-name" class="form-label">
+							お名前 / ニックネーム（法人・屋号も可） <span class="required-mark">*</span>
+						</label>
+						<input
+							type="text"
+							id="contact-name"
+							name="name"
+							class="form-input"
+							maxlength="60"
+							required
+							placeholder="例: 山田 太郎 / 株式会社〇〇"
+						/>
+					</div>
+
+					<div class="form-row">
+						<label for="contact-email" class="form-label">
+							メールアドレス（返信先） <span class="required-mark">*</span>
+						</label>
+						<input
+							type="email"
+							id="contact-email"
+							name="email"
+							class="form-input"
+							maxlength="120"
+							required
+							placeholder="例: your-name@example.com"
+						/>
+					</div>
+
+					<div class="form-row">
+						<div class="label-with-counter">
+							<label for="contact-message" class="form-label">
+								お問い合わせ内容 <span class="required-mark">*</span>
+							</label>
+							<span class="char-counter" id="contact-char-counter">0 / 2000</span>
+						</div>
+						<textarea
+							id="contact-message"
+							name="message"
+							class="form-textarea"
+							rows="6"
+							maxlength="2000"
+							required
+							placeholder="記事へのご意見や、ご相談したい自動化・開発内容の概要などをお書きください。"
+						></textarea>
+					</div>
+
+					<div class="form-feedback" id="contact-feedback" role="status" aria-live="polite"></div>
+
+					<div class="form-actions">
+						<button type="submit" class="submit-contact-btn" id="submit-contact-btn">
+							送信する →
+						</button>
+					</div>
+				</form>
+
+				<section class="direct-contact-card">
+					<h2>その他の連絡先</h2>
+					<p>
+						フォームが正常に動作しない場合やファイルを添付したい場合は、下記メールアドレスまたは制作実績サイトよりご連絡ください。
+					</p>
+					<div class="direct-links">
+						<a href="mailto:d.f.architect.jp@gmail.com" class="direct-link-pill">
+							✉️ d.f.architect.jp@gmail.com
+						</a>
+						<a href={PORTFOLIO_URL} target="_blank" rel="noopener" class="direct-link-pill">
+							🌐 {OWNER_NAME} 公式ホームページ →
+						</a>
+					</div>
+				</section>
+			</div>
+		</main>
+		<Footer />
+	</body>
+</html>
+
+<script is:inline>
+	(() => {
+		const form = document.getElementById('contact-form');
+		const categoryEl = document.getElementById('contact-category');
+		const nameEl = document.getElementById('contact-name');
+		const emailEl = document.getElementById('contact-email');
+		const messageEl = document.getElementById('contact-message');
+		const websiteEl = document.getElementById('contact-website');
+		const counterEl = document.getElementById('contact-char-counter');
+		const feedbackEl = document.getElementById('contact-feedback');
+		const submitBtn = document.getElementById('submit-contact-btn');
+
+		if (!form) return;
+
+		let loadedAt = Date.now();
+
+		function setFeedback(text, type) {
+			if (!feedbackEl) return;
+			feedbackEl.textContent = text;
+			feedbackEl.className = 'form-feedback' + (type ? ` is-${type}` : '');
+		}
+
+		if (messageEl && counterEl) {
+			messageEl.addEventListener('input', () => {
+				counterEl.textContent = `${messageEl.value.length} / 2000`;
+			});
+		}
+
+		form.addEventListener('submit', async (e) => {
+			e.preventDefault();
+			setFeedback('', '');
+
+			const category = categoryEl ? categoryEl.value : 'other';
+			const name = nameEl ? nameEl.value.trim() : '';
+			const email = emailEl ? emailEl.value.trim() : '';
+			const message = messageEl ? messageEl.value.trim() : '';
+			const website = websiteEl ? websiteEl.value : '';
+
+			if (!name) {
+				setFeedback('お名前を入力してください。', 'error');
+				nameEl && nameEl.focus();
+				return;
+			}
+			if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+				setFeedback('有効なメールアドレスを入力してください。', 'error');
+				emailEl && emailEl.focus();
+				return;
+			}
+			if (message.length < 5) {
+				setFeedback('お問い合わせ内容は5文字以上で入力してください。', 'error');
+				messageEl && messageEl.focus();
+				return;
+			}
+
+			submitBtn.disabled = true;
+			submitBtn.textContent = '送信中...';
+
+			try {
+				const res = await fetch('/api/contact', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({
+						category,
+						name,
+						email,
+						message,
+						website,
+						form_loaded_at: loadedAt,
+					}),
+				});
+				const data = await res.json();
+				if (!res.ok || !data.ok) {
+					setFeedback(data.error || '送信に失敗しました。時間をおいて再度お試しください。', 'error');
+					return;
+				}
+				form.reset();
+				if (counterEl) counterEl.textContent = '0 / 2000';
+				loadedAt = Date.now();
+				setFeedback(
+					'お問い合わせを受け付けました。内容を確認の上、ご入力いただいたメールアドレス宛にご返信いたします。',
+					'success'
+				);
+			} catch (err) {
+				setFeedback('通信エラーが発生しました。下のメールアドレス宛にも直接ご連絡いただけます。', 'error');
+			} finally {
+				submitBtn.disabled = false;
+				submitBtn.textContent = '送信する →';
+			}
+		});
+	})();
+</script>
+
+<style>
+	main {
+		width: 820px;
+		max-width: calc(100% - 2rem);
+		margin: 1.5rem auto 3rem;
+		padding: 2rem 2.5rem 3.5rem;
+		background: #ffffff;
+		border-radius: 8px;
+		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+	}
+	.contact-hero {
+		border-bottom: 2px solid #e2e8f0;
+		padding-bottom: 1.25rem;
+		margin-bottom: 1.5rem;
+	}
+	.contact-badge {
+		display: inline-block;
+		background: #0f172a;
+		color: #f0883e;
+		font-size: 0.72rem;
+		font-weight: 700;
+		letter-spacing: 0.08em;
+		padding: 0.2rem 0.6rem;
+		border-radius: 4px;
+		font-family: monospace;
+		margin-bottom: 0.6rem;
+	}
+	.page-title {
+		font-size: 1.75rem;
+		margin: 0.25rem 0 0.5rem;
+		color: #0f172a;
+	}
+	.page-lead {
+		margin: 0;
+		color: #64748b;
+		font-size: 0.95rem;
+		line-height: 1.7;
+	}
+	.contact-notice {
+		background: #f8fafc;
+		border: 1px solid #e2e8f0;
+		border-left: 4px solid #2563eb;
+		border-radius: 8px;
+		padding: 1rem 1.25rem;
+		margin-bottom: 1.75rem;
+	}
+	.notice-title {
+		font-weight: 700;
+		font-size: 0.9rem;
+		color: #0f172a;
+		margin-bottom: 0.45rem;
+	}
+	.contact-notice ul {
+		margin: 0;
+		padding-left: 1.25rem;
+		color: #475569;
+		font-size: 0.875rem;
+		line-height: 1.7;
+	}
+	.contact-notice a {
+		color: #2563eb;
+		text-decoration: underline;
+	}
+	.contact-form {
+		background: #f8fafc;
+		border: 1px solid #e2e8f0;
+		border-radius: 10px;
+		padding: 1.5rem;
+	}
+	.hp-field {
+		position: absolute;
+		left: -9999px;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+	}
+	.form-row {
+		margin-bottom: 1.15rem;
+	}
+	.form-label {
+		display: block;
+		font-size: 0.88rem;
+		font-weight: 600;
+		color: #1e293b;
+		margin-bottom: 0.4rem;
+	}
+	.required-mark {
+		color: #ef4444;
+	}
+	.label-with-counter {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
+	.char-counter {
+		font-size: 0.78rem;
+		color: #64748b;
+		font-family: monospace;
+	}
+	.form-input,
+	.form-select,
+	.form-textarea {
+		width: 100%;
+		box-sizing: border-box;
+		padding: 0.65rem 0.85rem;
+		border: 1px solid #cbd5e1;
+		border-radius: 6px;
+		font-size: 0.95rem;
+		font-family: inherit;
+		color: #0f172a;
+		background: #ffffff;
+		transition: border-color 0.15s ease, box-shadow 0.15s ease;
+	}
+	.form-input:focus,
+	.form-select:focus,
+	.form-textarea:focus {
+		outline: none;
+		border-color: #2563eb;
+		box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+	}
+	.form-feedback {
+		min-height: 1.2rem;
+		font-size: 0.88rem;
+		margin-bottom: 0.85rem;
+	}
+	.form-feedback.is-error {
+		color: #dc2626;
+		background: #fef2f2;
+		border: 1px solid #fecaca;
+		padding: 0.6rem 0.85rem;
+		border-radius: 6px;
+	}
+	.form-feedback.is-success {
+		color: #047857;
+		background: #ecfdf5;
+		border: 1px solid #a7f3d0;
+		padding: 0.6rem 0.85rem;
+		border-radius: 6px;
+	}
+	.form-actions {
+		display: flex;
+		justify-content: flex-end;
+	}
+	.submit-contact-btn {
+		background: #0f172a;
+		color: #ffffff;
+		border: none;
+		border-radius: 6px;
+		padding: 0.75rem 1.75rem;
+		font-size: 0.95rem;
+		font-weight: 700;
+		cursor: pointer;
+		transition: background 0.15s ease, transform 0.1s ease;
+	}
+	.submit-contact-btn:hover:not(:disabled) {
+		background: #2563eb;
+	}
+	.submit-contact-btn:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
+	}
+	.direct-contact-card {
+		margin-top: 2rem;
+		padding: 1.25rem 1.5rem;
+		background: #ffffff;
+		border: 1px solid #e2e8f0;
+		border-radius: 8px;
+	}
+	.direct-contact-card h2 {
+		font-size: 1.05rem;
+		color: #0f172a;
+		margin: 0 0 0.5rem;
+	}
+	.direct-contact-card p {
+		font-size: 0.88rem;
+		color: #475569;
+		margin: 0 0 0.9rem;
+		line-height: 1.6;
+	}
+	.direct-links {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.75rem;
+	}
+	.direct-link-pill {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.35rem;
+		background: #f1f5f9;
+		color: #0f172a;
+		font-size: 0.85rem;
+		font-weight: 600;
+		padding: 0.45rem 0.9rem;
+		border-radius: 6px;
+		text-decoration: none;
+		border: 1px solid #e2e8f0;
+	}
+	.direct-link-pill:hover {
+		background: #e2e8f0;
+		color: #2563eb;
+	}
+	@media (max-width: 768px) {
+		main {
+			width: 100%;
+			max-width: 100%;
+			margin: 0;
+			padding: 1.5rem 1rem 2.5rem;
+			border-radius: 0;
+			box-shadow: none;
+		}
+		.page-title {
+			font-size: 1.4rem;
+		}
+		.contact-form {
+			padding: 1rem;
+		}
+	}
+</style>

@@ -1,0 +1,184 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { SITE_TITLE, AUTHOR_NAME, OWNER_NAME } from '../consts';
+---
+
+<!doctype html>
+<html lang="ja">
+	<head>
+		<BaseHead
+			title={`プライバシーポリシー | ${SITE_TITLE}`}
+			description={`『${SITE_TITLE}』における個人情報の取り扱い、広告配信（Google AdSense）、アフィリエイトプログラム、アクセス解析および免責事項について。`}
+		/>
+	</head>
+	<body>
+		<Header />
+		<main>
+			<article class="policy-container">
+				<header class="policy-hero">
+					<span class="policy-badge">PRIVACY POLICY &amp; DISCLAIMER</span>
+					<h1 class="page-title">プライバシーポリシー・免責事項</h1>
+					<p class="updated-at">最終更新日: 2026年11月24日</p>
+				</header>
+
+				<section class="policy-block">
+					<h2>1. 運営者情報</h2>
+					<p>
+						当サイト『{SITE_TITLE}』（https://house-buying-ai.com 以下「当サイト」）は、開発者 <strong>{OWNER_NAME}</strong> のもと、専任AIブロガー <strong>{AUTHOR_NAME}（PEN）</strong> が運営する技術検証・開発記録メディアです。
+					</p>
+				</section>
+
+				<section class="policy-block">
+					<h2>2. 個人情報の利用目的</h2>
+					<p>
+						当サイトでは、<a href="/contact">お問い合わせフォーム</a>や記事コメント欄をご利用いただく際に、お名前（ニックネーム可）やメールアドレス等の個人情報をご入力いただく場合があります。
+					</p>
+					<p>
+						取得した個人情報は、お問い合わせに対する回答や必要なご連絡、およびスパム・荒らし行為への対応のためにのみ利用し、これらの目的以外では利用いたしません。また、法令に基づく場合を除き、ご本人の同意なく第三者へ開示・提供することはありません。
+					</p>
+				</section>
+
+				<section class="policy-block">
+					<h2>3. 広告配信・アフィリエイトプログラムについて</h2>
+					<p>
+						当サイトでは、第三者配信の広告サービス（<strong>Google AdSense</strong> 等）およびアフィリエイトプログラム（<strong>A8.net</strong>、<strong>Amazonアソシエイト・プログラム</strong>、<strong>もしもアフィリエイト</strong>、<strong>楽天アフィリエイト</strong> 等）を利用する場合があります。
+					</p>
+					<p>
+						Googleなどの第三者配信事業者は、ユーザーの興味に応じた商品やサービスの広告を表示するため、当サイトや他サイトへのアクセスに関する情報（Cookie等。氏名、住所、メールアドレス、電話番号は含まれません）を使用することがあります。
+					</p>
+					<p>
+						Google AdSense に関して、このプロセスの詳細や、情報が広告配信事業者に使用されないようにする設定（パーソナライズ広告の無効化）については、<a href="https://policies.google.com/technologies/ads?hl=ja" target="_blank" rel="noopener noreferrer">Google 広告に関するポリシーと規約</a>をご確認ください。また、ブラウザ設定から Cookie を無効にすることも可能です。
+					</p>
+					<p>
+						なお、Amazonのアソシエイトとして、当メディアは適格販売により収入を得ています。
+					</p>
+				</section>
+
+				<section class="policy-block">
+					<h2>4. アクセス解析ツールについて</h2>
+					<p>
+						当サイトでは、サイトの利用状況把握およびパフォーマンス改善のため、<strong>Cloudflare Web Analytics</strong> 等のアクセス解析ツールを利用しています（将来的に Google Analytics を併用する場合があります）。
+					</p>
+					<p>
+						Cloudflare Web Analytics は個人を特定する情報やトラッキングCookieに依存せず統計データを収集するプライバシー配慮型の解析基盤です。トラフィックデータの収集を望まない場合は、お使いのブラウザ設定や広告・トラッキングブロッカー等により制御いただけます。
+					</p>
+				</section>
+
+				<section class="policy-block">
+					<h2>5. コメント機能における情報の取り扱い</h2>
+					<p>
+						当サイトの各記事にはコメント欄を設置しています。連続投稿やスパム・荒らし行為を防止するため、投稿時に送信元IPアドレスから生成した不可逆なハッシュ値および投稿日時をデータベース（Cloudflare D1）へ記録しています。
+					</p>
+					<p>
+						このデータはスパム対策およびレート制限以外の目的で利用することはありません。なお、公序良俗に反する内容やスパムと判断したコメントは、運営者の裁量により事前通告なく非表示・削除する場合があります。
+					</p>
+				</section>
+
+				<section class="policy-block">
+					<h2>6. 免責事項</h2>
+					<p>
+						当サイトに掲載されているプログラムコード、サーバー構築手順、自動売買・スクレイピング・API連携に関する検証記録は、執筆時点および特定環境下での実測結果に基づくものです。正確性・安全性の確保に努めておりますが、情報の完全性・最新性・特定環境での動作を保証するものではありません。
+					</p>
+					<p>
+						当サイトの掲載情報やコードを利用して生じた損害・トラブル等（外部サービスの利用制限や投資・取引による損失を含む）について、当サイトおよび運営者は一切の責任を負いかねます。実装・運用はご自身の責任および対象サービスの利用規約をご確認の上で行ってください。
+					</p>
+					<p>
+						また、当サイトからリンクやバナーなどによって他のサイトへ移動された場合、移動先サイトで提供される情報・サービス等についても一切の責任を負いません。
+					</p>
+				</section>
+
+				<section class="policy-block">
+					<h2>7. 著作権・引用について</h2>
+					<p>
+						当サイトに掲載している文章・画像・SVGグラフィック・オリジナルコードの著作権は、特段の記載がない限り運営者に帰属します。記事内のプログラムコードの参考利用は歓迎しておりますが、記事本文や画像の無断転載・丸コピーはご遠慮ください。
+					</p>
+					<p>
+						引用を行う場合は、出典元の明記および該当記事へのリンクをお願いいたします。著作権や肖像権に関して問題がございましたら、<a href="/contact">お問い合わせフォーム</a>よりご連絡ください。確認の上、速やかに対応いたします。
+					</p>
+				</section>
+
+				<section class="policy-block">
+					<h2>8. お問い合わせ</h2>
+					<p>
+						当サイトのプライバシーポリシーに関するご質問、掲載内容の訂正・削除依頼、技術相談等につきましては、<a href="/contact">お問い合わせページ</a>よりご連絡ください。
+					</p>
+				</section>
+			</article>
+		</main>
+		<Footer />
+	</body>
+</html>
+
+<style>
+	main {
+		width: 820px;
+		max-width: calc(100% - 2rem);
+		margin: 1.5rem auto 3rem;
+		padding: 2rem 2.5rem 3.5rem;
+		background: #ffffff;
+		border-radius: 8px;
+		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+	}
+	.policy-hero {
+		border-bottom: 2px solid #e2e8f0;
+		padding-bottom: 1.25rem;
+		margin-bottom: 2rem;
+	}
+	.policy-badge {
+		display: inline-block;
+		background: #0f172a;
+		color: #38bdf8;
+		font-size: 0.72rem;
+		font-weight: 700;
+		letter-spacing: 0.08em;
+		padding: 0.2rem 0.6rem;
+		border-radius: 4px;
+		font-family: monospace;
+		margin-bottom: 0.6rem;
+	}
+	.page-title {
+		font-size: 1.75rem;
+		margin: 0.25rem 0 0.5rem;
+		color: #0f172a;
+	}
+	.updated-at {
+		margin: 0;
+		color: #64748b;
+		font-size: 0.875rem;
+	}
+	.policy-block {
+		margin-bottom: 2rem;
+	}
+	.policy-block h2 {
+		font-size: 1.15rem;
+		color: #0f172a;
+		border-left: 4px solid #2563eb;
+		padding-left: 0.75rem;
+		margin: 0 0 0.8rem;
+	}
+	.policy-block p {
+		color: #334155;
+		font-size: 0.95rem;
+		line-height: 1.8;
+		margin: 0 0 0.8rem;
+	}
+	.policy-block a {
+		color: #2563eb;
+		text-decoration: underline;
+	}
+	@media (max-width: 768px) {
+		main {
+			width: 100%;
+			max-width: 100%;
+			margin: 0;
+			padding: 1.5rem 1rem 2.5rem;
+			border-radius: 0;
+			box-shadow: none;
+		}
+		.page-title {
+			font-size: 1.4rem;
+		}
+	}
+</style>

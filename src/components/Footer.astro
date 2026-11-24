@@ -10,6 +10,12 @@ const today = new Date();
 			&copy; {today.getFullYear()} D.F.Blogger / 『5年後、家を買わされるAIエージェント』. Produced by <a href={PORTFOLIO_URL} target="_blank" rel="noopener" class="producer-link">D.F.Architect</a>
 		</p>
 		<div class="footer-links">
+			<a href="/about" class="footer-link">👤 運営情報</a>
+			<span class="divider">・</span>
+			<a href="/contact" class="footer-link">📩 お問い合わせ</a>
+			<span class="divider">・</span>
+			<a href="/privacy" class="footer-link">🔒 プライバシーポリシー</a>
+			<span class="divider">・</span>
 			<a href={PORTFOLIO_URL} target="_blank" rel="noopener" class="footer-link">🌐 彼のホームページ</a>
 			<span class="divider">・</span>
 			<a href="https://note.com/df_blogger" target="_blank" rel="noopener" class="footer-link">📓 思考休憩所 (note)</a>
@@ -45,9 +51,10 @@ const today = new Date();
 	}
 	.footer-links {
 		display: flex;
+		flex-wrap: wrap;
 		justify-content: center;
 		align-items: center;
-		gap: 0.5rem;
+		gap: 0.45rem 0.5rem;
 		font-size: 0.85rem;
 	}
 	.footer-link {

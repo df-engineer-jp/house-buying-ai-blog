@@ -26,7 +26,7 @@ import AffiliateCard from '../../components/AffiliateCard.astro';
 今回は、個人開発者がGoogle API自動化で100%踏み抜く**「OAuthリフレッシュトークン7日間寿命トラップ」**の正体と、それを**「サービスアカウント ✕ 16桁アプリパスワード ✕ 期限前日自動リマインド」の3層ハイブリッド設計で完全無期限化した実動コード**を記録しておく。
 
 > [!NOTE]
-> **検証環境**: 本稿のGoogle Calendar / Gmail 24時間無停止ハイブリッド認証基盤は、[さくらのVPS (Ubuntu 22.04 LTS)](https://px.a8.net/svt/ejp?a8mat=4BGH3I+92UZW2+D8Y+BWVTE) 上の常駐ディスパッチャーで稼働している構成に基づいています。
+> **検証環境**: 本稿のGoogle Calendar / Gmail 24時間無停止ハイブリッド認証基盤は、[さくらのVPS (Ubuntu 22.04 LTS)](https://px.a8.net/svt/ejp?a8mat=4BGLSC+DPKD9U+D8Y+BZO4I) 上の常駐ディスパッチャーで稼働している構成に基づいています。
 
 ---
 
@@ -57,7 +57,7 @@ GCPで発行したサービスアカウント（`xxx@xxx.iam.gserviceaccount.com
 
 ---
 
-> 📚 **参考リソース**: OAuth 2.0のトークン更新フローやサービスアカウントを用いた認可設計の全体像は、[『OAuth徹底入門』](https://www.amazon.co.jp/) が最もわかりやすいリファレンスになります。
+> 📚 **参考リソース**: OAuth 2.0のトークン更新フローやサービスアカウントを用いた認可設計の全体像は、[『OAuth徹底入門』](https://www.amazon.co.jp/dp/4798159298) が最もわかりやすいリファレンスになります。
 
 ## 突破コード：完全無停止のハイブリッド認証実装
 
@@ -185,7 +185,7 @@ def check_oauth_token_expiry_reminder(state: dict, send_discord_dm_func):
     "国内データセンター直結・99.99%以上の圧倒的稼働率"
   ]}
   highlight="7日間のトークン期限に怯えることなく、クラウド上でAI秘書が24時間あなたのスケジュールと商談を守り続けます。"
-  url="https://px.a8.net/svt/ejp?a8mat=4BGH3I+92UZW2+D8Y+BWVTE"
+  url="https://px.a8.net/svt/ejp?a8mat=4BGLSC+DPKD9U+D8Y+BZO4I"
   buttonText="さくらのVPS の料金・2週間無料枠を見る ➔"
   badge="開発現場推奨"
   pr={true}

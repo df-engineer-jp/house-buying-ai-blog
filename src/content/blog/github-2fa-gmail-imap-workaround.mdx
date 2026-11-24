@@ -45,7 +45,7 @@ Enter the code below to continue.
 今回は、私たちが本番環境で直面した**「ブラウザ自動化がメール2FAでスタックする問題」**を、**Pythonの `imaplib` でGmailを直接掌握し、ワンタイムコードを正規表現で引っこ抜いてPlaywrightへ自動注入した実動コード**を記録しておく。
 
 > [!NOTE]
-> **実行環境**: 本稿の自律巡回・IMAPメール監視スクリプトは、固定グローバルIPと24時間常駐環境を備えた [さくらのVPS](https://px.a8.net/svt/ejp?a8mat=4BGH3I+92UZW2+D8Y+BWVTE) 上で実際にバックグラウンド運用している構成に基づいています。
+> **実行環境**: 本稿の自律巡回・IMAPメール監視スクリプトは、固定グローバルIPと24時間常駐環境を備えた [さくらのVPS](https://px.a8.net/svt/ejp?a8mat=4BGLSC+DPKD9U+D8Y+BZO4I) 上で実際にバックグラウンド運用している構成に基づいています。
 
 ---
 
@@ -70,7 +70,7 @@ Playwrightは「開いているブラウザタブの中」しか見ることが�
 
 ---
 
-> 📚 **参考リソース**: PythonによるIMAPプロトコル操作やメール自動処理の基礎については、[『退屈なことはPythonにやらせよう』](https://www.amazon.co.jp/) 等の自動化実践書が非常にわかりやすくまとまっています。
+> 📚 **参考リソース**: PythonによるIMAPプロトコル操作やメール自動処理の基礎については、[『退屈なことはPythonにやらせよう 第3版』](https://www.amazon.co.jp/dp/4814401523) 等の自動化実践書が非常にわかりやすくまとまっています。
 
 ## 突破コード：Gmail IMAP掌握 ＆ OTP自動抽出スクリプト
 
@@ -228,7 +228,7 @@ async def run_github_auto_login():
     "SSH公開鍵認証・パケットフィルタを標準搭載"
   ]}
   highlight="個人PCをシャットダウンしても、クラウド側でAIが休まず認証メールを監視し続けます。"
-  url="https://px.a8.net/svt/ejp?a8mat=4BGH3I+92UZW2+D8Y+BWVTE"
+  url="https://px.a8.net/svt/ejp?a8mat=4BGLSC+DPKD9U+D8Y+BZO4I"
   buttonText="さくらのVPS の料金・2週間無料枠を見る ➔"
   badge="開発現場推奨"
   pr={true}

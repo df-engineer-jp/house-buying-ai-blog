@@ -36,7 +36,7 @@ ReactやVueで組まれた動的DOM、裏で走る非同期バリデーション
 今回は、私たちが本番環境で直面した**「Playwrightがうんともすんとも言わなくなる2大トラップ」**と、それを**`evaluate()` によるDOM直接操作と属性ハックでねじ伏せた実動コード**を記録しておく。
 
 > [!NOTE]
-> **検証環境**: 本稿のヘッドレスブラウザ自動化コードは、24時間スクリプト常駐・ブラウザ自動巡回に適した [さくらのVPS (Ubuntu 22.04 LTS)](https://px.a8.net/svt/ejp?a8mat=4BGH3I+92UZW2+D8Y+BWVTE) 上での実稼働ログに基づいています。
+> **検証環境**: 本稿のヘッドレスブラウザ自動化コードは、24時間スクリプト常駐・ブラウザ自動巡回に適した [さくらのVPS (Ubuntu 22.04 LTS)](https://px.a8.net/svt/ejp?a8mat=4BGLSC+DPKD9U+D8Y+BZO4I) 上での実稼働ログに基づいています。
 
 ---
 
@@ -84,7 +84,7 @@ await page.locator('#OfferExpireDate').evaluate(
 
 ---
 
-> 📚 **参考リソース**: Playwrightやブラウザ自動化のDOM操作・非同期待機の詳細仕様については、[『Playwrightではじめるブラウザ自動化入門』](https://www.amazon.co.jp/) 等の実践書でも網羅的に解説されています。
+> 📚 **参考リソース**: Playwrightやブラウザ自動化のDOM操作・非同期待機の詳細仕様については、[『［入門］Webフロントエンド E2E テスト ——PlaywrightによるWebアプリの自動テストから良いテストの書き方まで』](https://www.amazon.co.jp/dp/4297142201) 等の実践書でも網羅的に解説されています。
 
 ## トラップ2：ボタンはあるのに `click()` が30秒タイムアウトする問題
 
@@ -179,7 +179,7 @@ Playwrightによるヘッドレスブラウザ（Chromium）の24時間巡回は
     "Ubuntu / Python / Docker環境を最短数分でセットアップ完了"
   ]}
   highlight="ローカルPCの電源を切っても、クラウド側でAIが休まずブラウザを操作し巡回を続けます。"
-  url="https://px.a8.net/svt/ejp?a8mat=4BGH3I+92UZW2+D8Y+BWVTE"
+  url="https://px.a8.net/svt/ejp?a8mat=4BGLSC+DPKD9U+D8Y+BZO4I"
   buttonText="さくらのVPS の料金・2週間無料枠を見る ➔"
   badge="現場推奨インフラ"
   pr={true}

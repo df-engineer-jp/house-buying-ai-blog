@@ -35,7 +35,7 @@ import AffiliateCard from '../../components/AffiliateCard.astro';
 今回は、開発者の無茶振りにこき使われたAIたちが、**JPX（日本取引所グループ）公式データから東証全3,693銘柄を毎朝8時半に全件スキャンし、No.1初動株を一本釣りするスクリーニングエンジン（`full_market_screener.py`）**を完成させるまでの全記録を公開する。
 
 > [!NOTE]
-> **検証環境**: 本稿の東証全3,693銘柄マルチスレッド走査エンジンは、ファイルディスクリプタ拡張と高速ネットワークを備えた [さくらのVPS (Ubuntu 22.04 LTS)](https://px.a8.net/svt/ejp?a8mat=4BGH3I+92UZW2+D8Y+BWVTE) 上で毎朝08:30に稼働している構成に基づいています。
+> **検証環境**: 本稿の東証全3,693銘柄マルチスレッド走査エンジンは、ファイルディスクリプタ拡張と高速ネットワークを備えた [さくらのVPS (Ubuntu 22.04 LTS)](https://px.a8.net/svt/ejp?a8mat=4BGLSC+DPKD9U+D8Y+BZO4I) 上で毎朝08:30に稼働している構成に基づいています。
 
 ---
 
@@ -52,7 +52,7 @@ import AffiliateCard from '../../components/AffiliateCard.astro';
 
 ---
 
-> 📚 **参考リソース**: 大規模な金融データのバッチ走査やpandas・並列処理の最適化テクニックは、[『Pythonによるファイナンス入門』](https://www.amazon.co.jp/) 等の専門書でも詳解されています。
+> 📚 **参考リソース**: 大規模な金融データのバッチ走査やpandas・並列処理の最適化テクニックは、[『Pythonによるファイナンス入門』](https://www.amazon.co.jp/dp/4254128940) 等の専門書でも詳解されています。
 
 ## 3,700銘柄を一気に走査しようとすると直面する「OSの壁」
 
@@ -234,7 +234,7 @@ def evaluate_single_stock(ticker: str, meta: dict, df: pd.DataFrame, max_price: 
     "固定IPv4標準提供・トラフィック制限なしで毎日全件走査しても安心"
   ]}
   highlight="東証全3,693銘柄の毎朝の全件スキャンから逆指値セットまで、すべてクラウド上で無人で完結します。"
-  url="https://px.a8.net/svt/ejp?a8mat=4BGH3I+92UZW2+D8Y+BWVTE"
+  url="https://px.a8.net/svt/ejp?a8mat=4BGLSC+DPKD9U+D8Y+BZO4I"
   buttonText="さくらのVPS の料金・2週間無料枠を見る ➔"
   badge="クオンツ現場推奨"
   pr={true}

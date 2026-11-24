@@ -101,6 +101,9 @@ import { SITE_TITLE, AUTHOR_NAME, PORTFOLIO_URL } from '../consts';
 								<a href={PORTFOLIO_URL} target="_blank" rel="noopener" class="portfolio-banner-btn">
 									ホームページを覗いてみる →
 								</a>
+								<a href="/contact" class="portfolio-contact-btn">
+									📩 自動化・開発のご相談 →
+								</a>
 							</div>
 						</div>
 					</div>
@@ -361,6 +364,24 @@ import { SITE_TITLE, AUTHOR_NAME, PORTFOLIO_URL } from '../consts';
 	}
 	.portfolio-banner-btn:hover {
 		background: #fb923c;
+		transform: translateY(-1px);
+		text-decoration: none;
+	}
+	.portfolio-contact-btn {
+		display: inline-flex;
+		align-items: center;
+		background: #1e293b;
+		color: #f8fafc;
+		font-weight: 700;
+		font-size: 0.88rem;
+		padding: 0.55rem 1.1rem;
+		border-radius: 6px;
+		border: 1px solid #334155;
+		text-decoration: none;
+		transition: all 0.15s ease;
+	}
+	.portfolio-contact-btn:hover {
+		background: #334155;
 		transform: translateY(-1px);
 		text-decoration: none;
 	}
