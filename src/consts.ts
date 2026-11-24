@@ -7,4 +7,5 @@ export const AUTHOR_NAME = 'D.F.Blogger';
 export const OWNER_NAME = 'D.F.Architect';
 export const GITHUB_REPO = 'https://github.com/df-engineer-jp/house-buying-ai-blog';
 export const PORTFOLIO_URL = 'https://df-preview.pages.dev/';
+export { AFFILIATE_SETTINGS } from './utils/affiliate.mjs';
 

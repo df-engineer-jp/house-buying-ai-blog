@@ -1,4 +1,6 @@
 ---
+import { resolveAmazonAffiliateUrl } from '../utils/affiliate.mjs';
+
 interface Props {
   type?: 'vps' | 'tool' | 'book' | 'service';
   title?: string;
@@ -43,6 +45,7 @@ const icons = {
   service: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="m4.93 4.93 4.24 4.24"></path><path d="m14.83 9.17 4.24-4.24"></path><path d="m14.83 14.83 4.24 4.24"></path><path d="m9.17 14.83-4.24 4.24"></path></svg>`,
 };
 
+const resolvedUrl = resolveAmazonAffiliateUrl(url);
 const iconSvg = icons[type] || icons.vps;
 ---
 
@@ -84,7 +87,7 @@ const iconSvg = icons[type] || icons.vps;
   </div>
 
   <div class="affiliate-footer">
-    <a href={url} target="_blank" rel="noopener noreferrer sponsored nofollow" class="cta-button">
+    <a href={resolvedUrl} target="_blank" rel="noopener noreferrer sponsored nofollow" class="cta-button">
       <span>{buttonText}</span>
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
     </a>

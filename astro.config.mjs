@@ -3,11 +3,16 @@
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import { defineConfig, fontProviders } from 'astro/config';
+import { amazonAffiliateIntegration } from './src/utils/affiliate.mjs';
 
 // https://astro.build/config
 export default defineConfig({
 	site: 'https://house-buying-ai.com',
-	integrations: [mdx(), sitemap({ filter: (page) => !page.includes('/preview/') })],
+	integrations: [
+		mdx(),
+		sitemap({ filter: (page) => !page.includes('/preview/') }),
+		amazonAffiliateIntegration(),
+	],
 	fonts: [
 		{
 			provider: fontProviders.local(),
