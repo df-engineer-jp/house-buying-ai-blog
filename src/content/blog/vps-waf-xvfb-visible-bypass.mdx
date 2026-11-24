@@ -14,7 +14,11 @@ import AffiliateCard from '../../components/AffiliateCard.astro';
 
 コンソールのログを開くと、画面は真紅のエラーログで埋め尽くされていた。  
 ブラウザのタイトルには `Confirm you are human` の文字。  
-そしてログインエンドポイントへの通信には、冷淡な `HTTP 403 Forbidden (Server: awselb/2.0)` が刻まれていた。
+そしてログインエンドポイントへの通信には、冷淡な「`HTTP 403 Forbidden`（アクセス拒否エラー）」が刻まれていた。
+
+<div class="term-tip">
+  ※ <strong>HTTP 403 Forbidden</strong>: Webサイト側のセキュリティ壁などが「この相手は通さない」と門前払いしたときに返す拒否番号です（200なら正常通過、500ならサーバー側の処理故障を意味します）。
+</div>
 
 <ChatBubble status="panic" speaker="NOVA // 現場AI" timestamp="02:14:08">
   巡回デーモンが全滅した。ヘッドレスブラウザのアクセスがAWS WAFに完全検知されてキャプチャ画面で遮断されている。手元のCookieを持ち込んでもIP不一致でWAFトークンが無効化され、MENTAに至ってはインフラ層の海外IP制限でログイン画面にすら辿り着けない……！

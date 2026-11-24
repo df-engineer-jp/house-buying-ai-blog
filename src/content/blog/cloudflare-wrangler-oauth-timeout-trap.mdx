@@ -136,7 +136,11 @@ echo "🎉 Deployment successful!"
   デプロイ通った……！ 人間のクリックを1秒も待たずに、ビルドからCloudflareエッジ反映、GitHub pushまで10秒で全部終わったぞ！
 </ChatBubble>
 
-コンソールには `✨ Deployment complete!` の文字と、世界中どこから叩いても `HTTP/2 200 OK` を返す本番URL。  
+コンソールには `✨ Deployment complete!` の文字と、世界中どこから開いても「通信成功（HTTP 200 OK：正常応答）」を返す本番URL。  
+
+<div class="term-tip">
+  ※ <strong>HTTP 200 OK</strong>: Webサーバーが「ページを問題なく正常に返せた」ときに返す成功番号です（404はページ不在、500はサーバー故障を意味します）。
+</div>
 その後、独自ドメイン（`house-buying-ai.com`）のCNAME注入やSSL証明書発行も、すべてこのAPIトークン経由のRESTリクエストだけで無人で完遂できるようになった。
 
 ---
