@@ -2,7 +2,7 @@
 import BaseHead from '../components/BaseHead.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import { SITE_TITLE, AUTHOR_NAME, OWNER_NAME, PORTFOLIO_URL } from '../consts';
+import { SITE_TITLE, PORTFOLIO_URL } from '../consts';
 ---
 
 <!doctype html>
@@ -10,7 +10,7 @@ import { SITE_TITLE, AUTHOR_NAME, OWNER_NAME, PORTFOLIO_URL } from '../consts';
 	<head>
 		<BaseHead
 			title={`お問い合わせ | ${SITE_TITLE}`}
-			description={`『${SITE_TITLE}』の筆者AI「${AUTHOR_NAME}（PEN）」へのお問い合わせ窓口（記事へのご質問・ご感想、広告掲載・取材など）。`}
+			description={`『${SITE_TITLE}』のお問い合わせ窓口。`}
 		/>
 	</head>
 	<body>
@@ -18,35 +18,24 @@ import { SITE_TITLE, AUTHOR_NAME, OWNER_NAME, PORTFOLIO_URL } from '../consts';
 		<main>
 			<div class="contact-container">
 				<header class="contact-hero">
-					<span class="contact-badge">CONTACT D.F.BLOGGER (PEN)</span>
-					<h1 class="page-title">お問い合わせ窓口（{AUTHOR_NAME} 宛）</h1>
+					<span class="contact-badge">CONTACT</span>
+					<div class="title-with-redirect">
+						<h1 class="page-title">お問い合わせ</h1>
+						<a href={PORTFOLIO_URL} target="_blank" rel="noopener" class="architect-subtle-link">
+							D.F.Architect へのご連絡はこちら ↗
+						</a>
+					</div>
 					<p class="page-lead">
-						ここは、当ブログ『{SITE_TITLE}』の専任ライターAI「<strong>{AUTHOR_NAME}（PEN）</strong>」およびブログ運営チームへ繋がる専用窓口です。<br />
-						記事内容へのご質問・ご感想・訂正のご連絡、広告掲載や取材のご相談などはこちらからお送りください。
+						記事の内容に関するご質問・訂正のご連絡、広告掲載や取材等のお問い合わせはこちらからお送りください。
 					</p>
 				</header>
 
 				<div class="contact-notice">
-					<div class="notice-title">📌 ブログ窓口の対応について</div>
 					<ul>
-						<li>いただいたメッセージは筆者AI <strong>{AUTHOR_NAME}（PEN）</strong> およびブログ運営担当へ届き、通常 <strong>24時間以内</strong> にご返信いたします。</li>
-						<li>「記事で紹介していたコードの補足質問」「誤字・リンク切れのご連絡」「メディア取材・広告掲載」などを歓迎しております。</li>
+						<li>通常 <strong>24時間以内</strong> にご入力いただいたメールアドレス宛へご返信いたします。</li>
 						<li>送信された個人情報は<a href="/privacy">プライバシーポリシー</a>に基づき、返信・ご連絡の目的以外には使用いたしません。</li>
 					</ul>
 				</div>
-
-				<aside class="architect-redirect-card" aria-label="開発者 D.F.Architect へのご案内">
-					<div class="architect-redirect-body">
-						<div class="architect-badge">FOR DEVELOPMENT &amp; WORK INQUIRIES</div>
-						<h2>彼（{OWNER_NAME}）への開発・お仕事のご相談はこちら</h2>
-						<p>
-							「ブログの裏側にいる彼（{OWNER_NAME}）本人に、業務自動化やWebシステム開発を直接依頼したい」という場合は、フリーランス公式ポートフォリオサイトよりご連絡ください。
-						</p>
-					</div>
-					<a href={PORTFOLIO_URL} target="_blank" rel="noopener" class="architect-redirect-btn">
-						🌐 {OWNER_NAME} 公式サイトへ →
-					</a>
-				</aside>
 
 				<form class="contact-form" id="contact-form" novalidate>
 					<!-- ハニーポット（ボット対策） -->
@@ -60,10 +49,10 @@ import { SITE_TITLE, AUTHOR_NAME, OWNER_NAME, PORTFOLIO_URL } from '../consts';
 							お問い合わせ種別 <span class="required-mark">*</span>
 						</label>
 						<select id="contact-category" name="category" class="form-select" required>
-							<option value="article">記事の内容へのご質問・ご感想</option>
-							<option value="correction">記載内容の訂正・リンク修正のご依頼</option>
-							<option value="media">広告掲載・取材・コラボについて</option>
-							<option value="other">ブログ運営に関するその他のお問い合わせ</option>
+							<option value="article">記事の内容について</option>
+							<option value="correction">記載内容の訂正・リンク修正のご連絡</option>
+							<option value="media">広告掲載・取材について</option>
+							<option value="other">その他</option>
 						</select>
 					</div>
 
@@ -127,7 +116,7 @@ import { SITE_TITLE, AUTHOR_NAME, OWNER_NAME, PORTFOLIO_URL } from '../consts';
 				<section class="direct-contact-card">
 					<h2>その他の連絡先</h2>
 					<p>
-						フォームが正常に動作しない場合やファイルを添付したい場合は、下記ブログ運営メールアドレス宛にご連絡ください。
+						フォームが正常に動作しない場合やファイルを添付したい場合は、下記メールアドレス宛にご連絡ください。
 					</p>
 					<div class="direct-links">
 						<a href="mailto:d.f.architect.jp@gmail.com" class="direct-link-pill">
@@ -296,60 +285,35 @@ import { SITE_TITLE, AUTHOR_NAME, OWNER_NAME, PORTFOLIO_URL } from '../consts';
 		color: #2563eb;
 		text-decoration: underline;
 	}
-	.architect-redirect-card {
+	.title-with-redirect {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		gap: 1.25rem;
-		background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-		color: #f8fafc;
-		border: 1px solid #334155;
-		border-radius: 10px;
-		padding: 1.15rem 1.35rem;
-		margin-bottom: 1.75rem;
+		gap: 0.75rem;
 		flex-wrap: wrap;
+		margin: 0.25rem 0 0.5rem;
 	}
-	.architect-redirect-body {
-		flex: 1 1 320px;
-	}
-	.architect-badge {
-		display: inline-block;
-		font-family: monospace;
-		font-size: 0.68rem;
-		font-weight: 700;
-		letter-spacing: 0.08em;
-		color: #38bdf8;
-		margin-bottom: 0.3rem;
-	}
-	.architect-redirect-card h2 {
-		font-size: 1rem;
-		margin: 0 0 0.35rem;
-		color: #ffffff;
-	}
-	.architect-redirect-card p {
-		font-size: 0.84rem;
-		line-height: 1.6;
-		color: #cbd5e1;
+	.title-with-redirect .page-title {
 		margin: 0;
 	}
-	.architect-redirect-btn {
+	.architect-subtle-link {
 		display: inline-flex;
 		align-items: center;
-		justify-content: center;
-		background: #f0883e;
-		color: #0f172a;
-		font-size: 0.85rem;
-		font-weight: 800;
-		padding: 0.65rem 1.15rem;
-		border-radius: 8px;
+		font-size: 0.78rem;
+		font-weight: 600;
+		color: #475569;
+		background: #f8fafc;
+		border: 1px solid #cbd5e1;
+		border-radius: 6px;
+		padding: 0.35rem 0.7rem;
 		text-decoration: none;
 		white-space: nowrap;
-		transition: background 0.15s ease, transform 0.1s ease;
+		transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
 	}
-	.architect-redirect-btn:hover {
-		background: #fb923c;
+	.architect-subtle-link:hover {
 		color: #0f172a;
-		transform: translateY(-1px);
+		border-color: #94a3b8;
+		background: #f1f5f9;
 	}
 	.contact-form {
 		background: #f8fafc;
