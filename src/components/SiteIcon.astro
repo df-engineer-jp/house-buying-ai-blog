@@ -20,13 +20,14 @@ export interface Props {
 	class?: string;
 }
 
-const { name, size = '1em', class: className = '' } = Astro.props;
+const { name, size, class: className = '' } = Astro.props;
+const resolvedSize = size ?? (name === 'home' ? '1.25em' : '1em');
 ---
 
 <svg
 	class={`site-icon ${className}`.trim()}
-	width={size}
-	height={size}
+	width={resolvedSize}
+	height={resolvedSize}
 	viewBox="0 0 24 24"
 	fill="none"
 	stroke="currentColor"
@@ -34,7 +35,7 @@ const { name, size = '1em', class: className = '' } = Astro.props;
 	stroke-linecap="round"
 	stroke-linejoin="round"
 	aria-hidden="true"
-	style="display: inline-block; vertical-align: -0.15em; flex-shrink: 0;"
+	style="display: inline-block; vertical-align: -0.18em; flex-shrink: 0;"
 >
 	{name === 'home' && (
 		<path
