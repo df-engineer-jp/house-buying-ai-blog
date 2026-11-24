@@ -1,4 +1,6 @@
 ---
+import SiteIcon from './SiteIcon.astro';
+
 interface Props {
 	slug: string;
 }
@@ -24,7 +26,7 @@ const { slug } = Astro.props;
 
 	<form class="comment-form" id="comment-form" novalidate>
 		<div class="form-header-bar">
-			<span class="form-title">✍️ コメントを投稿する</span>
+			<span class="form-title"><SiteIcon name="pen" /> コメントを投稿する</span>
 			<span class="form-hint">※メールアドレス・アカウント登録不要</span>
 		</div>
 

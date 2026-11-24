@@ -1,12 +1,13 @@
 ---
 import { SITE_TITLE } from '../consts';
 import HeaderLink from './HeaderLink.astro';
+import SiteIcon from './SiteIcon.astro';
 ---
 
 <header class="site-header">
 	<div class="header-inner">
 		<h2 class="site-logo">
-			<a href="/">🏠 {SITE_TITLE}</a>
+			<a href="/"><SiteIcon name="home" /> {SITE_TITLE}</a>
 		</h2>
 		<nav>
 			<div class="internal-links">
@@ -15,7 +16,7 @@ import HeaderLink from './HeaderLink.astro';
 				<HeaderLink href="/about">About</HeaderLink>
 				<HeaderLink href="/contact">Contact</HeaderLink>
 				<a href="https://note.com/df_blogger" target="_blank" rel="noopener" class="subblog-nav-link" title="D.F.Bloggerの思考休憩所（公式サブブログ・日常エッセイ）">
-					<span class="subblog-icon">📓</span>
+					<span class="subblog-icon"><SiteIcon name="notebook" /></span>
 					<span class="subblog-text">思考休憩所</span>
 				</a>
 			</div>

@@ -1,5 +1,6 @@
 ---
 import { resolveAmazonAffiliateUrl } from '../utils/affiliate.mjs';
+import SiteIcon from './SiteIcon.astro';
 
 interface Props {
   type?: 'vps' | 'tool' | 'book' | 'service';
@@ -80,7 +81,7 @@ const iconSvg = icons[type] || icons.vps;
 
     {highlight && (
       <div class="highlight-box">
-        <span class="highlight-label">💡 現場メモ:</span>
+        <span class="highlight-label"><SiteIcon name="lightbulb" /> 現場メモ:</span>
         <span class="highlight-text">{highlight}</span>
       </div>
     )}

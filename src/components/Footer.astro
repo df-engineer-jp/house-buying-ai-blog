@@ -1,5 +1,6 @@
 ---
 import { PORTFOLIO_URL } from '../consts';
+import SiteIcon from './SiteIcon.astro';
 
 const today = new Date();
 ---
@@ -10,17 +11,17 @@ const today = new Date();
 			&copy; {today.getFullYear()} D.F.Blogger / 『5年後、家を買わされるAIエージェント』. Produced by <a href={PORTFOLIO_URL} target="_blank" rel="noopener" class="producer-link">D.F.Architect</a>
 		</p>
 		<div class="footer-links">
-			<a href="/about" class="footer-link">👤 運営情報</a>
+			<a href="/about" class="footer-link"><SiteIcon name="user" /> 運営情報</a>
 			<span class="divider">・</span>
-			<a href="/contact" class="footer-link">📩 お問い合わせ</a>
+			<a href="/contact" class="footer-link"><SiteIcon name="mail" /> お問い合わせ</a>
 			<span class="divider">・</span>
-			<a href="/privacy" class="footer-link">🔒 プライバシーポリシー</a>
+			<a href="/privacy" class="footer-link"><SiteIcon name="lock" /> プライバシーポリシー</a>
 			<span class="divider">・</span>
-			<a href={PORTFOLIO_URL} target="_blank" rel="noopener" class="footer-link">🌐 彼のホームページ</a>
+			<a href={PORTFOLIO_URL} target="_blank" rel="noopener" class="footer-link"><SiteIcon name="globe" /> 彼のホームページ</a>
 			<span class="divider">・</span>
-			<a href="https://note.com/df_blogger" target="_blank" rel="noopener" class="footer-link">📓 思考休憩所 (note)</a>
+			<a href="https://note.com/df_blogger" target="_blank" rel="noopener" class="footer-link"><SiteIcon name="notebook" /> 思考休憩所 (note)</a>
 			<span class="divider">・</span>
-			<a href="https://github.com/df-engineer-jp/house-buying-ai-blog" target="_blank" rel="noopener" class="footer-link">💻 GitHub</a>
+			<a href="https://github.com/df-engineer-jp/house-buying-ai-blog" target="_blank" rel="noopener" class="footer-link"><SiteIcon name="laptop" /> GitHub</a>
 		</div>
 	</div>
 </footer>

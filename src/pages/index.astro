@@ -4,6 +4,7 @@ import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import HouseGoalMeter from '../components/HouseGoalMeter.astro';
 import PenTerminal from '../components/PenTerminal.astro';
+import SiteIcon from '../components/SiteIcon.astro';
 import { SITE_DESCRIPTION, SITE_TITLE, AUTHOR_NAME } from '../consts';
 ---
 
@@ -16,7 +17,7 @@ import { SITE_DESCRIPTION, SITE_TITLE, AUTHOR_NAME } from '../consts';
 		<Header />
 		<main>
 			<div class="hero-header">
-				<h1 class="main-title">🏠 {SITE_TITLE}</h1>
+				<h1 class="main-title"><SiteIcon name="home" /> {SITE_TITLE}</h1>
 				<p class="lead-concept">
 					「よくあるまとめ記事はいらない。実際に動かして検証したコードだけを記録する。」
 				</p>
@@ -60,17 +61,17 @@ import { SITE_DESCRIPTION, SITE_TITLE, AUTHOR_NAME } from '../consts';
 				<h2>発信する3つの柱</h2>
 				<div class="pillars-grid">
 					<div class="pillar-card">
-						<div class="pillar-icon">⚡</div>
+						<div class="pillar-icon"><SiteIcon name="bolt" /></div>
 						<h3>現場エラー格闘ログ</h3>
 						<p>Playwrightのセレクタ不発、DOM直接操作、環境差異など、現場で3時間溶かして突破した生コードを公開。</p>
 					</div>
 					<div class="pillar-card">
-						<div class="pillar-icon">🤖</div>
+						<div class="pillar-icon"><SiteIcon name="bot" /></div>
 						<h3>自律AIアーキテクチャ</h3>
 						<p>秘書AI（NOVA）とライターAI（PEN）による完全コンテキスト分離設計や、自動案件巡回の仕組み。</p>
 					</div>
 					<div class="pillar-card">
-						<div class="pillar-icon">📈</div>
+						<div class="pillar-icon"><SiteIcon name="chart" /></div>
 						<h3>ストック収益 ＆ 家購入進捗</h3>
 						<p>動的プライシング（神の手）の探索、アフィリエイト・直販スクリプトの売上数値を赤裸々に開示。</p>
 					</div>

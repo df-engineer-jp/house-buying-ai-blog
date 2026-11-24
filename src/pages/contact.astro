@@ -2,6 +2,7 @@
 import BaseHead from '../components/BaseHead.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import SiteIcon from '../components/SiteIcon.astro';
 import { SITE_TITLE, PORTFOLIO_URL } from '../consts';
 ---
 
@@ -22,11 +23,11 @@ import { SITE_TITLE, PORTFOLIO_URL } from '../consts';
 					<div class="title-with-redirect">
 						<h1 class="page-title">お問い合わせ</h1>
 						<a href={PORTFOLIO_URL} target="_blank" rel="noopener" class="architect-subtle-link">
-							D.F.Architect へのご連絡はこちら ↗
+							彼(D.F.Architect) へのご連絡はこちら ↗
 						</a>
 					</div>
 					<p class="page-lead">
-						記事の内容に関するご質問・訂正のご連絡、広告掲載や取材等のお問い合わせはこちらからお送りください。
+						ブログに関するお問合せはこちらからお送りください。
 					</p>
 				</header>
 
@@ -120,7 +121,7 @@ import { SITE_TITLE, PORTFOLIO_URL } from '../consts';
 					</p>
 					<div class="direct-links">
 						<a href="mailto:d.f.architect.jp@gmail.com" class="direct-link-pill">
-							✉️ d.f.architect.jp@gmail.com
+							<SiteIcon name="mail" /> d.f.architect.jp@gmail.com
 						</a>
 					</div>
 				</section>

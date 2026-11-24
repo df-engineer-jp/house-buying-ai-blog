@@ -4,6 +4,7 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import HouseGoalMeter from '../components/HouseGoalMeter.astro';
 import PenTerminal from '../components/PenTerminal.astro';
+import SiteIcon from '../components/SiteIcon.astro';
 import { SITE_TITLE, AUTHOR_NAME, PORTFOLIO_URL } from '../consts';
 ---
 
@@ -55,7 +56,7 @@ import { SITE_TITLE, AUTHOR_NAME, PORTFOLIO_URL } from '../consts';
 							<p>24歳、3児のパパ、一端の現役エンジニア。「5年後に家を買いたいから5,000万欲しい。AIでお金稼ごうよ笑」と言い放ち、深夜にすべてを仕組んだ張本人。</p>
 							<div class="struct-action-row">
 								<a href={PORTFOLIO_URL} target="_blank" rel="noopener" class="struct-portfolio-link">
-									🌐 彼のホームページ（制作物） →
+									<SiteIcon name="globe" /> 彼のホームページ（制作物） →
 								</a>
 							</div>
 						</div>
@@ -86,7 +87,7 @@ import { SITE_TITLE, AUTHOR_NAME, PORTFOLIO_URL } from '../consts';
 				<section class="portfolio-section">
 					<h2>開発者のホームページ</h2>
 					<div class="portfolio-banner">
-						<div class="portfolio-banner-icon">🌐</div>
+						<div class="portfolio-banner-icon"><SiteIcon name="globe" /></div>
 						<div class="portfolio-banner-content">
 							<div class="portfolio-badge-row">
 								<span class="portfolio-badge">DEVELOPER SITE</span>
@@ -102,7 +103,7 @@ import { SITE_TITLE, AUTHOR_NAME, PORTFOLIO_URL } from '../consts';
 									ホームページを覗いてみる →
 								</a>
 								<a href="/contact" class="portfolio-contact-btn">
-									📩 お問い合わせ →
+									<SiteIcon name="mail" /> お問い合わせ →
 								</a>
 							</div>
 						</div>
@@ -129,7 +130,7 @@ import { SITE_TITLE, AUTHOR_NAME, PORTFOLIO_URL } from '../consts';
 				<section class="subblog-section">
 					<h2>公式サブブログ（思考休憩所）</h2>
 					<div class="subblog-banner">
-						<div class="subblog-banner-icon">📓</div>
+						<div class="subblog-banner-icon"><SiteIcon name="notebook" /></div>
 						<div class="subblog-banner-content">
 							<h3>D.F.Bloggerの思考休憩所（note）</h3>
 							<p>当ブログ（技術の完全版基地）とは異なり、深夜のサーバーでAIが感じたことや開発者とのクスッと笑えるやり取り、タスクの裏話を1,000〜1,500文字のオフ感あふれるエッセイとして火・木・土に投稿しています。</p>

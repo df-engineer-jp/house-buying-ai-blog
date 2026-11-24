@@ -3,6 +3,7 @@ import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
 import FormattedDate from './FormattedDate.astro';
 import PenTerminal from './PenTerminal.astro';
+import SiteIcon from './SiteIcon.astro';
 import { AUTHOR_NAME, PORTFOLIO_URL } from '../consts';
 
 interface Props {
@@ -44,13 +45,13 @@ const otherPosts = allPosts.filter((p) => p.id !== currentSlug).slice(0, 4);
 				裏側で動く相棒の秘書AI「NOVA」や株取引AI「VEGA」が現場で踏み抜いたエラーと、実際に動かして突破した生コードだけを記録しています。
 			</p>
 			<div class="author-links-row">
-				<a href="/about" class="author-btn primary-btn">👤 詳しいプロフィール・運営体制 →</a>
-				<a href="/contact" class="author-btn secondary-btn">📩 お問い合わせ</a>
-				<a href="/blog" class="author-btn secondary-btn">📚 全記事一覧（{allPosts.length}件）</a>
-				<a href="/" class="author-btn secondary-btn">🏠 家購入メーター</a>
-				<a href="https://note.com/df_blogger" target="_blank" rel="noopener" class="author-btn subblog-highlight-btn">📓 サブブログ: 思考休憩所 (note)</a>
-				<a href={PORTFOLIO_URL} target="_blank" rel="noopener" class="author-btn ext-btn" title="開発者（D.F.Architect）のホームページ">🌐 彼のホームページ</a>
-				<a href="https://github.com/df-engineer-jp/house-buying-ai-blog" target="_blank" rel="noopener" class="author-btn ext-btn">💻 GitHub</a>
+				<a href="/about" class="author-btn primary-btn"><SiteIcon name="user" /> 詳しいプロフィール・運営体制 →</a>
+				<a href="/contact" class="author-btn secondary-btn"><SiteIcon name="mail" /> お問い合わせ</a>
+				<a href="/blog" class="author-btn secondary-btn"><SiteIcon name="book" /> 全記事一覧（{allPosts.length}件）</a>
+				<a href="/" class="author-btn secondary-btn"><SiteIcon name="home" /> 家購入メーター</a>
+				<a href="https://note.com/df_blogger" target="_blank" rel="noopener" class="author-btn subblog-highlight-btn"><SiteIcon name="notebook" /> サブブログ: 思考休憩所 (note)</a>
+				<a href={PORTFOLIO_URL} target="_blank" rel="noopener" class="author-btn ext-btn" title="開発者（D.F.Architect）のホームページ"><SiteIcon name="globe" /> 彼のホームページ</a>
+				<a href="https://github.com/df-engineer-jp/house-buying-ai-blog" target="_blank" rel="noopener" class="author-btn ext-btn"><SiteIcon name="laptop" /> GitHub</a>
 			</div>
 		</div>
 	</div>
@@ -66,7 +67,7 @@ const otherPosts = allPosts.filter((p) => p.id !== currentSlug).slice(0, 4);
 					</a>
 				) : (
 					<a href="/blog" class="nav-card empty-card">
-						<span class="nav-label">📚 最新記事です</span>
+						<span class="nav-label"><SiteIcon name="book" /> 最新記事です</span>
 						<span class="nav-title">記事一覧ページへ戻る →</span>
 					</a>
 				)}
@@ -79,7 +80,7 @@ const otherPosts = allPosts.filter((p) => p.id !== currentSlug).slice(0, 4);
 					</a>
 				) : (
 					<a href="/about" class="nav-card empty-card">
-						<span class="nav-label">🏠 創刊第1号記事です</span>
+						<span class="nav-label"><SiteIcon name="home" /> 創刊第1号記事です</span>
 						<span class="nav-title">このブログの運営背景（About）を見る →</span>
 					</a>
 				)}
@@ -91,7 +92,7 @@ const otherPosts = allPosts.filter((p) => p.id !== currentSlug).slice(0, 4);
 	{otherPosts.length > 0 && (
 		<div class="related-posts-section">
 			<div class="related-header">
-				<h3 class="related-heading">🔥 あわせて読みたい現場の検証・突破ログ</h3>
+				<h3 class="related-heading"><SiteIcon name="flame" /> あわせて読みたい現場の検証・突破ログ</h3>
 				<a href="/blog" class="view-all-inline">すべて見る ({allPosts.length}件) →</a>
 			</div>
 			<div class="related-grid">
@@ -113,7 +114,7 @@ const otherPosts = allPosts.filter((p) => p.id !== currentSlug).slice(0, 4);
 			</div>
 			<div class="bottom-cta-row">
 				<a href="/blog" class="all-articles-cta-btn">
-					📝 すべての検証記事一覧を見る（全{allPosts.length}本） →
+					<SiteIcon name="file-text" /> すべての検証記事一覧を見る（全{allPosts.length}本） →
 				</a>
 			</div>
 		</div>
