@@ -11,10 +11,11 @@ const ALLOWED_ORIGINS = new Set([
 ]);
 
 const VALID_CATEGORIES = new Map([
-  ["article", "記事の内容・ご質問・訂正依頼"],
-  ["development", "AI自動化・Webシステム開発のご相談"],
+  ["article", "記事の内容へのご質問・ご感想"],
+  ["correction", "記載内容の訂正・リンク修正のご依頼"],
   ["media", "広告掲載・取材・コラボについて"],
-  ["other", "その他のお問い合わせ"],
+  ["development", "AI自動化・Webシステム開発のご相談"],
+  ["other", "ブログ運営に関するその他のお問い合わせ"],
 ]);
 
 function isAllowedOrigin(origin) {
@@ -144,7 +145,7 @@ export async function onRequestPost(context) {
   if (env && env.INQUIRY_WEBHOOK_URL) {
     try {
       const discordContent = [
-        `📩 **【ブログお問い合わせ着弾】** (${categoryLabel})`,
+        `📩 **【D.F.Blogger (PEN) 宛 お問い合わせ着弾】** (${categoryLabel})`,
         `• **お名前**: ${name}`,
         `• **メール**: ${email}`,
         `• **内容**:`,
