@@ -14,12 +14,10 @@ import {
 	SITE_DESCRIPTION,
 	SITE_TITLE,
 	AUTHOR_NAME,
-	PORTFOLIO_URL,
 	DF_SIGN_URL,
 	X_AXEL_URL,
 	X_AXEL_HANDLE,
 	NOTE_URL,
-	ZENN_URL,
 } from '../consts';
 
 const allPosts = (await getCollection('blog')).sort(
@@ -37,29 +35,12 @@ const recentPosts = allPosts.slice(0, 6);
 	<body>
 		<Header />
 		<main>
-			<!-- 1. ヒーロー ＆ クイック外部導線バー -->
+			<!-- 1. ヒーロー -->
 			<div class="hero-header">
 				<h1 class="main-title"><SiteIcon name="home" /> {SITE_TITLE}</h1>
 				<p class="lead-concept">
 					「よくあるまとめ記事はいらない。実際に動かして検証したコードだけを記録する。」
 				</p>
-				<div class="quick-hub-bar" aria-label="主要メディア・制作物へのクイックリンク">
-					<a href={X_AXEL_URL} target="_blank" rel="noopener" class="hub-pill hub-pill-dark">
-						<SiteIcon name="x" size="0.9em" /> AXELのX ({X_AXEL_HANDLE})
-					</a>
-					<a href={NOTE_URL} target="_blank" rel="noopener" class="hub-pill">
-						<SiteIcon name="notebook" size="0.95em" /> 思考休憩所 (note)
-					</a>
-					<a href={ZENN_URL} target="_blank" rel="noopener" class="hub-pill">
-						<SiteIcon name="zenn" size="0.9em" /> Zenn
-					</a>
-					<a href={DF_SIGN_URL} target="_blank" rel="noopener" class="hub-pill hub-pill-indigo">
-						<SiteIcon name="pen-line" size="0.95em" /> D.F.Sign (電子契約アプリ)
-					</a>
-					<a href={PORTFOLIO_URL} target="_blank" rel="noopener" class="hub-pill hub-pill-gold">
-						<SiteIcon name="globe" size="0.95em" /> 彼の個人サイト ↗
-					</a>
-				</div>
 			</div>
 
 			<!-- 2. 家購入メーター -->
@@ -247,61 +228,8 @@ const recentPosts = allPosts.slice(0, 6);
 		border-left: 3px solid #14213d;
 		padding: 0.55rem 0.85rem;
 		border-radius: 0 6px 6px 0;
-		margin: 0.5rem 0 0.9rem;
+		margin: 0.5rem 0 1rem;
 		font-weight: 600;
-	}
-	.quick-hub-bar {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.45rem;
-		margin: 0.75rem 0 0.25rem;
-	}
-	.hub-pill {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.35rem;
-		font-size: 0.76rem;
-		font-weight: 700;
-		padding: 0.32rem 0.7rem;
-		border-radius: 9999px;
-		background: #f8fafc;
-		color: #334155;
-		border: 1px solid #cbd5e1;
-		text-decoration: none;
-		transition: all 0.15s ease;
-	}
-	.hub-pill:hover {
-		background: #e2e8f0;
-		color: #0f172a;
-		text-decoration: none;
-		transform: translateY(-1px);
-	}
-	.hub-pill-dark {
-		background: #0f172a;
-		color: #f8fafc;
-		border-color: #0f172a;
-	}
-	.hub-pill-dark:hover {
-		background: #1e293b;
-		color: #38bdf8;
-	}
-	.hub-pill-indigo {
-		background: #eef2ff;
-		color: #3730a3;
-		border-color: #c7d2fe;
-	}
-	.hub-pill-indigo:hover {
-		background: #e0e7ff;
-		color: #1e1b4b;
-	}
-	.hub-pill-gold {
-		background: #f3efe4;
-		color: #785315;
-		border-color: #dfc99b;
-	}
-	.hub-pill-gold:hover {
-		background: #e9dfc7;
-		color: #14213d;
 	}
 
 	.lead-hook {
