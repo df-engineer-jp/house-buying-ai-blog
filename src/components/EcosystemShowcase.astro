@@ -1,0 +1,488 @@
+---
+import SiteIcon from './SiteIcon.astro';
+import {
+	PORTFOLIO_URL,
+	PRODUCTS_PORTFOLIO_URL,
+	ECOSYSTEM_PRODUCTS,
+	ECOSYSTEM_MEDIA,
+} from '../consts';
+
+interface Props {
+	showProducts?: boolean;
+	showMedia?: boolean;
+	headingTitle?: string;
+	headingLead?: string;
+}
+
+const {
+	showProducts = true,
+	showMedia = true,
+	headingTitle = 'D.F.Architect（彼の個人サイト・制作物置き場）',
+	headingLead = '「5年で家を買え」と言い放った張本人（現役エンジニア）の個人サイトと、彼と開発AIたちが作って公開している実用Webアプリ群です。',
+} = Astro.props;
+---
+
+{showProducts && (
+	<section class="df-showcase-section" aria-label="開発者の個人サイトと制作物">
+		<div class="section-head">
+			<h2>{headingTitle}</h2>
+			<p class="section-lead">{headingLead}</p>
+		</div>
+
+		<!-- メイン：彼の公式サイト（Blueprint Navy × Brass Gold） -->
+		<div class="architect-flagship-card">
+			<div class="flagship-top-accent" aria-hidden="true"></div>
+			<div class="flagship-body">
+				<div class="flagship-info">
+					<div class="flagship-badges">
+						<span class="badge-gold">DEVELOPER SITE</span>
+						<span class="badge-outline">df-architect.dev</span>
+					</div>
+					<h3 class="flagship-title">
+						D<span class="gold-dot">.</span>F<span class="gold-dot">.</span>Architect 公式ポートフォリオ・ご相談窓口
+					</h3>
+					<p class="flagship-desc">
+						当ブログの裏側を設計した24歳・3児のパパエンジニア（佐倉 隆晟）の個人サイトです。Web制作・ブラウザ自動化・業務システム構築の実績モックや、開発・お仕事のご相談窓口をまとめています。
+					</p>
+					<div class="flagship-actions">
+						<a href={PORTFOLIO_URL} target="_blank" rel="noopener" class="btn-gold">
+							<SiteIcon name="globe" /> 彼のホームページを覗く ↗
+						</a>
+						<a href={PRODUCTS_PORTFOLIO_URL} target="_blank" rel="noopener" class="btn-navy-ghost">
+							<SiteIcon name="layers" /> 公開Webアプリ一覧 (/products) ↗
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- サブ：公開Webアプリ・ツール群（D.F.Sign / D.F.Pack / D.F.MaskGuard） -->
+		<div class="products-subhead">
+			<span class="subhead-label"><SiteIcon name="layers" /> ブラウザですぐ使える公開Webアプリ・ツール</span>
+			<a href={PRODUCTS_PORTFOLIO_URL} target="_blank" rel="noopener" class="subhead-more">
+				すべての制作物を見る →
+			</a>
+		</div>
+
+		<div class="products-grid">
+			{ECOSYSTEM_PRODUCTS.map((prod) => (
+				<a
+					href={prod.url}
+					target="_blank"
+					rel="noopener"
+					class="product-card"
+					style={`--prod-accent: ${prod.accent};`}
+				>
+					<div class="product-card-top">
+						<span class="product-icon-box">
+							<SiteIcon name={prod.icon} size="1.15em" />
+						</span>
+						<span class="product-badge">{prod.badge}</span>
+					</div>
+					<h4 class="product-name">
+						{prod.name}
+						<span class="ext-arrow"><SiteIcon name="external" size="0.82em" /></span>
+					</h4>
+					<p class="product-tagline">{prod.tagline}</p>
+					<p class="product-desc">{prod.description}</p>
+					<span class="product-cta">アプリを開く →</span>
+				</a>
+			))}
+		</div>
+	</section>
+)}
+
+{showMedia && (
+	<section class="df-media-section" aria-label="外部メディア・公式SNS">
+		<div class="section-head">
+			<h2>外部メディア ＆ 公式SNSネットワーク</h2>
+			<p class="section-lead">
+				当ブログの検証記事以外にも、AIごとの専門チャンネルでリアルタイムの開発速報やオフの日常エッセイを発信しています。
+			</p>
+		</div>
+
+		<div class="media-grid">
+			{ECOSYSTEM_MEDIA.map((m) => (
+				<a href={m.url} target="_blank" rel="noopener" class={`media-card media-${m.id}`}>
+					<div class="media-card-header">
+						<span class="media-icon-wrap">
+							<SiteIcon name={m.icon} size="1.15em" />
+						</span>
+						<div class="media-meta">
+							<span class="media-owner">{m.owner}</span>
+							<span class="media-sub">{m.subLabel}</span>
+						</div>
+					</div>
+					<h3 class="media-title">{m.name}</h3>
+					<p class="media-desc">{m.description}</p>
+					<span class="media-link-text">
+						{m.cta} <SiteIcon name="external" size="0.82em" />
+					</span>
+				</a>
+			))}
+		</div>
+	</section>
+)}
+
+<style>
+	.df-showcase-section,
+	.df-media-section {
+		margin: 3rem 0;
+	}
+	.section-head {
+		margin-bottom: 1.25rem;
+	}
+	.section-head h2 {
+		margin-top: 0;
+		margin-bottom: 0.45rem;
+		font-size: 1.38rem;
+		color: #0f172a;
+		border-bottom: 2px solid #e2e8f0;
+		padding-bottom: 0.45rem;
+	}
+	.section-lead {
+		margin: 0;
+		font-size: 0.9rem;
+		color: #64748b;
+		line-height: 1.65;
+	}
+
+	/* Flagship Card (Blueprint Navy x Brass Gold) */
+	.architect-flagship-card {
+		position: relative;
+		background: linear-gradient(135deg, #14213d 0%, #0f172a 100%);
+		border: 1px solid #1e325c;
+		border-radius: 12px;
+		overflow: hidden;
+		color: #f8fafc;
+		box-shadow: 0 10px 26px rgba(20, 33, 61, 0.16);
+		margin-bottom: 1.4rem;
+	}
+	.flagship-top-accent {
+		height: 3px;
+		background: linear-gradient(90deg, #c8963e 0%, #e5c17a 50%, #c8963e 100%);
+	}
+	.flagship-body {
+		padding: 1.6rem 1.75rem;
+	}
+	.flagship-badges {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		flex-wrap: wrap;
+		margin-bottom: 0.65rem;
+	}
+	.badge-gold {
+		background: #c8963e;
+		color: #0f172a;
+		font-family: var(--font-mono);
+		font-size: 0.68rem;
+		font-weight: 800;
+		padding: 0.16rem 0.52rem;
+		border-radius: 4px;
+		letter-spacing: 0.05em;
+	}
+	.badge-outline {
+		background: rgba(255, 255, 255, 0.08);
+		border: 1px solid rgba(229, 193, 122, 0.35);
+		color: #e5c17a;
+		font-family: var(--font-mono);
+		font-size: 0.68rem;
+		font-weight: 600;
+		padding: 0.14rem 0.5rem;
+		border-radius: 4px;
+	}
+	.flagship-title {
+		margin: 0 0 0.6rem 0;
+		font-size: 1.28rem;
+		color: #ffffff;
+		line-height: 1.35;
+	}
+	.gold-dot {
+		color: #e5c17a;
+	}
+	.flagship-desc {
+		margin: 0 0 1.2rem 0;
+		font-size: 0.9rem;
+		line-height: 1.7;
+		color: #cbd5e1;
+	}
+	.flagship-actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.65rem;
+	}
+	.btn-gold {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4rem;
+		background: #c8963e;
+		color: #0f172a;
+		font-weight: 800;
+		font-size: 0.86rem;
+		padding: 0.55rem 1.05rem;
+		border-radius: 7px;
+		text-decoration: none;
+		transition: background 0.15s ease, transform 0.15s ease;
+	}
+	.btn-gold:hover {
+		background: #e5c17a;
+		color: #0f172a;
+		transform: translateY(-1px);
+		text-decoration: none;
+	}
+	.btn-navy-ghost {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4rem;
+		background: rgba(255, 255, 255, 0.07);
+		color: #f8fafc;
+		border: 1px solid rgba(255, 255, 255, 0.2);
+		font-weight: 600;
+		font-size: 0.84rem;
+		padding: 0.55rem 1rem;
+		border-radius: 7px;
+		text-decoration: none;
+		transition: background 0.15s ease, border-color 0.15s ease;
+	}
+	.btn-navy-ghost:hover {
+		background: rgba(255, 255, 255, 0.14);
+		border-color: #e5c17a;
+		color: #ffffff;
+		text-decoration: none;
+	}
+
+	/* Products Grid */
+	.products-subhead {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 0.5rem;
+		flex-wrap: wrap;
+		margin: 1.1rem 0 0.75rem;
+	}
+	.subhead-label {
+		font-size: 0.85rem;
+		font-weight: 700;
+		color: #334155;
+		display: inline-flex;
+		align-items: center;
+		gap: 0.35rem;
+	}
+	.subhead-more {
+		font-size: 0.82rem;
+		font-weight: 600;
+		color: #2563eb;
+		text-decoration: none;
+	}
+	.subhead-more:hover {
+		text-decoration: underline;
+	}
+	.products-grid {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 0.9rem;
+	}
+	.product-card {
+		display: flex;
+		flex-direction: column;
+		background: #ffffff;
+		border: 1px solid #e2e8f0;
+		border-top: 3px solid var(--prod-accent, #14213d);
+		border-radius: 10px;
+		padding: 1.05rem 1.05rem 1rem;
+		text-decoration: none;
+		color: inherit;
+		transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+	}
+	.product-card:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+		text-decoration: none;
+	}
+	.product-card-top {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 0.4rem;
+		margin-bottom: 0.55rem;
+	}
+	.product-icon-box {
+		width: 32px;
+		height: 32px;
+		border-radius: 7px;
+		background: #f8fafc;
+		border: 1px solid #e2e8f0;
+		color: var(--prod-accent, #14213d);
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+	}
+	.product-badge {
+		font-family: var(--font-mono);
+		font-size: 0.65rem;
+		font-weight: 700;
+		color: #64748b;
+		background: #f1f5f9;
+		padding: 0.15rem 0.45rem;
+		border-radius: 4px;
+	}
+	.product-name {
+		margin: 0 0 0.25rem 0;
+		font-size: 1.05rem;
+		font-weight: 800;
+		color: #0f172a;
+		display: flex;
+		align-items: center;
+		gap: 0.3rem;
+	}
+	.ext-arrow {
+		color: #94a3b8;
+		font-size: 0.85rem;
+	}
+	.product-tagline {
+		margin: 0 0 0.45rem 0;
+		font-size: 0.8rem;
+		font-weight: 700;
+		color: #334155;
+		line-height: 1.4;
+	}
+	.product-desc {
+		margin: 0 0 0.8rem 0;
+		font-size: 0.78rem;
+		color: #64748b;
+		line-height: 1.55;
+		flex-grow: 1;
+	}
+	.product-cta {
+		font-size: 0.78rem;
+		font-weight: 700;
+		color: var(--prod-accent, #2563eb);
+		margin-top: auto;
+	}
+
+	/* External Media Grid */
+	.media-grid {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: 0.9rem;
+	}
+	.media-card {
+		display: flex;
+		flex-direction: column;
+		background: #f8fafc;
+		border: 1px solid #e2e8f0;
+		border-radius: 10px;
+		padding: 1.1rem 1.2rem;
+		text-decoration: none;
+		color: inherit;
+		transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+	}
+	.media-card:hover {
+		background: #ffffff;
+		border-color: #94a3b8;
+		transform: translateY(-2px);
+		box-shadow: 0 6px 18px rgba(15, 23, 42, 0.07);
+		text-decoration: none;
+	}
+	.media-axel-x {
+		background: linear-gradient(145deg, #0f172a 0%, #1e293b 100%);
+		border-color: #334155;
+		color: #f8fafc;
+	}
+	.media-axel-x:hover {
+		background: linear-gradient(145deg, #111c33 0%, #24324a 100%);
+		border-color: #38bdf8;
+	}
+	.media-card-header {
+		display: flex;
+		align-items: center;
+		gap: 0.65rem;
+		margin-bottom: 0.55rem;
+	}
+	.media-icon-wrap {
+		width: 34px;
+		height: 34px;
+		border-radius: 8px;
+		background: #ffffff;
+		border: 1px solid #cbd5e1;
+		color: #0f172a;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+	}
+	.media-axel-x .media-icon-wrap {
+		background: #020617;
+		border-color: #334155;
+		color: #f8fafc;
+	}
+	.media-meta {
+		display: flex;
+		flex-direction: column;
+		line-height: 1.25;
+	}
+	.media-owner {
+		font-family: var(--font-mono);
+		font-size: 0.68rem;
+		font-weight: 700;
+		color: #64748b;
+	}
+	.media-axel-x .media-owner {
+		color: #38bdf8;
+	}
+	.media-sub {
+		font-family: var(--font-mono);
+		font-size: 0.72rem;
+		color: #475569;
+	}
+	.media-axel-x .media-sub {
+		color: #94a3b8;
+	}
+	.media-title {
+		margin: 0 0 0.4rem 0;
+		font-size: 1.02rem;
+		font-weight: 800;
+		color: #0f172a;
+	}
+	.media-axel-x .media-title {
+		color: #ffffff;
+	}
+	.media-desc {
+		margin: 0 0 0.75rem 0;
+		font-size: 0.82rem;
+		line-height: 1.6;
+		color: #475569;
+		flex-grow: 1;
+	}
+	.media-axel-x .media-desc {
+		color: #cbd5e1;
+	}
+	.media-link-text {
+		font-size: 0.8rem;
+		font-weight: 700;
+		color: #2563eb;
+		display: inline-flex;
+		align-items: center;
+		gap: 0.3rem;
+		margin-top: auto;
+	}
+	.media-axel-x .media-link-text {
+		color: #38bdf8;
+	}
+
+	@media (max-width: 768px) {
+		.products-grid {
+			grid-template-columns: 1fr;
+		}
+		.media-grid {
+			grid-template-columns: 1fr;
+		}
+		.flagship-body {
+			padding: 1.25rem 1.15rem;
+		}
+		.flagship-title {
+			font-size: 1.12rem;
+		}
+	}
+</style>

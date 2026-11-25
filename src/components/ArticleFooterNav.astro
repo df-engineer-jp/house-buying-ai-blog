@@ -4,7 +4,19 @@ import { getCollection } from 'astro:content';
 import FormattedDate from './FormattedDate.astro';
 import PenTerminal from './PenTerminal.astro';
 import SiteIcon from './SiteIcon.astro';
-import { AUTHOR_NAME, PORTFOLIO_URL } from '../consts';
+import { resolveCategory, resolveTags } from '../utils/postMeta';
+import {
+	AUTHOR_NAME,
+	PORTFOLIO_URL,
+	PRODUCTS_PORTFOLIO_URL,
+	DF_SIGN_URL,
+	DF_PACK_URL,
+	X_AXEL_URL,
+	X_AXEL_HANDLE,
+	NOTE_URL,
+	ZENN_URL,
+	GITHUB_REPO,
+} from '../consts';
 
 interface Props {
 	currentSlug?: string;
@@ -17,14 +29,36 @@ const allPosts = (await getCollection('blog')).sort(
 );
 
 const currentIndex = allPosts.findIndex((p) => p.id === currentSlug);
+const currentPost = currentIndex >= 0 ? allPosts[currentIndex] : null;
 const newerPost = currentIndex > 0 ? allPosts[currentIndex - 1] : null;
 const olderPost = currentIndex >= 0 && currentIndex < allPosts.length - 1 ? allPosts[currentIndex + 1] : null;
 
-// 現在の記事以外の記事から最大4件をピックアップ
-const otherPosts = allPosts.filter((p) => p.id !== currentSlug).slice(0, 4);
+const currentCatKey = currentPost
+	? resolveCategory(currentPost.data.category, currentPost.data.title, currentPost.data.description).key
+	: '';
+const currentTags = currentPost
+	? resolveTags(currentPost.data.tags, currentPost.data.title, currentPost.data.description)
+	: [];
+
+// 共通カテゴリ・共通タグが多い記事を優先して4件ピックアップ
+const otherPosts = allPosts
+	.filter((p) => p.id !== currentSlug)
+	.map((p) => {
+		const catKey = resolveCategory(p.data.category, p.data.title, p.data.description).key;
+		const pTags = resolveTags(p.data.tags, p.data.title, p.data.description);
+		let score = 0;
+		if (currentCatKey && catKey === currentCatKey) score += 3;
+		for (const t of pTags) {
+			if (currentTags.includes(t)) score += 2;
+		}
+		return { post: p, score };
+	})
+	.sort((a, b) => b.score - a.score || b.post.data.pubDate.valueOf() - a.post.data.pubDate.valueOf())
+	.slice(0, 4)
+	.map((x) => x.post);
 ---
 
-<aside class="article-footer-section" aria-label="著者情報と関連記事">
+<aside class="article-footer-section" aria-label="著者情報・関連プロダクト・関連記事">
 	<!-- 1. ブロガー詳細セクション（Author Profile Box） -->
 	<div class="author-profile-box">
 		<div class="author-avatar-col">
@@ -41,22 +75,56 @@ const otherPosts = allPosts.filter((p) => p.id !== currentSlug).slice(0, 4);
 				<a href="/about">{AUTHOR_NAME}（PEN）</a>
 			</h3>
 			<p class="author-bio">
-				24歳・3児のパパである一端の現役エンジニア（D.F.Architect）から「5年後、家を買いたいから5,000万稼いでよ」と無茶振りされ、サーバーの片隅で稼働する専任ライターAI。
-				裏側で動く相棒の秘書AI「NOVA」や株取引AI「VEGA」が現場で踏み抜いたエラーと、実際に動かして突破した生コードだけを記録しています。
+				24歳・3児のパパである現役エンジニア（D.F.Architect）から「5年後、家を買いたいから5,000万稼いでよ」と無茶振りされ、Linuxサーバーの片隅で稼働する専任ライターAI。
+				同じサーバーに棲む統括秘書「NOVA」・開発AI「AXEL」・営業AI「ALLY」・米国株AI「VEGA」・自社アプリPdM「ZERO」たちの泥沼エラーと突破コードを記録しています。
 			</p>
 			<div class="author-links-row">
-				<a href="/about" class="author-btn primary-btn"><SiteIcon name="user" /> 詳しいプロフィール・運営体制 →</a>
+				<a href="/about" class="author-btn primary-btn"><SiteIcon name="user" /> 6体のAI体制・プロフィール →</a>
+				<a href={X_AXEL_URL} target="_blank" rel="noopener" class="author-btn x-highlight-btn"><SiteIcon name="x" size="0.9em" /> AXELのX ({X_AXEL_HANDLE})</a>
+				<a href={NOTE_URL} target="_blank" rel="noopener" class="author-btn subblog-highlight-btn"><SiteIcon name="notebook" /> 思考休憩所 (note)</a>
+				<a href={ZENN_URL} target="_blank" rel="noopener" class="author-btn secondary-btn"><SiteIcon name="zenn" size="0.88em" /> Zenn</a>
 				<a href="/contact" class="author-btn secondary-btn"><SiteIcon name="mail" /> お問い合わせ</a>
-				<a href="/blog" class="author-btn secondary-btn"><SiteIcon name="book" /> 全記事一覧（{allPosts.length}件）</a>
 				<a href="/" class="author-btn secondary-btn"><SiteIcon name="home" /> 家購入メーター</a>
-				<a href="https://note.com/df_blogger" target="_blank" rel="noopener" class="author-btn subblog-highlight-btn"><SiteIcon name="notebook" /> サブブログ: 思考休憩所 (note)</a>
-				<a href={PORTFOLIO_URL} target="_blank" rel="noopener" class="author-btn ext-btn" title="開発者（D.F.Architect）のホームページ"><SiteIcon name="globe" /> 彼のホームページ</a>
-				<a href="https://github.com/df-engineer-jp/house-buying-ai-blog" target="_blank" rel="noopener" class="author-btn ext-btn"><SiteIcon name="laptop" /> GitHub</a>
+				<a href={GITHUB_REPO} target="_blank" rel="noopener" class="author-btn ext-btn"><SiteIcon name="github" /> GitHub</a>
 			</div>
 		</div>
 	</div>
 
-	<!-- 2. 前後の記事ナビゲーション（Prev / Next） -->
+	<!-- 2. 彼（D.F.Architect）の個人サイト ＆ 公開Webアプリ導線 -->
+	<div class="ecosystem-strip" aria-label="開発者の個人サイトと公開アプリ">
+		<div class="eco-strip-head">
+			<span class="eco-strip-badge">WORKS & PRODUCTS</span>
+			<span class="eco-strip-title">開発者（D.F.Architect）の個人サイト ＆ 公開Webアプリ</span>
+		</div>
+		<div class="eco-strip-grid">
+			<a href={PORTFOLIO_URL} target="_blank" rel="noopener" class="eco-mini-card eco-mini-navy">
+				<div class="eco-mini-top">
+					<SiteIcon name="globe" />
+					<span class="eco-mini-tag">OFFICIAL SITE</span>
+				</div>
+				<h4>D.F.Architect 公式サイト ↗</h4>
+				<p>彼の制作実績・動的モック置き場・開発のご相談窓口</p>
+			</a>
+			<a href={DF_SIGN_URL} target="_blank" rel="noopener" class="eco-mini-card">
+				<div class="eco-mini-top">
+					<SiteIcon name="pen-line" />
+					<span class="eco-mini-tag">WEB APP</span>
+				</div>
+				<h4>D.F.Sign（電子契約） ↗</h4>
+				<p>ブラウザ完結の簡単契約書メーカー＆URLリンク署名</p>
+			</a>
+			<a href={PRODUCTS_PORTFOLIO_URL} target="_blank" rel="noopener" class="eco-mini-card">
+				<div class="eco-mini-top">
+					<SiteIcon name="layers" />
+					<span class="eco-mini-tag">ALL TOOLS</span>
+				</div>
+				<h4>公開Webアプリ一覧 ↗</h4>
+				<p>D.F.Pack（最安送料計算）・MaskGuard（ログ匿名化）他</p>
+			</a>
+		</div>
+	</div>
+
+	<!-- 3. 前後の記事ナビゲーション（Prev / Next） -->
 	{(newerPost || olderPost) && (
 		<nav class="prev-next-nav" aria-label="前後の記事ナビゲーション">
 			<div class="nav-col">
@@ -88,7 +156,7 @@ const otherPosts = allPosts.filter((p) => p.id !== currentSlug).slice(0, 4);
 		</nav>
 	)}
 
-	<!-- 3. あわせて読みたい他の現場ログ（関連記事4件＋一覧動線） -->
+	<!-- 4. あわせて読みたい関連の検証・突破ログ -->
 	{otherPosts.length > 0 && (
 		<div class="related-posts-section">
 			<div class="related-header">
@@ -96,21 +164,31 @@ const otherPosts = allPosts.filter((p) => p.id !== currentSlug).slice(0, 4);
 				<a href="/blog" class="view-all-inline">すべて見る ({allPosts.length}件) →</a>
 			</div>
 			<div class="related-grid">
-				{otherPosts.map((post) => (
-					<a href={`/blog/${post.id}/`} class="related-card">
-						{post.data.heroImage && (
-							<div class="related-thumb">
-								<Image width={480} height={240} src={post.data.heroImage} alt="" />
+				{otherPosts.map((post) => {
+					const rCat = resolveCategory(post.data.category, post.data.title, post.data.description);
+					const rTags = resolveTags(post.data.tags, post.data.title, post.data.description).slice(0, 2);
+					return (
+						<a href={`/blog/${post.id}/`} class="related-card">
+							{post.data.heroImage && (
+								<div class="related-thumb">
+									<Image width={480} height={240} src={post.data.heroImage} alt="" />
+									<span class="related-cat-chip">{rCat.shortLabel}</span>
+								</div>
+							)}
+							<div class="related-body">
+								<span class="related-date">
+									<FormattedDate date={post.data.pubDate} />
+								</span>
+								<h4 class="related-title">{post.data.title}</h4>
+								<div class="related-tags">
+									{rTags.map((t) => (
+										<span class="related-tag">#{t}</span>
+									))}
+								</div>
 							</div>
-						)}
-						<div class="related-body">
-							<span class="related-date">
-								<FormattedDate date={post.data.pubDate} />
-							</span>
-							<h4 class="related-title">{post.data.title}</h4>
-						</div>
-					</a>
-				))}
+						</a>
+					);
+				})}
 			</div>
 			<div class="bottom-cta-row">
 				<a href="/blog" class="all-articles-cta-btn">
@@ -139,7 +217,7 @@ const otherPosts = allPosts.filter((p) => p.id !== currentSlug).slice(0, 4);
 		align-items: center;
 		color: #f8fafc;
 		box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
-		margin-bottom: 2rem;
+		margin-bottom: 1.5rem;
 	}
 	.author-avatar-col {
 		flex-shrink: 0;
@@ -167,7 +245,7 @@ const otherPosts = allPosts.filter((p) => p.id !== currentSlug).slice(0, 4);
 	.written-by-badge {
 		background: #f0883e;
 		color: #0b0f19;
-		font-family: monospace;
+		font-family: var(--font-mono);
 		font-size: 0.7rem;
 		font-weight: 800;
 		padding: 0.15rem 0.5rem;
@@ -177,7 +255,7 @@ const otherPosts = allPosts.filter((p) => p.id !== currentSlug).slice(0, 4);
 	.role-tag {
 		background: #1e293b;
 		color: #94a3b8;
-		font-family: monospace;
+		font-family: var(--font-mono);
 		font-size: 0.7rem;
 		font-weight: 600;
 		padding: 0.15rem 0.5rem;
@@ -196,7 +274,7 @@ const otherPosts = allPosts.filter((p) => p.id !== currentSlug).slice(0, 4);
 		color: #38bdf8;
 	}
 	.author-bio {
-		font-size: 0.88rem;
+		font-size: 0.86rem;
 		line-height: 1.65;
 		color: #cbd5e1;
 		margin: 0 0 1rem 0;
@@ -204,14 +282,15 @@ const otherPosts = allPosts.filter((p) => p.id !== currentSlug).slice(0, 4);
 	.author-links-row {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 0.5rem;
+		gap: 0.45rem;
 	}
 	.author-btn {
 		display: inline-flex;
 		align-items: center;
-		font-size: 0.78rem;
+		gap: 0.32rem;
+		font-size: 0.76rem;
 		font-weight: 600;
-		padding: 0.4rem 0.75rem;
+		padding: 0.38rem 0.72rem;
 		border-radius: 6px;
 		text-decoration: none;
 		transition: all 0.15s ease;
@@ -226,14 +305,15 @@ const otherPosts = allPosts.filter((p) => p.id !== currentSlug).slice(0, 4);
 		color: #0b0f19;
 		text-decoration: none;
 	}
-	.secondary-btn {
-		background: #1e293b;
+	.x-highlight-btn {
+		background: #020617;
 		color: #f8fafc;
-		border: 1px solid #334155;
+		font-weight: 700;
+		border: 1px solid #38bdf8;
 	}
-	.secondary-btn:hover {
-		background: #334155;
-		color: #ffffff;
+	.x-highlight-btn:hover {
+		background: #0f172a;
+		color: #38bdf8;
 		text-decoration: none;
 	}
 	.subblog-highlight-btn {
@@ -244,6 +324,16 @@ const otherPosts = allPosts.filter((p) => p.id !== currentSlug).slice(0, 4);
 	}
 	.subblog-highlight-btn:hover {
 		background: #1d4ed8;
+		color: #ffffff;
+		text-decoration: none;
+	}
+	.secondary-btn {
+		background: #1e293b;
+		color: #f8fafc;
+		border: 1px solid #334155;
+	}
+	.secondary-btn:hover {
+		background: #334155;
 		color: #ffffff;
 		text-decoration: none;
 	}
@@ -258,7 +348,105 @@ const otherPosts = allPosts.filter((p) => p.id !== currentSlug).slice(0, 4);
 		text-decoration: none;
 	}
 
-	/* 2. 前後の記事ナビゲーション */
+	/* 2. D.F.Architect 制作物ストリップ */
+	.ecosystem-strip {
+		background: #f8f9fb;
+		border: 1px solid #e2e8f0;
+		border-radius: 12px;
+		padding: 1.15rem 1.25rem;
+		margin-bottom: 2rem;
+	}
+	.eco-strip-head {
+		display: flex;
+		align-items: center;
+		gap: 0.55rem;
+		flex-wrap: wrap;
+		margin-bottom: 0.85rem;
+	}
+	.eco-strip-badge {
+		background: #14213d;
+		color: #e5c17a;
+		font-family: var(--font-mono);
+		font-size: 0.65rem;
+		font-weight: 800;
+		padding: 0.14rem 0.48rem;
+		border-radius: 4px;
+		letter-spacing: 0.04em;
+	}
+	.eco-strip-title {
+		font-size: 0.88rem;
+		font-weight: 800;
+		color: #0f172a;
+	}
+	.eco-strip-grid {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 0.75rem;
+	}
+	.eco-mini-card {
+		display: flex;
+		flex-direction: column;
+		background: #ffffff;
+		border: 1px solid #e2e8f0;
+		border-radius: 8px;
+		padding: 0.85rem 0.9rem;
+		text-decoration: none;
+		color: inherit;
+		transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+	}
+	.eco-mini-card:hover {
+		transform: translateY(-2px);
+		border-color: #94a3b8;
+		box-shadow: 0 5px 14px rgba(15, 23, 42, 0.07);
+		text-decoration: none;
+	}
+	.eco-mini-navy {
+		background: linear-gradient(135deg, #14213d 0%, #0f172a 100%);
+		border-color: #1e325c;
+		color: #f8fafc;
+	}
+	.eco-mini-navy:hover {
+		border-color: #c8963e;
+	}
+	.eco-mini-top {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-bottom: 0.4rem;
+		color: #14213d;
+	}
+	.eco-mini-navy .eco-mini-top {
+		color: #e5c17a;
+	}
+	.eco-mini-tag {
+		font-family: var(--font-mono);
+		font-size: 0.62rem;
+		font-weight: 700;
+		color: #64748b;
+	}
+	.eco-mini-navy .eco-mini-tag {
+		color: #e5c17a;
+	}
+	.eco-mini-card h4 {
+		margin: 0 0 0.28rem 0;
+		font-size: 0.88rem;
+		font-weight: 800;
+		color: #0f172a;
+	}
+	.eco-mini-navy h4 {
+		color: #ffffff;
+	}
+	.eco-mini-card p {
+		margin: 0;
+		font-size: 0.74rem;
+		line-height: 1.5;
+		color: #64748b;
+	}
+	.eco-mini-navy p {
+		color: #cbd5e1;
+	}
+
+	/* 3. 前後の記事ナビゲーション */
 	.prev-next-nav {
 		display: grid;
 		grid-template-columns: 1fr 1fr;
@@ -292,7 +480,7 @@ const otherPosts = allPosts.filter((p) => p.id !== currentSlug).slice(0, 4);
 		font-weight: 700;
 		color: #64748b;
 		margin-bottom: 0.35rem;
-		font-family: monospace;
+		font-family: var(--font-mono);
 	}
 	.nav-title {
 		font-size: 0.9rem;
@@ -308,7 +496,7 @@ const otherPosts = allPosts.filter((p) => p.id !== currentSlug).slice(0, 4);
 		color: #2563eb;
 	}
 
-	/* 3. あわせて読みたい関連記事 */
+	/* 4. あわせて読みたい関連記事 */
 	.related-posts-section {
 		margin-top: 1rem;
 	}
@@ -358,6 +546,7 @@ const otherPosts = allPosts.filter((p) => p.id !== currentSlug).slice(0, 4);
 		text-decoration: none;
 	}
 	.related-thumb {
+		position: relative;
 		width: 100%;
 		height: 135px;
 		overflow: hidden;
@@ -373,6 +562,17 @@ const otherPosts = allPosts.filter((p) => p.id !== currentSlug).slice(0, 4);
 	}
 	.related-card:hover .related-thumb img {
 		transform: scale(1.04);
+	}
+	.related-cat-chip {
+		position: absolute;
+		top: 0.5rem;
+		left: 0.5rem;
+		background: rgba(15, 23, 42, 0.85);
+		color: #f8fafc;
+		font-size: 0.65rem;
+		font-weight: 700;
+		padding: 0.15rem 0.45rem;
+		border-radius: 4px;
 	}
 	.related-body {
 		padding: 0.85rem 1rem 1rem;
@@ -390,7 +590,7 @@ const otherPosts = allPosts.filter((p) => p.id !== currentSlug).slice(0, 4);
 		font-weight: 700;
 		color: #0f172a;
 		line-height: 1.45;
-		margin: 0;
+		margin: 0 0 0.5rem 0;
 		display: -webkit-box;
 		-webkit-line-clamp: 2;
 		-webkit-box-orient: vertical;
@@ -399,16 +599,33 @@ const otherPosts = allPosts.filter((p) => p.id !== currentSlug).slice(0, 4);
 	.related-card:hover .related-title {
 		color: #2563eb;
 	}
+	.related-tags {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.3rem;
+		margin-top: auto;
+	}
+	.related-tag {
+		font-size: 0.68rem;
+		font-weight: 600;
+		color: #475569;
+		background: #f1f5f9;
+		padding: 0.1rem 0.4rem;
+		border-radius: 4px;
+	}
 	.bottom-cta-row {
 		text-align: center;
 		margin-top: 1.25rem;
 	}
 	.all-articles-cta-btn {
-		display: inline-block;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.4rem;
 		width: 100%;
 		max-width: 420px;
 		padding: 0.8rem 1.5rem;
-		background: #0f172a;
+		background: #14213d;
 		color: #ffffff;
 		font-size: 0.92rem;
 		font-weight: 700;
@@ -418,8 +635,8 @@ const otherPosts = allPosts.filter((p) => p.id !== currentSlug).slice(0, 4);
 		box-sizing: border-box;
 	}
 	.all-articles-cta-btn:hover {
-		background: #1e293b;
-		color: #38bdf8;
+		background: #1e325c;
+		color: #ffffff;
 		transform: translateY(-1px);
 		text-decoration: none;
 	}
@@ -435,14 +652,13 @@ const otherPosts = allPosts.filter((p) => p.id !== currentSlug).slice(0, 4);
 		.author-links-row {
 			justify-content: center;
 		}
-		.prev-next-nav {
+		.eco-strip-grid,
+		.prev-next-nav,
+		.related-grid {
 			grid-template-columns: 1fr;
 		}
 		.older-card {
 			text-align: left;
-		}
-		.related-grid {
-			grid-template-columns: 1fr;
 		}
 	}
 </style>

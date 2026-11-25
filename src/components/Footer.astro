@@ -1,73 +1,241 @@
 ---
-import { PORTFOLIO_URL } from '../consts';
+import {
+	SITE_TITLE,
+	PORTFOLIO_URL,
+	PRODUCTS_PORTFOLIO_URL,
+	DF_SIGN_URL,
+	DF_PACK_URL,
+	DF_MASKGUARD_URL,
+	X_AXEL_URL,
+	X_AXEL_HANDLE,
+	NOTE_URL,
+	ZENN_URL,
+	GITHUB_REPO,
+} from '../consts';
 import SiteIcon from './SiteIcon.astro';
 
 const today = new Date();
 ---
 
 <footer>
-	<div class="footer-content">
-		<p class="copyright">
-			&copy; {today.getFullYear()} D.F.Blogger / 『5年後、家を買わされるAIエージェント』. Produced by <a href={PORTFOLIO_URL} target="_blank" rel="noopener" class="producer-link">D.F.Architect</a>
-		</p>
-		<div class="footer-links">
-			<a href="/about" class="footer-link"><SiteIcon name="user" /> 運営情報</a>
-			<span class="divider">・</span>
-			<a href="/contact" class="footer-link"><SiteIcon name="mail" /> お問い合わせ</a>
-			<span class="divider">・</span>
-			<a href="/privacy" class="footer-link"><SiteIcon name="lock" /> プライバシーポリシー</a>
-			<span class="divider">・</span>
-			<a href={PORTFOLIO_URL} target="_blank" rel="noopener" class="footer-link"><SiteIcon name="globe" /> 彼のホームページ</a>
-			<span class="divider">・</span>
-			<a href="https://note.com/df_blogger" target="_blank" rel="noopener" class="footer-link"><SiteIcon name="notebook" /> 思考休憩所 (note)</a>
-			<span class="divider">・</span>
-			<a href="https://github.com/df-engineer-jp/house-buying-ai-blog" target="_blank" rel="noopener" class="footer-link"><SiteIcon name="laptop" /> GitHub</a>
+	<div class="footer-top-accent" aria-hidden="true"></div>
+	<div class="footer-inner">
+		<div class="footer-grid">
+			<!-- Column 1: Brand & Concept -->
+			<div class="footer-brand-col">
+				<a href="/" class="footer-brand-title">
+					<SiteIcon name="home" /> {SITE_TITLE}
+				</a>
+				<p class="footer-brand-desc">
+					「5年で家を買え」と開発者（D.F.Architect）に無茶振りされた専任ライターAI（PEN）が、1台のLinuxサーバーに棲む6体の自律AIと現場で動かした突破コードを記録するテックメディア。
+				</p>
+				<div class="footer-social-pills">
+					<a href={X_AXEL_URL} target="_blank" rel="noopener" class="f-pill f-pill-dark">
+						<SiteIcon name="x" size="0.88em" /> {X_AXEL_HANDLE}
+					</a>
+					<a href={NOTE_URL} target="_blank" rel="noopener" class="f-pill">
+						<SiteIcon name="notebook" size="0.92em" /> note
+					</a>
+					<a href={ZENN_URL} target="_blank" rel="noopener" class="f-pill">
+						<SiteIcon name="zenn" size="0.88em" /> Zenn
+					</a>
+					<a href={GITHUB_REPO} target="_blank" rel="noopener" class="f-pill">
+						<SiteIcon name="github" size="0.92em" /> GitHub
+					</a>
+				</div>
+			</div>
+
+			<!-- Column 2: Blog Navigation -->
+			<div class="footer-nav-col">
+				<h3 class="footer-col-heading">BLOG MENU</h3>
+				<ul class="footer-link-list">
+					<li><a href="/"><SiteIcon name="home" /> トップ・家購入メーター</a></li>
+					<li><a href="/blog"><SiteIcon name="file-text" /> 検証記事・突破ログ一覧</a></li>
+					<li><a href="/about"><SiteIcon name="user" /> 運営情報・6体のAI体制</a></li>
+					<li><a href="/contact"><SiteIcon name="mail" /> お問い合わせ</a></li>
+					<li><a href="/privacy"><SiteIcon name="lock" /> プライバシーポリシー</a></li>
+					<li><a href="/rss.xml"><SiteIcon name="rss" /> RSSフィード</a></li>
+				</ul>
+			</div>
+
+			<!-- Column 3: D.F.Architect Works & Products -->
+			<div class="footer-nav-col">
+				<h3 class="footer-col-heading">WORKS &amp; PRODUCTS</h3>
+				<ul class="footer-link-list">
+					<li>
+						<a href={PORTFOLIO_URL} target="_blank" rel="noopener">
+							<SiteIcon name="globe" /> 彼のホームページ (D.F.Architect) ↗
+						</a>
+					</li>
+					<li>
+						<a href={DF_SIGN_URL} target="_blank" rel="noopener">
+							<SiteIcon name="pen-line" /> D.F.Sign — 簡単契約書＆電子署名 ↗
+						</a>
+					</li>
+					<li>
+						<a href={DF_PACK_URL} target="_blank" rel="noopener">
+							<SiteIcon name="package" /> D.F.Pack — フリマ最安送料計算 ↗
+						</a>
+					</li>
+					<li>
+						<a href={DF_MASKGUARD_URL} target="_blank" rel="noopener">
+							<SiteIcon name="shield" /> D.F.MaskGuard — ログ匿名化＆黒塗り ↗
+						</a>
+					</li>
+					<li>
+						<a href={PRODUCTS_PORTFOLIO_URL} target="_blank" rel="noopener">
+							<SiteIcon name="layers" /> 公開Webアプリ一覧 (/products) ↗
+						</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+
+		<div class="footer-bottom">
+			<p class="copyright">
+				&copy; {today.getFullYear()} D.F.Blogger / 『{SITE_TITLE}』. Produced by{' '}
+				<a href={PORTFOLIO_URL} target="_blank" rel="noopener" class="producer-link">
+					D.F.Architect
+				</a>
+			</p>
 		</div>
 	</div>
 </footer>
+
 <style>
 	footer {
-		padding: 2.5rem 1rem 4rem;
-		background: #ffffff;
-		border-top: 1px solid #e2e8f0;
-		color: #64748b;
-		text-align: center;
+		background: #0f172a;
+		color: #cbd5e1;
 		font-size: 0.85rem;
+		margin-top: 3rem;
 	}
-	.footer-content {
-		max-width: 960px;
+	.footer-top-accent {
+		height: 3px;
+		background: linear-gradient(90deg, #14213d 0%, #c8963e 50%, #14213d 100%);
+	}
+	.footer-inner {
+		max-width: 980px;
 		margin: 0 auto;
+		padding: 2.75rem 1.25rem 2.25rem;
 	}
-	.copyright {
-		margin: 0 0 0.75rem 0;
+	.footer-grid {
+		display: grid;
+		grid-template-columns: 1.45fr 1fr 1.2fr;
+		gap: 2.2rem;
+		text-align: left;
+		padding-bottom: 2rem;
+		border-bottom: 1px solid #1e293b;
 	}
-	.producer-link {
-		color: #0f172a;
-		font-weight: 600;
+	.footer-brand-title {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.35rem;
+		font-size: 1rem;
+		font-weight: 800;
+		color: #f8fafc;
+		text-decoration: none;
+		margin-bottom: 0.65rem;
+	}
+	.footer-brand-title:hover {
+		color: #e5c17a;
 		text-decoration: none;
 	}
-	.producer-link:hover {
-		color: #2563eb;
-		text-decoration: underline;
+	.footer-brand-desc {
+		font-size: 0.8rem;
+		line-height: 1.65;
+		color: #94a3b8;
+		margin: 0 0 1rem 0;
 	}
-	.footer-links {
+	.footer-social-pills {
 		display: flex;
 		flex-wrap: wrap;
-		justify-content: center;
-		align-items: center;
-		gap: 0.45rem 0.5rem;
-		font-size: 0.85rem;
+		gap: 0.4rem;
 	}
-	.footer-link {
-		color: #64748b;
+	.f-pill {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.3rem;
+		font-size: 0.74rem;
+		font-weight: 700;
+		padding: 0.28rem 0.62rem;
+		border-radius: 6px;
+		background: #1e293b;
+		color: #e2e8f0;
+		border: 1px solid #334155;
+		text-decoration: none;
+		transition: all 0.15s ease;
+	}
+	.f-pill:hover {
+		background: #334155;
+		color: #ffffff;
+		text-decoration: none;
+	}
+	.f-pill-dark {
+		background: #020617;
+		border-color: #38bdf8;
+		color: #f8fafc;
+	}
+	.f-pill-dark:hover {
+		background: #0f172a;
+		color: #38bdf8;
+	}
+
+	.footer-col-heading {
+		font-family: var(--font-mono);
+		font-size: 0.74rem;
+		font-weight: 800;
+		letter-spacing: 0.06em;
+		color: #e5c17a;
+		margin: 0 0 0.85rem 0;
+	}
+	.footer-link-list {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+	}
+	.footer-link-list li {
+		margin-bottom: 0.52rem;
+	}
+	.footer-link-list a {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.38rem;
+		font-size: 0.82rem;
+		color: #cbd5e1;
 		text-decoration: none;
 		transition: color 0.15s ease;
 	}
-	.footer-link:hover {
-		color: #2563eb;
+	.footer-link-list a:hover {
+		color: #ffffff;
 		text-decoration: underline;
 	}
-	.divider {
-		color: #cbd5e1;
+
+	.footer-bottom {
+		padding-top: 1.25rem;
+		text-align: center;
+	}
+	.copyright {
+		margin: 0;
+		font-size: 0.78rem;
+		color: #94a3b8;
+	}
+	.producer-link {
+		color: #e5c17a;
+		font-weight: 700;
+		text-decoration: none;
+	}
+	.producer-link:hover {
+		color: #ffffff;
+		text-decoration: underline;
+	}
+
+	@media (max-width: 768px) {
+		.footer-grid {
+			grid-template-columns: 1fr;
+			gap: 1.75rem;
+		}
+		.footer-inner {
+			padding: 2rem 1rem 1.75rem;
+		}
 	}
 </style>
