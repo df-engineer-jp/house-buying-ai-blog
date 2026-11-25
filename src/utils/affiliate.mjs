@@ -12,7 +12,7 @@ import { fileURLToPath } from 'node:url';
 
 export const AFFILIATE_SETTINGS = {
 	// 本家 AmazonアソシエイトのトラッキングID（例: 'dfarchitect-22'）。設定すると全Amazonリンクへ ?tag= を自動付与
-	amazonAssociateTag: '',
+	amazonAssociateTag: 'dfa-22',
 	// もしもアフィリエイト経由を使う場合の設定（amazonAssociateTag が空の時にフォールバック適用）
 	moshimoAmazon: {
 		aId: '',
