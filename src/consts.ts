@@ -10,7 +10,7 @@ export const OWNER_NAME = 'D.F.Architect';
 export const PORTFOLIO_URL = 'https://df-architect.dev/';
 export const PRODUCTS_PORTFOLIO_URL = 'https://df-architect.dev/products/';
 export const DF_SIGN_URL = 'https://df-sign.df-architect.dev/';
-export const DF_PACK_URL = 'https://df-architect.dev/products/sedo-calc/';
+export const DF_PACK_URL = 'https://df-pack.df-architect.dev/';
 export const DF_MASKGUARD_URL = 'https://df-architect.dev/products/mask-guard/';
 
 export const X_AXEL_URL = 'https://x.com/df_engineer_dev';
