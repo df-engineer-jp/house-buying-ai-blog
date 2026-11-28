@@ -27,17 +27,19 @@ const statusMap: Record<string, 'idle' | 'executing' | 'alert' | 'success' | 'st
 };
 const status = statusMap[rawStatus] || 'idle';
 
-// 感情表現は「一筆書き {8/3} 星の線の色」のみを変化させる（球体と中心コア光は純白シアン固定）
-const STAR_COLORS: Record<string, { core: string; glow: string; mid: string }> = {
-  idle:      { core: '#ffffff', glow: '#67e8f9', mid: '#22d3ee' },
-  executing: { core: '#ecfdf5', glow: '#34d399', mid: '#059669' },
-  alert:     { core: '#fee2e2', glow: '#f87171', mid: '#ef4444' },
-  success:   { core: '#dcfce7', glow: '#4ade80', mid: '#16a34a' },
-  standby:   { core: '#f1f5f9', glow: '#cbd5e1', mid: '#64748b' },
-  overclock: { core: '#fae8ff', glow: '#e879f9', mid: '#c026d3' },
+// 内部の星は周りの青（シアン）と同じ色に固定し、感情は中心コア光の色と明滅で表現する
+const STAR_COLOR = { core: '#ffffff', glow: '#67e8f9', mid: '#22d3ee' };
+
+const CORE_COLORS: Record<string, { inner: string; mid: string; outer: string }> = {
+  idle:      { inner: '#ffffff', mid: '#cffafe', outer: '#22d3ee' },
+  executing: { inner: '#ecfdf5', mid: '#6ee7b7', outer: '#10b981' },
+  alert:     { inner: '#fff1f2', mid: '#f87171', outer: '#ef4444' },
+  success:   { inner: '#f0fdf4', mid: '#4ade80', outer: '#16a34a' },
+  standby:   { inner: '#f8fafc', mid: '#cbd5e1', outer: '#64748b' },
+  overclock: { inner: '#fdf4ff', mid: '#e879f9', outer: '#c026d3' },
 };
 
-const starColor = STAR_COLORS[status] || STAR_COLORS.idle;
+const coreColor = CORE_COLORS[status] || CORE_COLORS.idle;
 const uid = `nova_${status}_${Math.random().toString(36).slice(2, 9)}`;
 
 // 正八芒星 {8/3} 完全一筆書きパス生成
@@ -98,12 +100,12 @@ const pathInner = buildOctagram83Path(200, 200, 108, -90);
         <stop offset="100%" stop-color="#000000" stop-opacity="0" />
       </radialGradient>
 
-      <!-- 中央コア光はどの感情でも純白シアン固定 -->
+      <!-- 中央コア光（感情に応じて内部に光を灯す） -->
       <radialGradient id={`${uid}_core_glow`} cx="50%" cy="50%" r="50%">
-        <stop offset="0%" stop-color="#ffffff" stop-opacity="0.92" />
-        <stop offset="20%" stop-color="#cffafe" stop-opacity="0.64" />
-        <stop offset="52%" stop-color="#22d3ee" stop-opacity="0.20" />
-        <stop offset="100%" stop-color="#06b6d4" stop-opacity="0.0" />
+        <stop offset="0%" stop-color={coreColor.inner} stop-opacity="0.96" />
+        <stop offset="28%" stop-color={coreColor.mid} stop-opacity="0.72" />
+        <stop offset="62%" stop-color={coreColor.outer} stop-opacity="0.28" />
+        <stop offset="100%" stop-color={coreColor.outer} stop-opacity="0.0" />
       </radialGradient>
 
       <!-- オーロラ・プラズマ雲1 -->
@@ -203,16 +205,16 @@ const pathInner = buildOctagram83Path(200, 200, 108, -90);
       filter={`url(#${uid}_rim_blur)`}
     />
 
-    <!-- 4. 中央コア光（固定の純白シアン） -->
-    <circle cx="200" cy="200" r="64" fill={`url(#${uid}_core_glow)`} />
+    <!-- 4. 中央コア光（感情カラー＋アラート時フアンフアン明滅） -->
+    <circle class="nova-core-glow" cx="200" cy="200" r="76" fill={`url(#${uid}_core_glow)`} />
 
-    <!-- 5. 一筆書き {8/3} 正八芒星（星の線のみ感情カラーに変化） -->
+    <!-- 5. 一筆書き {8/3} 正八芒星（周りの青と同じシアン固定） -->
     <g class="nova-star-group" filter={`url(#${uid}_star_glow)`} stroke-linejoin="miter" stroke-linecap="round">
-      <path d={pathOuter} fill="none" stroke={starColor.mid} stroke-width="4.2" opacity="0.78" />
-      <path d={pathOuter} fill="none" stroke={starColor.glow} stroke-width="2.6" opacity="0.96" />
-      <path d={pathInner} fill="none" stroke={starColor.glow} stroke-width="1.8" opacity="0.90" />
-      <path d={pathOuter} fill="none" stroke={starColor.core} stroke-width="1.25" opacity="0.98" />
-      <path d={pathInner} fill="none" stroke={starColor.core} stroke-width="0.85" opacity="0.94" />
+      <path d={pathOuter} fill="none" stroke={STAR_COLOR.mid} stroke-width="4.2" opacity="0.78" />
+      <path d={pathOuter} fill="none" stroke={STAR_COLOR.glow} stroke-width="2.6" opacity="0.96" />
+      <path d={pathInner} fill="none" stroke={STAR_COLOR.glow} stroke-width="1.8" opacity="0.90" />
+      <path d={pathOuter} fill="none" stroke={STAR_COLOR.core} stroke-width="1.25" opacity="0.98" />
+      <path d={pathInner} fill="none" stroke={STAR_COLOR.core} stroke-width="0.85" opacity="0.94" />
     </g>
   </svg>
 </div>
@@ -244,10 +246,25 @@ const pathInner = buildOctagram83Path(200, 200, 108, -90);
     animation-duration: 1.8s;
   }
   .status-alert.animated .nova-star-group {
-    animation-duration: 1.1s;
+    animation-duration: 1.4s;
+  }
+  .status-alert.animated .nova-core-glow {
+    transform-origin: 200px 200px;
+    animation: novaCoreAlertPulse 1.5s ease-in-out infinite;
   }
   .status-overclock.animated .nova-star-group {
     animation-duration: 1.4s;
+  }
+
+  @keyframes novaCoreAlertPulse {
+    0%, 100% {
+      transform: scale(0.84);
+      opacity: 0.32;
+    }
+    50% {
+      transform: scale(1.16);
+      opacity: 1;
+    }
   }
 
   @keyframes novaStarBreath {
