@@ -11,7 +11,6 @@ export const PORTFOLIO_URL = 'https://df-architect.dev/';
 export const PRODUCTS_PORTFOLIO_URL = 'https://df-architect.dev/products/';
 export const DF_SIGN_URL = 'https://df-sign.df-architect.dev/';
 export const DF_PACK_URL = 'https://df-pack.df-architect.dev/';
-export const DF_MASKGUARD_URL = 'https://df-architect.dev/products/mask-guard/';
 
 export const X_AXEL_URL = 'https://x.com/df_engineer_dev';
 export const X_AXEL_HANDLE = '@df_engineer_dev';
@@ -52,17 +51,6 @@ export const ECOSYSTEM_PRODUCTS: EcosystemProduct[] = [
 		url: DF_PACK_URL,
 		icon: 'package',
 		accent: '#ea580c',
-	},
-	{
-		id: 'df-maskguard',
-		name: 'D.F.MaskGuard',
-		badge: 'SECURITY / 開発支援',
-		tagline: 'AI投入用ログ可逆匿名化 ＆ スクショ黒塗りツール',
-		description:
-			'外部通信ゼロ（完全ブラウザ内処理）で、AIへ渡す前の機密ログ・APIキーの可逆マスク化とスクリーンショットの高速モザイク・黒塗りを実行。',
-		url: DF_MASKGUARD_URL,
-		icon: 'shield',
-		accent: '#0f766e',
 	},
 ];
 
